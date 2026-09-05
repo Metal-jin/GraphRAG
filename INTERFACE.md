@@ -7,7 +7,7 @@
 
 ## 1. 检索方法统一接口：QAMethod
 
-所有检索方法（vector / library_graphrag / hipporag2）**必须**：
+所有检索方法（vector / library_graphrag / tcpr）**必须**：
 1. 继承 `QAMethod`（定义在 `src/core/interfaces.py`）
 2. 设置 `name`（方法唯一名字）
 3. 实现 `ask(question, top_k)` 方法

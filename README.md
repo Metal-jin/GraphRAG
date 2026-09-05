@@ -2,7 +2,7 @@
 
 天津大学 2026 知识工程综合实践
 
-**项目简介**：构建金庸武侠知识图谱，实现多种检索方法（纯向量基线、调库基线、自研 PPR 方法），用统一框架和同一套评测问题公平对比效果。
+**项目简介**：构建金庸武侠知识图谱，实现多种检索方法（纯向量基线、调库基线、自研 TCPR 方法），用统一框架和同一套评测问题公平对比效果。
 
 > ⚠️ 写代码前，请先读完本文件，再看 `INTERFACE.md` 和 `src/core/interfaces.py`。
 
@@ -12,11 +12,11 @@
 
 本项目不是一个"跑通流程"的拼装系统，而是围绕以下问题展开的**方法对比研究**：
 
-1. 自研的 **PPR（个性化 PageRank）图检索**方法，相比纯向量检索和调库图检索，能否提高**多跳问题**（如"郭靖的师父的师父是谁"）的回答准确率？
-2. 在"高度节点惩罚"等改进下，PPR 检索能否抑制热门实体（如郭靖）带来的噪声，提高关键实体命中率？
+1. 在 **LLM 抽取、含噪声的**中文武侠知识图谱上，自研的 **TCPR（Type-Constrained Personalized Retrieval，类型约束的个性化检索）**方法，相比纯向量检索和调库图检索，能否更好地回答**多跳问题**（如"郭靖的师父的师父是谁"）？
+2. **实体类型约束 + 关系类型加权**能否抑制噪声关系带来的错误推理，提高关键实体命中率？
 3. 不同的**知识注入形式**（结构化三元组 / 路径证据 / 子图摘要）对 LLM 最终答案质量有何影响？
 
-这三个问题分别对应 GraphRAG 的**检索方式**和**知识注入**两大核心组件，是我们相对老师示范项目的创新所在。
+前两个问题针对**检索方式**（自研 TCPR 相对基线的优势），第三个针对**知识注入**，是我们相对老师示范项目、以及同类"调库/照搬论文方法"项目的差异化创新所在。
 
 ## 项目边界（不做什么）
 
@@ -38,7 +38,7 @@
    ↓
 ┌─────────────────────────────────────────┐
 │  三种检索方法（统一 QAMethod 接口）      │
-│   vector / library_graphrag / hipporag2 │
+│   vector / library_graphrag / tcpr     │
 └─────────────────────────────────────────┘
    ↓ 返回统一 Answer（含证据）
 LLM 生成答案（generate/service.py）
@@ -55,8 +55,8 @@ LLM 生成答案（generate/service.py）
 ```
 src/
   core/       框架核心：接口、方法注册表、配置
-  methods/    检索方法实现（vector / library_graphrag / hipporag2）
-  retrieve/   检索算法细节（向量工具、PPR 实现）
+  methods/    检索方法实现（vector / library_graphrag / tcpr）
+  retrieve/   检索算法细节（向量工具、TCPR 实现）
   ingest/     数据构建：切块、抽取、入库、数据读取
   generate/   统一问答入口
   eval/       评测：问题集、指标、对比脚本
@@ -74,7 +74,7 @@ output/       评测输出
 
 | 角色 | 分支名 | 负责目录 | 一句话职责 |
 |---|---|---|---|
-| A+D（组长） | `feature/d-ppr` | `src/core/`、`src/methods/hipporag2.py` | 架构接口 + 自研 PPR 算法 |
+| A+D（组长） | `feature/d-tcpr` | `src/core/`、`src/methods/tcpr.py` | 架构接口 + 自研 TCPR 算法 |
 | B | `feature/b-ingest` | `src/ingest/`、`docs/ontology.md` | 数据 + 图谱构建 |
 | C | `feature/c-baseline` | `src/methods/vector.py`、`library_graphrag.py`、`src/retrieve/vector_utils.py` | 两个基线方法 |
 | E1 | `feature/e1-eval` | `src/eval/`、`output/` | 评测 |
