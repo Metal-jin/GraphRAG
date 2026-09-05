@@ -1,0 +1,8 @@
+python-dotenv
+neo4j
+neo4j-graphrag
+openai
+numpy
+flask
+flask-cors
+pytest

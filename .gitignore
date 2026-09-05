@@ -1,0 +1,27 @@
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 虚拟环境
+.venv/
+venv/
+
+# 敏感信息（密钥/密码，绝不提交）
+.env
+
+# 原始语料和中间数据（版权/体积大，不进 git）
+data/source/*
+!data/source/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+
+# 打包输出
+output/*.zip
+
+# 测试缓存
+.pytest_cache/
+
+# IDE 配置
+.vscode/
+.idea/
