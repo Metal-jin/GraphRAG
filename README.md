@@ -22,7 +22,7 @@
 
 为保证聚焦、避免范围蔓延，明确本阶段：
 
-- **聚焦检索方法对比**，数据先用一部小说（如《射雕英雄传》）验证，不做全量金庸作品抽取。
+- **聚焦武侠领域推理**，数据先用一部小说（如《射雕英雄传》）验证，不做全量金庸作品抽取。
 - **不做独立前后端分离**，前端用单页 HTML 即可，重点在方法本身。
 - **不追求抽取绝对完整**，允许人工校正少量 LLM 抽取结果。
 - **不引入复杂 Agent 编排**，核心链路保持"检索 → 生成"的可解释性。
@@ -37,16 +37,17 @@
 知识图谱（Neo4j，含向量/全文索引）
    ↓
 ┌─────────────────────────────────────────┐
-│  四种检索方法（统一 QAMethod 接口）      │
-│   vector / library_graphrag / pathrag / │
-│   tcpr                                  │
+│  统一 QAMethod 接口                     │
+│  基线：vector / library_graphrag        │
+│  领域策略：master_chain / sect_agg /    │
+│           art_lineage                   │
 └─────────────────────────────────────────┘
    ↓ 返回统一 Answer（含证据）
 LLM 生成答案（generate/service.py）
    ↓
 前端展示 + 证据高亮（frontend/index.html）
 
-评测：同一套问题集跑四种方法 → 对比表（eval/run_compare.py）
+评测：同一套问题集跑五种方法 → 对比表（eval/run_compare.py）
 ```
 
 ---
@@ -56,8 +57,8 @@ LLM 生成答案（generate/service.py）
 ```
 src/
   core/       框架核心：接口、方法注册表、配置
-  methods/    检索方法实现（vector / library_graphrag / pathrag / tcpr）
-  retrieve/   检索算法细节（向量工具、TCPR 实现）
+  methods/    检索方法实现（vector / library_graphrag / master_chain / sect_agg / art_lineage）
+  retrieve/   领域检索策略实现（师徒链、门派聚合、武功传承）
   ingest/     数据构建：切块、抽取、入库、数据读取
   generate/   统一问答入口
   eval/       评测：问题集、指标、对比脚本
@@ -75,7 +76,7 @@ output/       评测输出
 
 | 角色 | 分支名 | 负责目录 | 一句话职责 |
 |---|---|---|---|
-| A+D（组长） | `feature/d-tcpr` | `src/core/`、`src/methods/tcpr.py`、`src/methods/pathrag.py` | 架构接口 + 复现 PathRAG + 自研 TCPR |
+| A+D（组长） | `feature/d-strategy` | `src/core/`、`src/methods/master_chain.py`、`sect_agg.py`、`art_lineage.py` | 架构接口 + 三个领域检索策略 |
 | B | `feature/b-ingest` | `src/ingest/`、`docs/ontology.md` | 数据 + 图谱构建 |
 | C | `feature/c-baseline` | `src/methods/vector.py`、`library_graphrag.py`、`src/retrieve/vector_utils.py` | 两个基线方法 |
 | E1 | `feature/e1-eval` | `src/eval/`、`output/` | 评测 |
@@ -148,6 +149,13 @@ Copy-Item .env.example .env
 2. 写 `src/methods/library_graphrag.py`：调 `neo4j-graphrag` 库的图检索。
 3. 写 `src/retrieve/vector_utils.py`：向量检索工具，供 D 复用。
 4. 两个方法都要实现 `QAMethod` 接口（见 `src/core/interfaces.py`），并用 `@register` 注册。
+
+### D（组长，三个领域检索策略）
+
+1. 写 `src/methods/master_chain.py`：师徒链检索（沿 `MASTER_OF` 反向走多跳，返回完整师徒链）。
+2. 写 `src/methods/sect_agg.py`：门派聚合检索（定位门派，聚合其下所有人物和武功）。
+3. 写 `src/methods/art_lineage.py`：武功传承检索（通过师徒+精通组合推导传承链）。
+4. 三个方法都要实现 `QAMethod` 接口，并用 `@register` 注册。
 
 ### E1（评测）
 
@@ -250,10 +258,10 @@ git push
 
 ## 八、评测方案
 
-- **问题集**：约 50 个金庸多跳问题，覆盖师徒、门派、武功、结拜、夫妻等关系类型（由 E1 负责，见 `src/eval/questions.json`）。
+- **问题集**：约 50 个金庸问题，按类型分类（人物关系 / 门派归属 / 武功传承 / 综合）（由 E1 负责，见 `src/eval/questions.json`）。
 - **指标**：答案准确率、关键实体命中率。
-- **公平性**：四种方法用同一套问题、同一个 LLM、同一个 `top_k` 对比，保证结论可信。
-- **对比实验**：`src/eval/run_compare.py` 自动跑四种方法（含复现的 PathRAG），输出 `output/compare_table.md` 对比表。
+- **公平性**：五种方法用同一套问题、同一个 LLM、同一个 `top_k` 对比，保证结论可信。
+- **对比实验**：`src/eval/run_compare.py` 自动跑两个基线 + 三个领域策略，输出 `output/compare_table.md` 对比表。
 
 ## 九、数据与诚实性
 
