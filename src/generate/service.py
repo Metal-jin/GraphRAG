@@ -2,6 +2,9 @@ from typing import List, Dict, Any
 from core.registry import get_method, list_methods
 from core.interfaces import Answer
 
+# 导入 methods 包，触发各方法文件上的 @register 装饰器，否则注册表为空
+import methods  # noqa: F401
+
 
 def get_available_methods() -> List[str]:
     """
@@ -24,7 +27,7 @@ def ask_question(question: str, method_name: str = "vector", top_k: int = 5) -> 
         method_instance = get_method(method_name)
         # 调用问答接口
         result: Answer = method_instance.ask(question, top_k=top_k)
-        
+
         # 转为字典返回，保持字段和 Answer 完全一致
         return {
             "answer_text": result.answer_text,

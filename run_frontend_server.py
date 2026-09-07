@@ -5,6 +5,8 @@ import os
 
 # 把项目根目录加入路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# 把 src 目录也加入路径，让 service.py 里的 `from core.xxx` 能找到模块
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 
 from src.generate.service import get_available_methods, ask_question
 

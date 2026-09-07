@@ -5,8 +5,18 @@
 """
 
 # 只要导入 src.methods，就会触发装饰器注册；评测和统一入口因此可以
-# 通过 get_method("vector") / get_method("library_graphrag") 取得方法。
+# 通过 get_method("vector") / get_method("library_graphrag") / get_method("master_chain")
+# / get_method("sect_agg") / get_method("art_lineage") 取得方法。
 from .vector import VectorMethod
 from .library_graphrag import LibraryGraphRAGMethod
+from .master_chain import MasterChainMethod
+from .sect_agg import SectAggMethod
+from .art_lineage import ArtLineageMethod
 
-__all__ = ["VectorMethod", "LibraryGraphRAGMethod"]
+__all__ = [
+    "VectorMethod",
+    "LibraryGraphRAGMethod",
+    "MasterChainMethod",
+    "SectAggMethod",
+    "ArtLineageMethod",
+]
