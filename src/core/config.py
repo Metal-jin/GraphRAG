@@ -6,11 +6,13 @@ core/config.py
 不要在业务代码里到处写 os.getenv。
 """
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-# 加载项目根目录的 .env 文件
-load_dotenv()
+# 加载项目根目录的 .env 文件（按本文件位置定位仓库根，不依赖当前工作目录）
+_BASE_DIR = Path(__file__).resolve().parents[2]  # src/core/config.py -> 仓库根
+load_dotenv(_BASE_DIR / ".env")
 
 
 def get_env(key: str, default: str = None) -> str:
