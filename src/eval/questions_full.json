@@ -1,0 +1,802 @@
+{
+  "dataset_name": "金庸知识图谱多跳问答评测集",
+  "version": "1.0",
+  "language": "zh-CN",
+  "description": "完整评测集（50题，覆盖射雕/神雕/笑傲/倚天/天龙，阶段二用）。阶段一用 questions.json（仅射雕）。",
+  "scoring_hint": "程序主要使用 acceptable_answers 做实体命中判断；answer_entities 是人工复核和后续精确图谱评测使用的规范名称。",
+  "questions": [
+    {
+      "id": "q001",
+      "question": "郭靖的妻子是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "黄蓉"
+      ],
+      "acceptable_answers": [
+        "黄蓉"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q002",
+      "question": "黄蓉的父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "黄药师"
+      ],
+      "acceptable_answers": [
+        "黄药师",
+        "东邪"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q003",
+      "question": "郭靖的母亲是谁？",
+      "category": "亲属",
+      "relation": "母亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "李萍"
+      ],
+      "acceptable_answers": [
+        "李萍"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q004",
+      "question": "郭靖的父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "郭啸天"
+      ],
+      "acceptable_answers": [
+        "郭啸天"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q005",
+      "question": "郭靖早期拜谁为师？（回答其中一位师父即可）",
+      "category": "师徒",
+      "relation": "师父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "江南七怪",
+        "柯镇恶",
+        "朱聪",
+        "韩宝驹",
+        "南希仁",
+        "张阿生",
+        "全金发",
+        "韩小莹"
+      ],
+      "acceptable_answers": [
+        "江南七怪",
+        "柯镇恶",
+        "朱聪",
+        "韩宝驹",
+        "南希仁",
+        "张阿生",
+        "全金发",
+        "韩小莹"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q006",
+      "question": "郭靖向谁学习降龙十八掌？",
+      "category": "武功",
+      "relation": "传授武功",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "洪七公"
+      ],
+      "acceptable_answers": [
+        "洪七公",
+        "北丐"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q007",
+      "question": "黄药师的女儿是谁？",
+      "category": "亲属",
+      "relation": "女儿",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "黄蓉"
+      ],
+      "acceptable_answers": [
+        "黄蓉"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q008",
+      "question": "洪七公属于哪个门派？",
+      "category": "门派",
+      "relation": "所属门派",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "丐帮"
+      ],
+      "acceptable_answers": [
+        "丐帮"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q009",
+      "question": "欧阳锋的侄子是谁？",
+      "category": "亲属",
+      "relation": "侄子",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "欧阳克"
+      ],
+      "acceptable_answers": [
+        "欧阳克"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q010",
+      "question": "穆念慈的儿子是谁？",
+      "category": "亲属",
+      "relation": "儿子",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "杨过"
+      ],
+      "acceptable_answers": [
+        "杨过"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q011",
+      "question": "杨过的父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "杨康"
+      ],
+      "acceptable_answers": [
+        "杨康"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q012",
+      "question": "杨过的母亲是谁？",
+      "category": "亲属",
+      "relation": "母亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "穆念慈"
+      ],
+      "acceptable_answers": [
+        "穆念慈"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q013",
+      "question": "杨过的妻子是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "小龙女"
+      ],
+      "acceptable_answers": [
+        "小龙女",
+        "龙姑娘"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q014",
+      "question": "杨过的义父是谁？",
+      "category": "亲属",
+      "relation": "义父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "欧阳锋"
+      ],
+      "acceptable_answers": [
+        "欧阳锋",
+        "西毒"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q015",
+      "question": "杨过主要向谁学习古墓派武功？",
+      "category": "师徒",
+      "relation": "师父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "小龙女"
+      ],
+      "acceptable_answers": [
+        "小龙女",
+        "龙姑娘"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q016",
+      "question": "小龙女的丈夫是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "杨过"
+      ],
+      "acceptable_answers": [
+        "杨过",
+        "神雕大侠"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q017",
+      "question": "令狐冲的师父是谁？",
+      "category": "师徒",
+      "relation": "师父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "岳不群"
+      ],
+      "acceptable_answers": [
+        "岳不群",
+        "君子剑"
+      ],
+      "source_hint": "笑傲江湖"
+    },
+    {
+      "id": "q018",
+      "question": "令狐冲的妻子是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "任盈盈"
+      ],
+      "acceptable_answers": [
+        "任盈盈",
+        "圣姑"
+      ],
+      "source_hint": "笑傲江湖"
+    },
+    {
+      "id": "q019",
+      "question": "任盈盈的父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "任我行"
+      ],
+      "acceptable_answers": [
+        "任我行"
+      ],
+      "source_hint": "笑傲江湖"
+    },
+    {
+      "id": "q020",
+      "question": "令狐冲属于哪个门派？",
+      "category": "门派",
+      "relation": "所属门派",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "华山派"
+      ],
+      "acceptable_answers": [
+        "华山派"
+      ],
+      "source_hint": "笑傲江湖"
+    },
+    {
+      "id": "q021",
+      "question": "岳不群的妻子是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "宁中则"
+      ],
+      "acceptable_answers": [
+        "宁中则"
+      ],
+      "source_hint": "笑傲江湖"
+    },
+    {
+      "id": "q022",
+      "question": "周芷若的师父是谁？",
+      "category": "师徒",
+      "relation": "师父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "灭绝师太"
+      ],
+      "acceptable_answers": [
+        "灭绝师太",
+        "灭绝"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q023",
+      "question": "周芷若属于哪个门派？",
+      "category": "门派",
+      "relation": "所属门派",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "峨眉派"
+      ],
+      "acceptable_answers": [
+        "峨眉派",
+        "峨眉"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q024",
+      "question": "张无忌的父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "张翠山"
+      ],
+      "acceptable_answers": [
+        "张翠山"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q025",
+      "question": "张无忌的母亲是谁？",
+      "category": "亲属",
+      "relation": "母亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "殷素素"
+      ],
+      "acceptable_answers": [
+        "殷素素"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q026",
+      "question": "张无忌的义父是谁？",
+      "category": "亲属",
+      "relation": "义父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "谢逊"
+      ],
+      "acceptable_answers": [
+        "谢逊",
+        "金毛狮王"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q027",
+      "question": "张无忌的妻子是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "赵敏"
+      ],
+      "acceptable_answers": [
+        "赵敏",
+        "敏敏特穆尔"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q028",
+      "question": "赵敏的父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "汝阳王"
+      ],
+      "acceptable_answers": [
+        "汝阳王",
+        "察罕特穆尔"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q029",
+      "question": "张无忌在武当山主要向谁学习武功？",
+      "category": "师徒",
+      "relation": "师祖",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "张三丰"
+      ],
+      "acceptable_answers": [
+        "张三丰",
+        "张真人"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q030",
+      "question": "张三丰创建了哪个门派？",
+      "category": "门派",
+      "relation": "创建门派",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "武当派"
+      ],
+      "acceptable_answers": [
+        "武当派",
+        "武当"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q031",
+      "question": "乔峰的妻子是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "阿朱"
+      ],
+      "acceptable_answers": [
+        "阿朱"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q032",
+      "question": "乔峰的养父是谁？",
+      "category": "亲属",
+      "relation": "养父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "乔三槐"
+      ],
+      "acceptable_answers": [
+        "乔三槐"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q033",
+      "question": "乔峰的亲生父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "萧远山"
+      ],
+      "acceptable_answers": [
+        "萧远山"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q034",
+      "question": "乔峰的结拜兄弟之一是谁？（回答段誉或虚竹均可）",
+      "category": "结拜",
+      "relation": "结拜兄弟",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "段誉",
+        "虚竹"
+      ],
+      "acceptable_answers": [
+        "段誉",
+        "虚竹",
+        "镇南王世子",
+        "梦郎"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q035",
+      "question": "虚竹的师父是谁？",
+      "category": "师徒",
+      "relation": "师父",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "无崖子"
+      ],
+      "acceptable_answers": [
+        "无崖子"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q036",
+      "question": "虚竹的妻子是谁？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "梦姑"
+      ],
+      "acceptable_answers": [
+        "梦姑",
+        "西夏公主"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q037",
+      "question": "段誉的父亲是谁？",
+      "category": "亲属",
+      "relation": "父亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "段正淳"
+      ],
+      "acceptable_answers": [
+        "段正淳",
+        "镇南王"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q038",
+      "question": "段誉的母亲是谁？",
+      "category": "亲属",
+      "relation": "母亲",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "刀白凤"
+      ],
+      "acceptable_answers": [
+        "刀白凤"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q039",
+      "question": "段誉最终与谁成婚？",
+      "category": "婚姻",
+      "relation": "配偶",
+      "hop": 1,
+      "difficulty": "medium",
+      "answer_entities": [
+        "王语嫣"
+      ],
+      "acceptable_answers": [
+        "王语嫣"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q040",
+      "question": "王语嫣的表哥是谁？",
+      "category": "亲属",
+      "relation": "表哥",
+      "hop": 1,
+      "difficulty": "easy",
+      "answer_entities": [
+        "慕容复"
+      ],
+      "acceptable_answers": [
+        "慕容复"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q041",
+      "question": "郭靖的妻子的父亲是谁？",
+      "category": "多跳亲属",
+      "relation": "妻子的父亲",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "黄药师"
+      ],
+      "acceptable_answers": [
+        "黄药师",
+        "东邪"
+      ],
+      "source_hint": "射雕英雄传"
+    },
+    {
+      "id": "q042",
+      "question": "杨过的妻子的丈夫是谁？",
+      "category": "多跳婚姻",
+      "relation": "妻子的丈夫",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "杨过"
+      ],
+      "acceptable_answers": [
+        "杨过",
+        "神雕大侠"
+      ],
+      "source_hint": "神雕侠侣"
+    },
+    {
+      "id": "q043",
+      "question": "张无忌的妻子的父亲是谁？",
+      "category": "多跳亲属",
+      "relation": "妻子的父亲",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "汝阳王"
+      ],
+      "acceptable_answers": [
+        "汝阳王",
+        "察罕特穆尔"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q044",
+      "question": "令狐冲的妻子的父亲是谁？",
+      "category": "多跳亲属",
+      "relation": "妻子的父亲",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "任我行"
+      ],
+      "acceptable_answers": [
+        "任我行"
+      ],
+      "source_hint": "笑傲江湖"
+    },
+    {
+      "id": "q045",
+      "question": "乔峰的养父的养子是谁？",
+      "category": "多跳亲属",
+      "relation": "养父的养子",
+      "hop": 2,
+      "difficulty": "hard",
+      "answer_entities": [
+        "乔峰",
+        "萧峰"
+      ],
+      "acceptable_answers": [
+        "乔峰",
+        "萧峰"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q046",
+      "question": "段誉的父亲的妻子是谁？",
+      "category": "多跳婚姻",
+      "relation": "父亲的妻子",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "刀白凤"
+      ],
+      "acceptable_answers": [
+        "刀白凤"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q047",
+      "question": "王语嫣的表哥的表妹是谁？",
+      "category": "多跳亲属",
+      "relation": "表哥的表妹",
+      "hop": 2,
+      "difficulty": "hard",
+      "answer_entities": [
+        "王语嫣"
+      ],
+      "acceptable_answers": [
+        "王语嫣"
+      ],
+      "source_hint": "天龙八部"
+    },
+    {
+      "id": "q048",
+      "question": "周芷若的师父所在的门派是什么？",
+      "category": "多跳门派",
+      "relation": "师父的门派",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "峨眉派"
+      ],
+      "acceptable_answers": [
+        "峨眉派",
+        "峨眉"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q049",
+      "question": "张无忌的义父的外号是什么？",
+      "category": "多跳人物属性",
+      "relation": "义父的外号",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "金毛狮王"
+      ],
+      "acceptable_answers": [
+        "金毛狮王",
+        "金毛狮王谢逊"
+      ],
+      "source_hint": "倚天屠龙记"
+    },
+    {
+      "id": "q050",
+      "question": "郭靖向洪七公学习的掌法叫什么？",
+      "category": "多跳武功",
+      "relation": "师父传授武功",
+      "hop": 2,
+      "difficulty": "medium",
+      "answer_entities": [
+        "降龙十八掌"
+      ],
+      "acceptable_answers": [
+        "降龙十八掌",
+        "降龙十八缺三掌"
+      ],
+      "source_hint": "射雕英雄传"
+    }
+  ]
+}
