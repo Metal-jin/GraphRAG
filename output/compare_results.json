@@ -5,50 +5,50 @@
       "questions": 50,
       "available": 50,
       "availability": 1.0,
-      "entity_hits": 0,
-      "accuracy": 0.0,
-      "entity_recall": 0.0,
-      "avg_latency_ms": 31.15
+      "entity_hits": 1,
+      "accuracy": 0.02,
+      "entity_recall": 0.02,
+      "avg_latency_ms": 191.63
     },
     {
       "method": "library_graphrag",
       "questions": 50,
       "available": 50,
       "availability": 1.0,
-      "entity_hits": 3,
-      "accuracy": 0.06,
-      "entity_recall": 0.06,
-      "avg_latency_ms": 1357.78
+      "entity_hits": 6,
+      "accuracy": 0.12,
+      "entity_recall": 0.12,
+      "avg_latency_ms": 762.95
     },
     {
       "method": "master_chain",
       "questions": 50,
       "available": 50,
       "availability": 1.0,
-      "entity_hits": 1,
-      "accuracy": 0.02,
-      "entity_recall": 0.02,
-      "avg_latency_ms": 273.58
+      "entity_hits": 32,
+      "accuracy": 0.64,
+      "entity_recall": 0.64,
+      "avg_latency_ms": 1131.92
     },
     {
       "method": "sect_agg",
       "questions": 50,
       "available": 50,
       "availability": 1.0,
-      "entity_hits": 0,
-      "accuracy": 0.0,
-      "entity_recall": 0.0,
-      "avg_latency_ms": 29.12
+      "entity_hits": 3,
+      "accuracy": 0.06,
+      "entity_recall": 0.06,
+      "avg_latency_ms": 221.43
     },
     {
       "method": "vector",
       "questions": 50,
       "available": 50,
       "availability": 1.0,
-      "entity_hits": 2,
-      "accuracy": 0.04,
-      "entity_recall": 0.04,
-      "avg_latency_ms": 1880.61
+      "entity_hits": 6,
+      "accuracy": 0.12,
+      "entity_recall": 0.12,
+      "avg_latency_ms": 761.51
     }
   ],
   "results": [
@@ -58,7 +58,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 4203.89,
+      "latency_ms": 1422.51,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -72,7 +72,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1162.04,
+      "latency_ms": 862.06,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -84,9 +84,9 @@
       "question_id": "q003",
       "method": "vector",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 4497.34,
+      "answer_text": "黄药师",
+      "entity_hit": true,
+      "latency_ms": 663.46,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -100,7 +100,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1255.77,
+      "latency_ms": 532.78,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -112,9 +112,9 @@
       "question_id": "q005",
       "method": "vector",
       "status": "ok",
-      "answer_text": "柯镇恶",
-      "entity_hit": true,
-      "latency_ms": 1133.35,
+      "answer_text": "根据现有资料无法回答。",
+      "entity_hit": false,
+      "latency_ms": 427.31,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -126,9 +126,9 @@
       "question_id": "q006",
       "method": "vector",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 3852.85,
+      "answer_text": "黄药师是黄蓉的父亲，但资料中未提及黄药师有女儿。根据现有资料无法回答。",
+      "entity_hit": true,
+      "latency_ms": 911.64,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -142,7 +142,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1162.91,
+      "latency_ms": 860.97,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -156,7 +156,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 3416.77,
+      "latency_ms": 484.54,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -170,7 +170,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 800.77,
+      "latency_ms": 501.28,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -184,7 +184,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 2034.9,
+      "latency_ms": 448.2,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -198,7 +198,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1292.45,
+      "latency_ms": 659.97,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -210,9 +210,9 @@
       "question_id": "q012",
       "method": "vector",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 878.18,
+      "answer_text": "郭靖向洪七公学习降龙十八掌。",
+      "entity_hit": true,
+      "latency_ms": 494.95,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -224,9 +224,9 @@
       "question_id": "q013",
       "method": "vector",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1051.6,
+      "latency_ms": 776.29,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -240,7 +240,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1148.15,
+      "latency_ms": 734.83,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -254,7 +254,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1703.85,
+      "latency_ms": 813.05,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -268,7 +268,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1200.51,
+      "latency_ms": 555.42,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -282,7 +282,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 2106.76,
+      "latency_ms": 710.37,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -296,7 +296,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 5015.57,
+      "latency_ms": 658.42,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -310,7 +310,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 999.3,
+      "latency_ms": 857.87,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -324,7 +324,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1480.41,
+      "latency_ms": 629.13,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -338,7 +338,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 4712.16,
+      "latency_ms": 895.18,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -352,7 +352,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 4611.61,
+      "latency_ms": 697.82,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -366,7 +366,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1106.22,
+      "latency_ms": 814.23,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -378,9 +378,9 @@
       "question_id": "q024",
       "method": "vector",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1091.82,
+      "answer_text": "柯镇恶是“江南七怪”的成员。",
+      "entity_hit": true,
+      "latency_ms": 866.51,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -394,7 +394,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1176.23,
+      "latency_ms": 970.44,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -408,7 +408,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1065.48,
+      "latency_ms": 639.79,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -422,7 +422,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1486.24,
+      "latency_ms": 870.52,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -434,9 +434,9 @@
       "question_id": "q028",
       "method": "vector",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1233.96,
+      "answer_text": "蛤蟆功",
+      "entity_hit": true,
+      "latency_ms": 679.46,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -450,7 +450,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1662.69,
+      "latency_ms": 839.89,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -464,7 +464,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1021.66,
+      "latency_ms": 846.21,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -478,7 +478,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1141.13,
+      "latency_ms": 904.44,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -492,7 +492,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 9527.8,
+      "latency_ms": 982.55,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -506,7 +506,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1989.31,
+      "latency_ms": 854.66,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -518,9 +518,9 @@
       "question_id": "q034",
       "method": "vector",
       "status": "ok",
-      "answer_text": "段誉",
-      "entity_hit": true,
-      "latency_ms": 1941.73,
+      "answer_text": "根据现有资料无法回答。",
+      "entity_hit": false,
+      "latency_ms": 858.07,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -534,7 +534,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 773.61,
+      "latency_ms": 832.52,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -548,7 +548,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1037.53,
+      "latency_ms": 824.0,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -562,7 +562,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 977.0,
+      "latency_ms": 805.22,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -576,7 +576,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1572.6,
+      "latency_ms": 397.68,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -588,9 +588,9 @@
       "question_id": "q039",
       "method": "vector",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1197.87,
+      "answer_text": "柯镇恶是“江南七怪”的成员。",
+      "entity_hit": true,
+      "latency_ms": 910.62,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -604,7 +604,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1015.84,
+      "latency_ms": 848.55,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -618,7 +618,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1178.72,
+      "latency_ms": 583.47,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -632,7 +632,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1036.03,
+      "latency_ms": 852.18,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -646,7 +646,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1408.45,
+      "latency_ms": 814.16,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -660,7 +660,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1595.98,
+      "latency_ms": 576.16,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -674,7 +674,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1264.77,
+      "latency_ms": 854.29,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -688,7 +688,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1329.05,
+      "latency_ms": 696.09,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -702,7 +702,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1283.15,
+      "latency_ms": 753.07,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -716,7 +716,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1394.11,
+      "latency_ms": 590.7,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -730,7 +730,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1174.05,
+      "latency_ms": 806.48,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -744,7 +744,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1626.33,
+      "latency_ms": 1205.54,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -758,7 +758,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1409.62,
+      "latency_ms": 671.83,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -773,7 +773,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1469.31,
+      "latency_ms": 787.5,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -786,9 +786,9 @@
       "question_id": "q003",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1141.97,
+      "answer_text": "黄药师",
+      "entity_hit": true,
+      "latency_ms": 739.61,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -803,7 +803,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1829.85,
+      "latency_ms": 854.35,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -816,9 +816,9 @@
       "question_id": "q005",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "柯镇恶",
-      "entity_hit": true,
-      "latency_ms": 957.58,
+      "answer_text": "根据现有资料无法回答。",
+      "entity_hit": false,
+      "latency_ms": 776.77,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -831,9 +831,9 @@
       "question_id": "q006",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 906.29,
+      "answer_text": "黄药师是黄蓉的父亲，但资料中未提及黄药师有女儿。根据现有资料无法回答。",
+      "entity_hit": true,
+      "latency_ms": 974.92,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -848,7 +848,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1351.06,
+      "latency_ms": 749.56,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -863,7 +863,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1597.95,
+      "latency_ms": 1170.18,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -876,9 +876,9 @@
       "question_id": "q009",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "欧阳锋的侄子是谁？根据现有资料无法回答。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 951.44,
+      "latency_ms": 954.02,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -893,7 +893,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1700.92,
+      "latency_ms": 814.99,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -908,7 +908,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 906.55,
+      "latency_ms": 868.5,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -921,9 +921,9 @@
       "question_id": "q012",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1510.87,
+      "answer_text": "郭靖向洪七公学习降龙十八掌。",
+      "entity_hit": true,
+      "latency_ms": 536.46,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -936,9 +936,9 @@
       "question_id": "q013",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1101.9,
+      "latency_ms": 845.95,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -953,7 +953,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1192.49,
+      "latency_ms": 403.99,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -968,7 +968,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 843.22,
+      "latency_ms": 959.79,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -983,7 +983,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1028.34,
+      "latency_ms": 575.09,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -998,7 +998,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1229.08,
+      "latency_ms": 753.6,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1013,7 +1013,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1108.09,
+      "latency_ms": 916.76,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1028,7 +1028,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 841.34,
+      "latency_ms": 802.35,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1043,7 +1043,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1461.76,
+      "latency_ms": 713.67,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1058,7 +1058,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1525.39,
+      "latency_ms": 946.1,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1073,7 +1073,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1217.46,
+      "latency_ms": 822.06,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1088,7 +1088,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1594.95,
+      "latency_ms": 738.15,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1101,9 +1101,9 @@
       "question_id": "q024",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1266.16,
+      "answer_text": "柯镇恶是“江南七怪”的成员。",
+      "entity_hit": true,
+      "latency_ms": 678.76,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1116,9 +1116,9 @@
       "question_id": "q025",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1742.55,
+      "answer_text": "马钰属于全真教。",
+      "entity_hit": true,
+      "latency_ms": 476.59,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1133,7 +1133,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 627.01,
+      "latency_ms": 756.52,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1148,7 +1148,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1022.24,
+      "latency_ms": 900.14,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1163,7 +1163,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 843.36,
+      "latency_ms": 743.49,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1178,7 +1178,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1321.06,
+      "latency_ms": 680.79,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1193,7 +1193,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1182.3,
+      "latency_ms": 486.42,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1208,7 +1208,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1733.27,
+      "latency_ms": 936.46,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1223,7 +1223,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1222.43,
+      "latency_ms": 784.49,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1238,7 +1238,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1496.65,
+      "latency_ms": 732.3,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1251,9 +1251,9 @@
       "question_id": "q034",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "段誉",
-      "entity_hit": true,
-      "latency_ms": 921.23,
+      "answer_text": "根据现有资料无法回答。",
+      "entity_hit": false,
+      "latency_ms": 823.83,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1268,7 +1268,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1278.77,
+      "latency_ms": 770.6,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1283,7 +1283,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 817.77,
+      "latency_ms": 444.01,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1298,7 +1298,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 2430.3,
+      "latency_ms": 463.66,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1313,7 +1313,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1183.01,
+      "latency_ms": 678.92,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1326,9 +1326,9 @@
       "question_id": "q039",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1550.51,
+      "answer_text": "柯镇恶是“江南七怪”的成员。",
+      "entity_hit": true,
+      "latency_ms": 1088.76,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1343,7 +1343,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1815.5,
+      "latency_ms": 856.66,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1356,9 +1356,9 @@
       "question_id": "q041",
       "method": "library_graphrag",
       "status": "ok",
-      "answer_text": "郭靖的妻子是黄蓉，黄蓉的父亲是黄药师。",
-      "entity_hit": true,
-      "latency_ms": 1402.07,
+      "answer_text": "根据现有资料无法回答。",
+      "entity_hit": false,
+      "latency_ms": 593.35,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1373,7 +1373,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 747.91,
+      "latency_ms": 805.13,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1388,7 +1388,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1367.47,
+      "latency_ms": 837.15,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1403,7 +1403,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 2099.5,
+      "latency_ms": 804.43,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1418,7 +1418,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1171.16,
+      "latency_ms": 784.23,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1433,7 +1433,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 2867.36,
+      "latency_ms": 660.92,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1448,7 +1448,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1522.37,
+      "latency_ms": 704.6,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1463,7 +1463,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1916.54,
+      "latency_ms": 953.02,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1478,7 +1478,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1762.25,
+      "latency_ms": 440.82,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1493,7 +1493,7 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1701.06,
+      "latency_ms": 885.29,
       "error": "",
       "debug_info": {
         "top_k": 5,
@@ -1508,518 +1508,518 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1827.81,
+      "latency_ms": 1553.59,
       "error": "",
       "debug_info": {
         "seed": "郭靖",
-        "hit_count": 63
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q002",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 93.23,
+      "latency_ms": 1552.95,
       "error": "",
       "debug_info": {
-        "question": "黄蓉的父亲是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q003",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 2340.61,
+      "answer_text": "黄药师",
+      "entity_hit": true,
+      "latency_ms": 1435.95,
       "error": "",
       "debug_info": {
-        "seed": "郭靖",
-        "hit_count": 63
+        "seed": "黄蓉",
+        "hit_count": 1190
       }
     },
     {
       "question_id": "q004",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 920.67,
+      "answer_text": "包惜弱",
+      "entity_hit": true,
+      "latency_ms": 1010.38,
       "error": "",
       "debug_info": {
-        "seed": "郭靖",
-        "hit_count": 63
+        "seed": "杨康",
+        "hit_count": 513
       }
     },
     {
       "question_id": "q005",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "柯镇恶",
+      "answer_text": "欧阳锋",
       "entity_hit": true,
-      "latency_ms": 2083.28,
+      "latency_ms": 679.5,
       "error": "",
       "debug_info": {
-        "seed": "郭靖",
-        "hit_count": 63
+        "seed": "欧阳克",
+        "hit_count": 106
       }
     },
     {
       "question_id": "q006",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 1826.07,
+      "answer_text": "黄蓉",
+      "entity_hit": true,
+      "latency_ms": 997.01,
       "error": "",
       "debug_info": {
-        "seed": "郭靖",
-        "hit_count": 63
+        "seed": "黄药师",
+        "hit_count": 417
       }
     },
     {
       "question_id": "q007",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 30.73,
+      "answer_text": "包惜弱",
+      "entity_hit": true,
+      "latency_ms": 1096.57,
       "error": "",
       "debug_info": {
-        "question": "黄药师的女儿是谁？",
-        "seed": null
+        "seed": "杨铁心",
+        "hit_count": 114
       }
     },
     {
       "question_id": "q008",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 32.98,
+      "latency_ms": 1239.85,
       "error": "",
       "debug_info": {
-        "question": "洪七公属于哪个门派？",
-        "seed": null
+        "seed": "周伯通",
+        "hit_count": 732
       }
     },
     {
       "question_id": "q009",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 35.0,
+      "answer_text": "黄蓉",
+      "entity_hit": true,
+      "latency_ms": 1321.44,
       "error": "",
       "debug_info": {
-        "question": "欧阳锋的侄子是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q010",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 33.51,
+      "answer_text": "郭靖",
+      "entity_hit": true,
+      "latency_ms": 1461.31,
       "error": "",
       "debug_info": {
-        "question": "穆念慈的儿子是谁？",
-        "seed": null
+        "seed": "黄蓉",
+        "hit_count": 1190
       }
     },
     {
       "question_id": "q011",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 28.85,
+      "latency_ms": 923.47,
       "error": "",
       "debug_info": {
-        "question": "杨过的父亲是谁？",
-        "seed": null
+        "seed": "江南七怪",
+        "hit_count": 0
       }
     },
     {
       "question_id": "q012",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 33.0,
+      "answer_text": "洪七公",
+      "entity_hit": true,
+      "latency_ms": 1423.04,
       "error": "",
       "debug_info": {
-        "question": "杨过的母亲是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q013",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 28.98,
+      "answer_text": "丘处机",
+      "entity_hit": true,
+      "latency_ms": 1198.58,
       "error": "",
       "debug_info": {
-        "question": "杨过的妻子是谁？",
-        "seed": null
+        "seed": "杨康",
+        "hit_count": 513
       }
     },
     {
       "question_id": "q014",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 29.73,
+      "answer_text": "黄药师",
+      "entity_hit": true,
+      "latency_ms": 857.19,
       "error": "",
       "debug_info": {
-        "question": "杨过的义父是谁？",
-        "seed": null
+        "seed": "梅超风",
+        "hit_count": 496
       }
     },
     {
       "question_id": "q015",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 30.07,
+      "answer_text": "周伯通",
+      "entity_hit": true,
+      "latency_ms": 944.75,
       "error": "",
       "debug_info": {
-        "question": "杨过主要向谁学习古墓派武功？",
-        "seed": null
+        "seed": "王重阳",
+        "hit_count": 563
       }
     },
     {
       "question_id": "q016",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 27.81,
+      "answer_text": "黄药师、洪七公",
+      "entity_hit": true,
+      "latency_ms": 905.73,
       "error": "",
       "debug_info": {
-        "question": "小龙女的丈夫是谁？",
-        "seed": null
+        "seed": "黄蓉",
+        "hit_count": 1190
       }
     },
     {
       "question_id": "q017",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 34.74,
+      "answer_text": "马钰",
+      "entity_hit": true,
+      "latency_ms": 1324.94,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的师父是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q018",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 28.78,
+      "answer_text": "丐帮。",
+      "entity_hit": true,
+      "latency_ms": 1010.81,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的妻子是谁？",
-        "seed": null
+        "seed": "洪七公",
+        "hit_count": 450
       }
     },
     {
       "question_id": "q019",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 29.82,
+      "answer_text": "桃花岛。",
+      "entity_hit": true,
+      "latency_ms": 1229.89,
       "error": "",
       "debug_info": {
-        "question": "任盈盈的父亲是谁？",
-        "seed": null
+        "seed": "黄药师",
+        "hit_count": 417
       }
     },
     {
       "question_id": "q020",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 34.04,
+      "latency_ms": 842.59,
       "error": "",
       "debug_info": {
-        "question": "令狐冲属于哪个门派？",
-        "seed": null
+        "seed": "王重阳",
+        "hit_count": 563
       }
     },
     {
       "question_id": "q021",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 27.88,
+      "latency_ms": 834.88,
       "error": "",
       "debug_info": {
-        "question": "岳不群的妻子是谁？",
-        "seed": null
+        "seed": "欧阳锋",
+        "hit_count": 105
       }
     },
     {
       "question_id": "q022",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 27.95,
+      "latency_ms": 1263.78,
       "error": "",
       "debug_info": {
-        "question": "周芷若的师父是谁？",
-        "seed": null
+        "seed": "一灯大师",
+        "hit_count": 440
       }
     },
     {
       "question_id": "q023",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 28.01,
+      "answer_text": "铁掌帮帮主。",
+      "entity_hit": true,
+      "latency_ms": 970.36,
       "error": "",
       "debug_info": {
-        "question": "周芷若属于哪个门派？",
-        "seed": null
+        "seed": "裘千仞",
+        "hit_count": 150
       }
     },
     {
       "question_id": "q024",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 28.54,
+      "answer_text": "柯镇恶是江南七怪的成员。",
+      "entity_hit": true,
+      "latency_ms": 1657.5,
       "error": "",
       "debug_info": {
-        "question": "张无忌的父亲是谁？",
-        "seed": null
+        "seed": "柯镇恶",
+        "hit_count": 347
       }
     },
     {
       "question_id": "q025",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 29.51,
+      "latency_ms": 1088.06,
       "error": "",
       "debug_info": {
-        "question": "张无忌的母亲是谁？",
-        "seed": null
+        "seed": "马钰",
+        "hit_count": 572
       }
     },
     {
       "question_id": "q026",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 29.28,
+      "latency_ms": 1685.66,
       "error": "",
       "debug_info": {
-        "question": "张无忌的义父是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q027",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 32.99,
+      "latency_ms": 1447.42,
       "error": "",
       "debug_info": {
-        "question": "张无忌的妻子是谁？",
-        "seed": null
+        "seed": "洪七公",
+        "hit_count": 450
       }
     },
     {
       "question_id": "q028",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 27.48,
+      "latency_ms": 1070.6,
       "error": "",
       "debug_info": {
-        "question": "赵敏的父亲是谁？",
-        "seed": null
+        "seed": "欧阳锋",
+        "hit_count": 105
       }
     },
     {
       "question_id": "q029",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 32.05,
+      "answer_text": "一阳指",
+      "entity_hit": true,
+      "latency_ms": 597.82,
       "error": "",
       "debug_info": {
-        "question": "张无忌在武当山主要向谁学习武功？",
-        "seed": null
+        "seed": "一灯大师",
+        "hit_count": 440
       }
     },
     {
       "question_id": "q030",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 28.9,
+      "latency_ms": 1073.59,
       "error": "",
       "debug_info": {
-        "question": "张三丰创建了哪个门派？",
-        "seed": null
+        "seed": "周伯通",
+        "hit_count": 732
       }
     },
     {
       "question_id": "q031",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 29.01,
+      "latency_ms": 932.02,
       "error": "",
       "debug_info": {
-        "question": "乔峰的妻子是谁？",
-        "seed": null
+        "seed": "黄药师",
+        "hit_count": 417
       }
     },
     {
       "question_id": "q032",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 29.78,
+      "latency_ms": 1068.26,
       "error": "",
       "debug_info": {
-        "question": "乔峰的养父是谁？",
-        "seed": null
+        "seed": "梅超风",
+        "hit_count": 496
       }
     },
     {
       "question_id": "q033",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 31.46,
+      "answer_text": "拖雷",
+      "entity_hit": true,
+      "latency_ms": 1483.4,
       "error": "",
       "debug_info": {
-        "question": "乔峰的亲生父亲是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q034",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 29.99,
+      "answer_text": "欧阳锋",
+      "entity_hit": true,
+      "latency_ms": 1493.78,
       "error": "",
       "debug_info": {
-        "question": "乔峰的结拜兄弟之一是谁？（回答段誉或虚竹均可）",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q035",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 30.38,
+      "answer_text": "黄药师",
+      "entity_hit": true,
+      "latency_ms": 1462.92,
       "error": "",
       "debug_info": {
-        "question": "虚竹的师父是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q036",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 28.22,
+      "answer_text": "陈玄风、梅超风",
+      "entity_hit": true,
+      "latency_ms": 810.81,
       "error": "",
       "debug_info": {
-        "question": "虚竹的妻子是谁？",
-        "seed": null
+        "seed": "黑风双煞",
+        "hit_count": 176
       }
     },
     {
       "question_id": "q037",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 29.25,
+      "answer_text": "丐帮。",
+      "entity_hit": true,
+      "latency_ms": 1413.97,
       "error": "",
       "debug_info": {
-        "question": "段誉的父亲是谁？",
-        "seed": null
+        "seed": "洪七公",
+        "hit_count": 450
       }
     },
     {
       "question_id": "q038",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 27.93,
+      "answer_text": "全真教",
+      "entity_hit": true,
+      "latency_ms": 1186.65,
       "error": "",
       "debug_info": {
-        "question": "段誉的母亲是谁？",
-        "seed": null
+        "seed": "丘处机",
+        "hit_count": 682
       }
     },
     {
       "question_id": "q039",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 29.26,
+      "answer_text": "江南七怪",
+      "entity_hit": true,
+      "latency_ms": 923.08,
       "error": "",
       "debug_info": {
-        "question": "段誉最终与谁成婚？",
-        "seed": null
+        "seed": "柯镇恶",
+        "hit_count": 347
       }
     },
     {
       "question_id": "q040",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 28.0,
+      "latency_ms": 743.45,
       "error": "",
       "debug_info": {
-        "question": "王语嫣的表哥是谁？",
-        "seed": null
+        "seed": "洪七公",
+        "hit_count": 450
       }
     },
     {
@@ -2028,128 +2028,128 @@
       "status": "ok",
       "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 1012.16,
+      "latency_ms": 935.46,
       "error": "",
       "debug_info": {
-        "seed": "郭靖",
-        "hit_count": 63
+        "seed": "洪七公",
+        "hit_count": 450
       }
     },
     {
       "question_id": "q042",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 30.07,
+      "answer_text": "老顽童",
+      "entity_hit": true,
+      "latency_ms": 1393.76,
       "error": "",
       "debug_info": {
-        "question": "杨过的妻子的丈夫是谁？",
-        "seed": null
+        "seed": "王重阳",
+        "hit_count": 563
       }
     },
     {
       "question_id": "q043",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 30.0,
+      "answer_text": "郭靖",
+      "entity_hit": true,
+      "latency_ms": 936.84,
       "error": "",
       "debug_info": {
-        "question": "张无忌的妻子的父亲是谁？",
-        "seed": null
+        "seed": "黄药师",
+        "hit_count": 417
       }
     },
     {
       "question_id": "q044",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "黄药师",
       "entity_hit": false,
-      "latency_ms": 32.18,
+      "latency_ms": 1415.05,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的妻子的父亲是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q045",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 31.94,
+      "latency_ms": 851.78,
       "error": "",
       "debug_info": {
-        "question": "乔峰的养父的养子是谁？",
-        "seed": null
+        "seed": "黄蓉",
+        "hit_count": 1190
       }
     },
     {
       "question_id": "q046",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 38.6,
+      "answer_text": "黄蓉",
+      "entity_hit": true,
+      "latency_ms": 695.81,
       "error": "",
       "debug_info": {
-        "question": "段誉的父亲的妻子是谁？",
-        "seed": null
+        "seed": "欧阳克",
+        "hit_count": 106
       }
     },
     {
       "question_id": "q047",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 27.33,
+      "answer_text": "成吉思汗",
+      "entity_hit": true,
+      "latency_ms": 1464.63,
       "error": "",
       "debug_info": {
-        "question": "王语嫣的表哥的表妹是谁？",
-        "seed": null
+        "seed": "郭靖",
+        "hit_count": 2663
       }
     },
     {
       "question_id": "q048",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 29.86,
+      "answer_text": "黄蓉",
+      "entity_hit": true,
+      "latency_ms": 941.59,
       "error": "",
       "debug_info": {
-        "question": "周芷若的师父所在的门派是什么？",
-        "seed": null
+        "seed": "梅超风",
+        "hit_count": 496
       }
     },
     {
       "question_id": "q049",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "未能从问题中识别出人物实体。",
-      "entity_hit": false,
-      "latency_ms": 29.48,
+      "answer_text": "王重阳",
+      "entity_hit": true,
+      "latency_ms": 918.37,
       "error": "",
       "debug_info": {
-        "question": "张无忌的义父的外号是什么？",
-        "seed": null
+        "seed": "丘处机",
+        "hit_count": 682
       }
     },
     {
       "question_id": "q050",
       "method": "master_chain",
       "status": "ok",
-      "answer_text": "根据现有资料无法回答。",
-      "entity_hit": false,
-      "latency_ms": 2301.85,
+      "answer_text": "打狗棒法",
+      "entity_hit": true,
+      "latency_ms": 825.29,
       "error": "",
       "debug_info": {
-        "seed": "郭靖",
-        "hit_count": 63
+        "seed": "洪七公",
+        "hit_count": 450
       }
     },
     {
@@ -2158,46 +2158,7 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 38.56,
-      "error": "",
-      "debug_info": {
-        "question": "郭靖的妻子是谁？",
-        "seed": null
-      }
-    },
-    {
-      "question_id": "q002",
-      "method": "sect_agg",
-      "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
-      "entity_hit": false,
-      "latency_ms": 33.67,
-      "error": "",
-      "debug_info": {
-        "question": "黄蓉的父亲是谁？",
-        "seed": null
-      }
-    },
-    {
-      "question_id": "q003",
-      "method": "sect_agg",
-      "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
-      "entity_hit": false,
-      "latency_ms": 30.49,
-      "error": "",
-      "debug_info": {
-        "question": "郭靖的母亲是谁？",
-        "seed": null
-      }
-    },
-    {
-      "question_id": "q004",
-      "method": "sect_agg",
-      "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
-      "entity_hit": false,
-      "latency_ms": 31.75,
+      "latency_ms": 144.0,
       "error": "",
       "debug_info": {
         "question": "郭靖的父亲是谁？",
@@ -2205,15 +2166,54 @@
       }
     },
     {
+      "question_id": "q002",
+      "method": "sect_agg",
+      "status": "ok",
+      "answer_text": "未能从问题中识别出门派实体。",
+      "entity_hit": false,
+      "latency_ms": 140.4,
+      "error": "",
+      "debug_info": {
+        "question": "郭靖的母亲是谁？",
+        "seed": null
+      }
+    },
+    {
+      "question_id": "q003",
+      "method": "sect_agg",
+      "status": "ok",
+      "answer_text": "未能从问题中识别出门派实体。",
+      "entity_hit": false,
+      "latency_ms": 144.3,
+      "error": "",
+      "debug_info": {
+        "question": "黄蓉的父亲是谁？",
+        "seed": null
+      }
+    },
+    {
+      "question_id": "q004",
+      "method": "sect_agg",
+      "status": "ok",
+      "answer_text": "未能从问题中识别出门派实体。",
+      "entity_hit": false,
+      "latency_ms": 142.35,
+      "error": "",
+      "debug_info": {
+        "question": "杨康的母亲是谁？",
+        "seed": null
+      }
+    },
+    {
       "question_id": "q005",
       "method": "sect_agg",
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 32.73,
+      "latency_ms": 143.48,
       "error": "",
       "debug_info": {
-        "question": "郭靖早期拜谁为师？（回答其中一位师父即可）",
+        "question": "欧阳克是谁的侄子？",
         "seed": null
       }
     },
@@ -2223,10 +2223,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 29.25,
+      "latency_ms": 139.09,
       "error": "",
       "debug_info": {
-        "question": "郭靖向谁学习降龙十八掌？",
+        "question": "黄药师的女儿是谁？",
         "seed": null
       }
     },
@@ -2236,10 +2236,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 29.98,
+      "latency_ms": 136.66,
       "error": "",
       "debug_info": {
-        "question": "黄药师的女儿是谁？",
+        "question": "杨铁心的妻子是谁？",
         "seed": null
       }
     },
@@ -2249,10 +2249,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 30.03,
+      "latency_ms": 144.62,
       "error": "",
       "debug_info": {
-        "question": "洪七公属于哪个门派？",
+        "question": "周伯通的情人是谁？",
         "seed": null
       }
     },
@@ -2262,10 +2262,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.35,
+      "latency_ms": 146.85,
       "error": "",
       "debug_info": {
-        "question": "欧阳锋的侄子是谁？",
+        "question": "郭靖的妻子是谁？",
         "seed": null
       }
     },
@@ -2275,10 +2275,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.37,
+      "latency_ms": 141.79,
       "error": "",
       "debug_info": {
-        "question": "穆念慈的儿子是谁？",
+        "question": "黄蓉的丈夫是谁？",
         "seed": null
       }
     },
@@ -2286,13 +2286,13 @@
       "question_id": "q011",
       "method": "sect_agg",
       "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 27.09,
+      "latency_ms": 1332.18,
       "error": "",
       "debug_info": {
-        "question": "杨过的父亲是谁？",
-        "seed": null
+        "seed": "江南七怪",
+        "member_count": 10
       }
     },
     {
@@ -2301,10 +2301,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.36,
+      "latency_ms": 171.31,
       "error": "",
       "debug_info": {
-        "question": "杨过的母亲是谁？",
+        "question": "郭靖向谁学习降龙十八掌？",
         "seed": null
       }
     },
@@ -2314,10 +2314,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 34.83,
+      "latency_ms": 138.47,
       "error": "",
       "debug_info": {
-        "question": "杨过的妻子是谁？",
+        "question": "杨康的师父是谁？",
         "seed": null
       }
     },
@@ -2327,10 +2327,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 29.06,
+      "latency_ms": 141.19,
       "error": "",
       "debug_info": {
-        "question": "杨过的义父是谁？",
+        "question": "梅超风的师父是谁？",
         "seed": null
       }
     },
@@ -2340,10 +2340,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 26.95,
+      "latency_ms": 142.56,
       "error": "",
       "debug_info": {
-        "question": "杨过主要向谁学习古墓派武功？",
+        "question": "王重阳的师弟是谁？",
         "seed": null
       }
     },
@@ -2353,10 +2353,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 29.94,
+      "latency_ms": 144.43,
       "error": "",
       "debug_info": {
-        "question": "小龙女的丈夫是谁？",
+        "question": "黄蓉的师父是谁？",
         "seed": null
       }
     },
@@ -2364,13 +2364,13 @@
       "question_id": "q017",
       "method": "sect_agg",
       "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 26.2,
+      "latency_ms": 1047.71,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的师父是谁？",
-        "seed": null
+        "seed": "全真教",
+        "member_count": 34
       }
     },
     {
@@ -2379,10 +2379,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.14,
+      "latency_ms": 146.2,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的妻子是谁？",
+        "question": "洪七公属于哪个门派？",
         "seed": null
       }
     },
@@ -2392,10 +2392,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.49,
+      "latency_ms": 136.49,
       "error": "",
       "debug_info": {
-        "question": "任盈盈的父亲是谁？",
+        "question": "黄药师是哪里的岛主？",
         "seed": null
       }
     },
@@ -2405,10 +2405,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 30.93,
+      "latency_ms": 134.32,
       "error": "",
       "debug_info": {
-        "question": "令狐冲属于哪个门派？",
+        "question": "王重阳创立了什么门派？",
         "seed": null
       }
     },
@@ -2418,10 +2418,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 30.86,
+      "latency_ms": 137.37,
       "error": "",
       "debug_info": {
-        "question": "岳不群的妻子是谁？",
+        "question": "欧阳锋来自哪里？",
         "seed": null
       }
     },
@@ -2431,10 +2431,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.81,
+      "latency_ms": 136.14,
       "error": "",
       "debug_info": {
-        "question": "周芷若的师父是谁？",
+        "question": "一灯大师属于哪个家族？",
         "seed": null
       }
     },
@@ -2444,10 +2444,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.07,
+      "latency_ms": 140.26,
       "error": "",
       "debug_info": {
-        "question": "周芷若属于哪个门派？",
+        "question": "裘千仞是哪个帮派的帮主？",
         "seed": null
       }
     },
@@ -2457,10 +2457,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.35,
+      "latency_ms": 134.37,
       "error": "",
       "debug_info": {
-        "question": "张无忌的父亲是谁？",
+        "question": "柯镇恶是哪个组合的成员？",
         "seed": null
       }
     },
@@ -2470,10 +2470,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.35,
+      "latency_ms": 137.32,
       "error": "",
       "debug_info": {
-        "question": "张无忌的母亲是谁？",
+        "question": "马钰属于哪个门派？",
         "seed": null
       }
     },
@@ -2483,10 +2483,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.19,
+      "latency_ms": 151.21,
       "error": "",
       "debug_info": {
-        "question": "张无忌的义父是谁？",
+        "question": "郭靖精通什么掌法？",
         "seed": null
       }
     },
@@ -2496,10 +2496,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.38,
+      "latency_ms": 135.2,
       "error": "",
       "debug_info": {
-        "question": "张无忌的妻子是谁？",
+        "question": "洪七公的招牌棒法是什么？",
         "seed": null
       }
     },
@@ -2509,10 +2509,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.21,
+      "latency_ms": 136.48,
       "error": "",
       "debug_info": {
-        "question": "赵敏的父亲是谁？",
+        "question": "欧阳锋的成名武功是什么？",
         "seed": null
       }
     },
@@ -2522,10 +2522,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.23,
+      "latency_ms": 135.73,
       "error": "",
       "debug_info": {
-        "question": "张无忌在武当山主要向谁学习武功？",
+        "question": "一灯大师的绝技是什么？",
         "seed": null
       }
     },
@@ -2535,10 +2535,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.5,
+      "latency_ms": 140.77,
       "error": "",
       "debug_info": {
-        "question": "张三丰创建了哪个门派？",
+        "question": "周伯通的独门武功是什么？",
         "seed": null
       }
     },
@@ -2548,10 +2548,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.55,
+      "latency_ms": 135.49,
       "error": "",
       "debug_info": {
-        "question": "乔峰的妻子是谁？",
+        "question": "黄药师的指法绝技是什么？",
         "seed": null
       }
     },
@@ -2561,10 +2561,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 26.79,
+      "latency_ms": 141.34,
       "error": "",
       "debug_info": {
-        "question": "乔峰的养父是谁？",
+        "question": "梅超风的爪法武功是什么？",
         "seed": null
       }
     },
@@ -2574,10 +2574,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.83,
+      "latency_ms": 134.24,
       "error": "",
       "debug_info": {
-        "question": "乔峰的亲生父亲是谁？",
+        "question": "郭靖的蒙古结拜兄弟是谁？",
         "seed": null
       }
     },
@@ -2587,10 +2587,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.6,
+      "latency_ms": 136.72,
       "error": "",
       "debug_info": {
-        "question": "乔峰的结拜兄弟之一是谁？（回答段誉或虚竹均可）",
+        "question": "郭靖的仇敌（西毒）是谁？",
         "seed": null
       }
     },
@@ -2600,10 +2600,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 30.22,
+      "latency_ms": 136.88,
       "error": "",
       "debug_info": {
-        "question": "虚竹的师父是谁？",
+        "question": "郭靖的妻子的父亲是谁？",
         "seed": null
       }
     },
@@ -2611,13 +2611,13 @@
       "question_id": "q036",
       "method": "sect_agg",
       "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
-      "entity_hit": false,
-      "latency_ms": 28.0,
+      "answer_text": "陈玄风",
+      "entity_hit": true,
+      "latency_ms": 898.48,
       "error": "",
       "debug_info": {
-        "question": "虚竹的妻子是谁？",
-        "seed": null
+        "seed": "黑风双煞",
+        "member_count": 2
       }
     },
     {
@@ -2626,10 +2626,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.02,
+      "latency_ms": 145.6,
       "error": "",
       "debug_info": {
-        "question": "段誉的父亲是谁？",
+        "question": "郭靖的师父洪七公属于哪个门派？",
         "seed": null
       }
     },
@@ -2639,10 +2639,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 31.91,
+      "latency_ms": 141.91,
       "error": "",
       "debug_info": {
-        "question": "段誉的母亲是谁？",
+        "question": "杨康的师父丘处机属于哪个门派？",
         "seed": null
       }
     },
@@ -2652,10 +2652,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.86,
+      "latency_ms": 139.74,
       "error": "",
       "debug_info": {
-        "question": "段誉最终与谁成婚？",
+        "question": "郭靖的师父柯镇恶是哪个组合的成员？",
         "seed": null
       }
     },
@@ -2665,10 +2665,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 29.17,
+      "latency_ms": 136.19,
       "error": "",
       "debug_info": {
-        "question": "王语嫣的表哥是谁？",
+        "question": "黄蓉的师父洪七公的成名武功是什么？",
         "seed": null
       }
     },
@@ -2678,10 +2678,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 29.56,
+      "latency_ms": 134.03,
       "error": "",
       "debug_info": {
-        "question": "郭靖的妻子的父亲是谁？",
+        "question": "郭靖向洪七公学习的掌法叫什么？",
         "seed": null
       }
     },
@@ -2691,10 +2691,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.04,
+      "latency_ms": 143.06,
       "error": "",
       "debug_info": {
-        "question": "杨过的妻子的丈夫是谁？",
+        "question": "王重阳的师弟周伯通的外号是什么？",
         "seed": null
       }
     },
@@ -2704,10 +2704,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.14,
+      "latency_ms": 131.32,
       "error": "",
       "debug_info": {
-        "question": "张无忌的妻子的父亲是谁？",
+        "question": "黄药师的女儿黄蓉的丈夫是谁？",
         "seed": null
       }
     },
@@ -2717,10 +2717,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 29.55,
+      "latency_ms": 136.19,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的妻子的父亲是谁？",
+        "question": "郭靖的妻子的师父是谁？",
         "seed": null
       }
     },
@@ -2730,10 +2730,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.67,
+      "latency_ms": 139.49,
       "error": "",
       "debug_info": {
-        "question": "乔峰的养父的养子是谁？",
+        "question": "黄蓉的师父属于哪个门派？",
         "seed": null
       }
     },
@@ -2743,10 +2743,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 27.44,
+      "latency_ms": 137.0,
       "error": "",
       "debug_info": {
-        "question": "段誉的父亲的妻子是谁？",
+        "question": "欧阳锋的侄子欧阳克追求的姑娘是谁？",
         "seed": null
       }
     },
@@ -2756,10 +2756,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.06,
+      "latency_ms": 139.42,
       "error": "",
       "debug_info": {
-        "question": "王语嫣的表哥的表妹是谁？",
+        "question": "郭靖的义兄拖雷的父亲是谁？",
         "seed": null
       }
     },
@@ -2769,10 +2769,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出门派实体。",
       "entity_hit": false,
-      "latency_ms": 28.04,
+      "latency_ms": 133.89,
       "error": "",
       "debug_info": {
-        "question": "周芷若的师父所在的门派是什么？",
+        "question": "梅超风的师父黄药师的女儿是谁？",
         "seed": null
       }
     },
@@ -2780,26 +2780,26 @@
       "question_id": "q049",
       "method": "sect_agg",
       "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
-      "entity_hit": false,
-      "latency_ms": 29.24,
+      "answer_text": "王重阳",
+      "entity_hit": true,
+      "latency_ms": 914.07,
       "error": "",
       "debug_info": {
-        "question": "张无忌的义父的外号是什么？",
-        "seed": null
+        "seed": "全真教",
+        "member_count": 34
       }
     },
     {
       "question_id": "q050",
       "method": "sect_agg",
       "status": "ok",
-      "answer_text": "未能从问题中识别出门派实体。",
-      "entity_hit": false,
-      "latency_ms": 33.43,
+      "answer_text": "打狗棒法",
+      "entity_hit": true,
+      "latency_ms": 573.25,
       "error": "",
       "debug_info": {
-        "question": "郭靖向洪七公学习的掌法叫什么？",
-        "seed": null
+        "seed": "丐帮",
+        "member_count": 25
       }
     },
     {
@@ -2808,10 +2808,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 31.61,
+      "latency_ms": 152.16,
       "error": "",
       "debug_info": {
-        "question": "郭靖的妻子是谁？",
+        "question": "郭靖的父亲是谁？",
         "seed": null
       }
     },
@@ -2821,10 +2821,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.72,
+      "latency_ms": 153.9,
       "error": "",
       "debug_info": {
-        "question": "黄蓉的父亲是谁？",
+        "question": "郭靖的母亲是谁？",
         "seed": null
       }
     },
@@ -2834,10 +2834,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 32.33,
+      "latency_ms": 139.99,
       "error": "",
       "debug_info": {
-        "question": "郭靖的母亲是谁？",
+        "question": "黄蓉的父亲是谁？",
         "seed": null
       }
     },
@@ -2847,10 +2847,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.86,
+      "latency_ms": 132.05,
       "error": "",
       "debug_info": {
-        "question": "郭靖的父亲是谁？",
+        "question": "杨康的母亲是谁？",
         "seed": null
       }
     },
@@ -2860,10 +2860,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 30.0,
+      "latency_ms": 134.93,
       "error": "",
       "debug_info": {
-        "question": "郭靖早期拜谁为师？（回答其中一位师父即可）",
+        "question": "欧阳克是谁的侄子？",
         "seed": null
       }
     },
@@ -2873,10 +2873,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.06,
+      "latency_ms": 137.33,
       "error": "",
       "debug_info": {
-        "question": "郭靖向谁学习降龙十八掌？",
+        "question": "黄药师的女儿是谁？",
         "seed": null
       }
     },
@@ -2886,10 +2886,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.95,
+      "latency_ms": 138.51,
       "error": "",
       "debug_info": {
-        "question": "黄药师的女儿是谁？",
+        "question": "杨铁心的妻子是谁？",
         "seed": null
       }
     },
@@ -2899,10 +2899,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 30.68,
+      "latency_ms": 136.93,
       "error": "",
       "debug_info": {
-        "question": "洪七公属于哪个门派？",
+        "question": "周伯通的情人是谁？",
         "seed": null
       }
     },
@@ -2912,10 +2912,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.43,
+      "latency_ms": 134.19,
       "error": "",
       "debug_info": {
-        "question": "欧阳锋的侄子是谁？",
+        "question": "郭靖的妻子是谁？",
         "seed": null
       }
     },
@@ -2925,10 +2925,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.41,
+      "latency_ms": 135.09,
       "error": "",
       "debug_info": {
-        "question": "穆念慈的儿子是谁？",
+        "question": "黄蓉的丈夫是谁？",
         "seed": null
       }
     },
@@ -2938,10 +2938,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 31.19,
+      "latency_ms": 138.94,
       "error": "",
       "debug_info": {
-        "question": "杨过的父亲是谁？",
+        "question": "郭靖的启蒙师父（江南七怪之首）是谁？",
         "seed": null
       }
     },
@@ -2949,13 +2949,13 @@
       "question_id": "q012",
       "method": "art_lineage",
       "status": "ok",
-      "answer_text": "未能从问题中识别出武功实体。",
-      "entity_hit": false,
-      "latency_ms": 27.24,
+      "answer_text": "洪七公",
+      "entity_hit": true,
+      "latency_ms": 734.55,
       "error": "",
       "debug_info": {
-        "question": "杨过的母亲是谁？",
-        "seed": null
+        "seed": "降龙十八掌",
+        "lineage_count": 14
       }
     },
     {
@@ -2964,10 +2964,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 30.69,
+      "latency_ms": 145.88,
       "error": "",
       "debug_info": {
-        "question": "杨过的妻子是谁？",
+        "question": "杨康的师父是谁？",
         "seed": null
       }
     },
@@ -2977,10 +2977,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.95,
+      "latency_ms": 133.59,
       "error": "",
       "debug_info": {
-        "question": "杨过的义父是谁？",
+        "question": "梅超风的师父是谁？",
         "seed": null
       }
     },
@@ -2990,10 +2990,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.78,
+      "latency_ms": 143.62,
       "error": "",
       "debug_info": {
-        "question": "杨过主要向谁学习古墓派武功？",
+        "question": "王重阳的师弟是谁？",
         "seed": null
       }
     },
@@ -3003,10 +3003,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.54,
+      "latency_ms": 134.58,
       "error": "",
       "debug_info": {
-        "question": "小龙女的丈夫是谁？",
+        "question": "黄蓉的师父是谁？",
         "seed": null
       }
     },
@@ -3014,13 +3014,13 @@
       "question_id": "q017",
       "method": "art_lineage",
       "status": "ok",
-      "answer_text": "未能从问题中识别出武功实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 28.09,
+      "latency_ms": 907.76,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的师父是谁？",
-        "seed": null
+        "seed": "内功",
+        "hit_count": 0
       }
     },
     {
@@ -3029,10 +3029,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.62,
+      "latency_ms": 154.12,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的妻子是谁？",
+        "question": "洪七公属于哪个门派？",
         "seed": null
       }
     },
@@ -3042,10 +3042,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.52,
+      "latency_ms": 140.62,
       "error": "",
       "debug_info": {
-        "question": "任盈盈的父亲是谁？",
+        "question": "黄药师是哪里的岛主？",
         "seed": null
       }
     },
@@ -3055,10 +3055,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 29.01,
+      "latency_ms": 135.23,
       "error": "",
       "debug_info": {
-        "question": "令狐冲属于哪个门派？",
+        "question": "王重阳创立了什么门派？",
         "seed": null
       }
     },
@@ -3068,10 +3068,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 30.55,
+      "latency_ms": 139.68,
       "error": "",
       "debug_info": {
-        "question": "岳不群的妻子是谁？",
+        "question": "欧阳锋来自哪里？",
         "seed": null
       }
     },
@@ -3081,10 +3081,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.72,
+      "latency_ms": 134.35,
       "error": "",
       "debug_info": {
-        "question": "周芷若的师父是谁？",
+        "question": "一灯大师属于哪个家族？",
         "seed": null
       }
     },
@@ -3094,10 +3094,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 29.28,
+      "latency_ms": 138.91,
       "error": "",
       "debug_info": {
-        "question": "周芷若属于哪个门派？",
+        "question": "裘千仞是哪个帮派的帮主？",
         "seed": null
       }
     },
@@ -3107,10 +3107,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 30.95,
+      "latency_ms": 136.46,
       "error": "",
       "debug_info": {
-        "question": "张无忌的父亲是谁？",
+        "question": "柯镇恶是哪个组合的成员？",
         "seed": null
       }
     },
@@ -3120,10 +3120,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 31.77,
+      "latency_ms": 136.99,
       "error": "",
       "debug_info": {
-        "question": "张无忌的母亲是谁？",
+        "question": "马钰属于哪个门派？",
         "seed": null
       }
     },
@@ -3131,13 +3131,13 @@
       "question_id": "q026",
       "method": "art_lineage",
       "status": "ok",
-      "answer_text": "未能从问题中识别出武功实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 85.51,
+      "latency_ms": 890.41,
       "error": "",
       "debug_info": {
-        "question": "张无忌的义父是谁？",
-        "seed": null
+        "seed": "掌法",
+        "hit_count": 0
       }
     },
     {
@@ -3146,10 +3146,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 31.63,
+      "latency_ms": 138.66,
       "error": "",
       "debug_info": {
-        "question": "张无忌的妻子是谁？",
+        "question": "洪七公的招牌棒法是什么？",
         "seed": null
       }
     },
@@ -3159,10 +3159,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 33.11,
+      "latency_ms": 132.65,
       "error": "",
       "debug_info": {
-        "question": "赵敏的父亲是谁？",
+        "question": "欧阳锋的成名武功是什么？",
         "seed": null
       }
     },
@@ -3172,10 +3172,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.93,
+      "latency_ms": 143.35,
       "error": "",
       "debug_info": {
-        "question": "张无忌在武当山主要向谁学习武功？",
+        "question": "一灯大师的绝技是什么？",
         "seed": null
       }
     },
@@ -3185,10 +3185,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 29.17,
+      "latency_ms": 131.68,
       "error": "",
       "debug_info": {
-        "question": "张三丰创建了哪个门派？",
+        "question": "周伯通的独门武功是什么？",
         "seed": null
       }
     },
@@ -3198,10 +3198,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 29.78,
+      "latency_ms": 133.9,
       "error": "",
       "debug_info": {
-        "question": "乔峰的妻子是谁？",
+        "question": "黄药师的指法绝技是什么？",
         "seed": null
       }
     },
@@ -3211,10 +3211,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 31.02,
+      "latency_ms": 154.83,
       "error": "",
       "debug_info": {
-        "question": "乔峰的养父是谁？",
+        "question": "梅超风的爪法武功是什么？",
         "seed": null
       }
     },
@@ -3224,10 +3224,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 33.31,
+      "latency_ms": 134.63,
       "error": "",
       "debug_info": {
-        "question": "乔峰的亲生父亲是谁？",
+        "question": "郭靖的蒙古结拜兄弟是谁？",
         "seed": null
       }
     },
@@ -3237,10 +3237,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 35.71,
+      "latency_ms": 134.2,
       "error": "",
       "debug_info": {
-        "question": "乔峰的结拜兄弟之一是谁？（回答段誉或虚竹均可）",
+        "question": "郭靖的仇敌（西毒）是谁？",
         "seed": null
       }
     },
@@ -3250,10 +3250,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 30.22,
+      "latency_ms": 134.7,
       "error": "",
       "debug_info": {
-        "question": "虚竹的师父是谁？",
+        "question": "郭靖的妻子的父亲是谁？",
         "seed": null
       }
     },
@@ -3263,10 +3263,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 33.05,
+      "latency_ms": 136.27,
       "error": "",
       "debug_info": {
-        "question": "虚竹的妻子是谁？",
+        "question": "黄蓉的父亲的徒弟（黑风双煞之一）是谁？",
         "seed": null
       }
     },
@@ -3276,10 +3276,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.54,
+      "latency_ms": 133.61,
       "error": "",
       "debug_info": {
-        "question": "段誉的父亲是谁？",
+        "question": "郭靖的师父洪七公属于哪个门派？",
         "seed": null
       }
     },
@@ -3289,10 +3289,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 29.37,
+      "latency_ms": 135.12,
       "error": "",
       "debug_info": {
-        "question": "段誉的母亲是谁？",
+        "question": "杨康的师父丘处机属于哪个门派？",
         "seed": null
       }
     },
@@ -3302,10 +3302,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 34.72,
+      "latency_ms": 136.08,
       "error": "",
       "debug_info": {
-        "question": "段誉最终与谁成婚？",
+        "question": "郭靖的师父柯镇恶是哪个组合的成员？",
         "seed": null
       }
     },
@@ -3315,10 +3315,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.77,
+      "latency_ms": 141.03,
       "error": "",
       "debug_info": {
-        "question": "王语嫣的表哥是谁？",
+        "question": "黄蓉的师父洪七公的成名武功是什么？",
         "seed": null
       }
     },
@@ -3326,13 +3326,13 @@
       "question_id": "q041",
       "method": "art_lineage",
       "status": "ok",
-      "answer_text": "未能从问题中识别出武功实体。",
+      "answer_text": "根据现有资料无法回答。",
       "entity_hit": false,
-      "latency_ms": 31.17,
+      "latency_ms": 666.18,
       "error": "",
       "debug_info": {
-        "question": "郭靖的妻子的父亲是谁？",
-        "seed": null
+        "seed": "掌法",
+        "hit_count": 0
       }
     },
     {
@@ -3341,10 +3341,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.43,
+      "latency_ms": 140.61,
       "error": "",
       "debug_info": {
-        "question": "杨过的妻子的丈夫是谁？",
+        "question": "王重阳的师弟周伯通的外号是什么？",
         "seed": null
       }
     },
@@ -3354,10 +3354,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 27.28,
+      "latency_ms": 137.63,
       "error": "",
       "debug_info": {
-        "question": "张无忌的妻子的父亲是谁？",
+        "question": "黄药师的女儿黄蓉的丈夫是谁？",
         "seed": null
       }
     },
@@ -3367,10 +3367,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 26.38,
+      "latency_ms": 136.85,
       "error": "",
       "debug_info": {
-        "question": "令狐冲的妻子的父亲是谁？",
+        "question": "郭靖的妻子的师父是谁？",
         "seed": null
       }
     },
@@ -3380,10 +3380,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 29.07,
+      "latency_ms": 140.42,
       "error": "",
       "debug_info": {
-        "question": "乔峰的养父的养子是谁？",
+        "question": "黄蓉的师父属于哪个门派？",
         "seed": null
       }
     },
@@ -3393,10 +3393,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 32.37,
+      "latency_ms": 139.88,
       "error": "",
       "debug_info": {
-        "question": "段誉的父亲的妻子是谁？",
+        "question": "欧阳锋的侄子欧阳克追求的姑娘是谁？",
         "seed": null
       }
     },
@@ -3406,10 +3406,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 35.75,
+      "latency_ms": 136.78,
       "error": "",
       "debug_info": {
-        "question": "王语嫣的表哥的表妹是谁？",
+        "question": "郭靖的义兄拖雷的父亲是谁？",
         "seed": null
       }
     },
@@ -3419,10 +3419,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 37.16,
+      "latency_ms": 134.52,
       "error": "",
       "debug_info": {
-        "question": "周芷若的师父所在的门派是什么？",
+        "question": "梅超风的师父黄药师的女儿是谁？",
         "seed": null
       }
     },
@@ -3432,10 +3432,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 30.83,
+      "latency_ms": 139.23,
       "error": "",
       "debug_info": {
-        "question": "张无忌的义父的外号是什么？",
+        "question": "丘处机的门派全真教的创派祖师是谁？",
         "seed": null
       }
     },
@@ -3445,10 +3445,10 @@
       "status": "ok",
       "answer_text": "未能从问题中识别出武功实体。",
       "entity_hit": false,
-      "latency_ms": 28.31,
+      "latency_ms": 147.96,
       "error": "",
       "debug_info": {
-        "question": "郭靖向洪七公学习的掌法叫什么？",
+        "question": "洪七公所在门派丐帮的绝技棒法是什么？",
         "seed": null
       }
     }
