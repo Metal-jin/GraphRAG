@@ -131,7 +131,16 @@ def run_one_method(method_name: str, question: Mapping[str, Any], top_k: int) ->
     try:
         method = _get_method(method_name)
         answer = method.ask(question["question"], top_k=top_k)
-        result.answer_text = getattr(answer, "answer_text", "") or ""
+        # 检索 → 生成：把检索上下文喂给 LLM，生成简洁答案
+        raw_context = getattr(answer, "raw_context", "") or ""
+        if raw_context:
+            try:
+                from generate.llm import generate_answer
+                result.answer_text = generate_answer(question["question"], raw_context)
+            except Exception:
+                result.answer_text = getattr(answer, "answer_text", "") or ""
+        else:
+            result.answer_text = getattr(answer, "answer_text", "") or ""
         result.debug_info = getattr(answer, "debug_info", {}) or {}
         result.entity_hit = entity_hit(result.answer_text, question["acceptable_answers"])
         result.status = "ok"
