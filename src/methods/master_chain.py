@@ -92,11 +92,12 @@ class MasterChainMethod(QAMethod):
         chain = [{"name": seed, "depth": 0}]
         chain += [{"name": r["name"], "depth": r["depth"]} for r in rows]
 
-        # 生成答案文本：郭靖 的师父是 马钰；马钰 的师父是 ...
-        parts = []
-        for i in range(1, len(chain)):
-            parts.append(f"{chain[i - 1]['name']} 的师父是 {chain[i]['name']}")
-        answer_text = "；".join(parts) + "。"
+        # 按代分组展示：同一 depth 是同一代师父（彼此是兄弟，不是父子）
+        by_depth = {}
+        for c in chain:
+            by_depth.setdefault(c["depth"], []).append(c["name"])
+        parts = [f"第{d}代师父：{'、'.join(by_depth[d])}" for d in sorted(by_depth) if d > 0]
+        answer_text = f"{seed} 的师父链：" + "；".join(parts) + "。"
 
         return Answer( # 师徒链检索方法的返回值
             answer_text=answer_text,
