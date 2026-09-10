@@ -22,6 +22,7 @@
 | `master_chain` | 领域策略 | 师徒链检索 |
 | `sect_agg` | 领域策略 | 门派聚合检索 |
 | `art_lineage` | 领域策略 | 武功传承检索 |
+| `person_relation` | 领域策略 | 人物关系检索（父子/配偶/结拜/仇敌） |
 
 ```python
 from core.registry import register
@@ -88,9 +89,10 @@ intent = classify("郭靖的师父的师父是谁")
 | 意图（intent） | 路由（method_name） | 注入形式（injection） |
 |---|---|---|
 | `person`（人物关系） | `master_chain` | `path`（关系路径） |
+| `person_relation`（父子/配偶/结拜/仇敌） | `person_relation` | `triples`（三元组） |
 | `sect`（门派聚合） | `sect_agg` | `subgraph`（子图摘要） |
 | `art`（武功传承） | `art_lineage` | `path`（关系路径） |
-| `general`（通用兜底） | `vector` | `text`（原文） |
+| `general`（通用兜底/综合比较） | `vector` | `text`（原文） |
 
 ---
 

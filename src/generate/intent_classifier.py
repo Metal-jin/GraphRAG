@@ -35,6 +35,18 @@ ART_KEYWORDS = ("传承", "谁传", "传给谁", "创始人", "谁创", "源自"
 SECT_KEYWORDS = ("绝学", "成员", "门下", "有哪些", "掌门", "帮主", "什么武功", "会什么")
 MASTER_KEYWORDS = ("师父", "师傅", "师祖", "太师父", "徒弟", "弟子", "师承", "师从", "师门", "门徒")
 
+# 非师徒的人物关系关键词（父子/配偶/结拜/仇敌，路由到 person_relation）
+PERSON_REL_KEYWORDS = (
+    "父亲", "母亲", "爸爸", "妈妈", "爹", "娘", "儿子", "女儿", "子女", "孩子",
+    "父母", "父子", "父女", "母子", "母女",
+    "配偶", "妻子", "丈夫", "老婆", "老公", "夫人", "娘子", "夫妻",
+    "结拜", "义兄", "义弟", "结义",
+    "仇敌", "敌人", "对手", "死对头", "仇人",
+)
+
+# 综合比较类关键词（路由到通用检索）
+COMPARE_KEYWORDS = ("谁厉害", "谁强", "谁更", "比较", "区别", "对比", "哪个厉害", "谁武功高", "谁高")
+
 
 class IntentClassifier:
     """规则 + 实体识别的意图分类器。"""
@@ -80,13 +92,23 @@ class IntentClassifier:
             return Intent("sect", "sect_agg", sect, "门派", "subgraph",
                           f"命中门派实体「{sect}」且含聚合关键词")
 
-        # 3. 人物实体 + 师徒/关系关键词 → 师徒链
+        # 3. 人物实体 + 父子/配偶/结拜/仇敌 → 人物关系检索
         person = self._match_entity(q, "人物")
+        if person and any(k in q for k in PERSON_REL_KEYWORDS):
+            return Intent("person_relation", "person_relation", person, "人物", "triples",
+                          f"命中人物实体「{person}」且含人物关系关键词（父子/配偶/结拜/仇敌）")
+
+        # 4. 人物实体 + 综合比较类 → 通用检索
+        if person and any(k in q for k in COMPARE_KEYWORDS):
+            return Intent("general", "vector", person, "人物", "text",
+                          f"命中人物实体「{person}」但属综合比较类，走通用检索")
+
+        # 5. 人物实体 + 师徒/关系关键词 → 师徒链
         if person and any(k in q for k in MASTER_KEYWORDS):
             return Intent("person", "master_chain", person, "人物", "path",
                           f"命中人物实体「{person}」且含师徒关系关键词")
 
-        # 4. 人物实体（无明确关键词）→ 默认按人物关系处理
+        # 6. 人物实体（无明确关键词）→ 默认按人物关系处理
         if person:
             return Intent("person", "master_chain", person, "人物", "path",
                           f"命中人物实体「{person}」，默认按人物关系处理")

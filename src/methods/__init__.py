@@ -12,6 +12,7 @@ from .library_graphrag import LibraryGraphRAGMethod
 from .master_chain import MasterChainMethod
 from .sect_agg import SectAggMethod
 from .art_lineage import ArtLineageMethod
+from .person_relation import PersonRelationMethod
 
 __all__ = [
     "VectorMethod",
@@ -19,4 +20,5 @@ __all__ = [
     "MasterChainMethod",
     "SectAggMethod",
     "ArtLineageMethod",
+    "PersonRelationMethod",
 ]

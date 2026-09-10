@@ -67,6 +67,16 @@ def _members_to_subgraph(evidence: List[Dict]) -> str:
     return "\n".join(lines)
 
 
+def _triples_injection(evidence: List[Dict]) -> str:
+    """三元组列表 → 文本。
+
+    evidence: [{"source": "黄药师", "rel": "父母子女", "target": "黄蓉"}, ...]
+    输出: （黄药师，父母子女，黄蓉）
+    """
+    lines = [f"（{e.get('source', '')}，{e.get('rel', '关系')}，{e.get('target', '')}）" for e in evidence]
+    return "\n".join(lines)
+
+
 def build_context(method_name: str, evidence: List[Dict], raw_context: str = "") -> str:
     """根据路由到的方法，把证据转成对应的注入形式。
 
@@ -78,5 +88,7 @@ def build_context(method_name: str, evidence: List[Dict], raw_context: str = "")
         return _lineage_to_path(evidence, "传承")
     if method_name == "sect_agg":
         return _members_to_subgraph(evidence)
+    if method_name == "person_relation":
+        return _triples_injection(evidence)
     # general / vector / library_graphrag：直接用原始检索文本
     return raw_context or ""
