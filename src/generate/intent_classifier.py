@@ -3,10 +3,11 @@
 阶段二核心：用户不再需要手动选方法，系统根据问题自动判断意图并路由。
 
 意图（语义）→ 路由（方法）+ 注入形式：
-    - person（人物关系）  → master_chain + path（路径）
-    - sect（门派聚合）    → sect_agg     + subgraph（子图摘要）
-    - art（武功传承）     → art_lineage  + path（路径）
-    - general（通用兜底） → vector       + text（原文）
+    - person（人物师徒关系）      → master_chain    + path（路径）
+    - person_relation（人物关系） → person_relation + triples（三元组）
+    - sect（门派聚合）            → sect_agg        + subgraph（子图摘要）
+    - art（武功传承）             → art_lineage     + path（路径）
+    - general（通用兜底/综合比较） → vector         + text（原文）
 
 分类方法（规则 + 实体识别，阶段二够用，无需训练模型）：
     1. 从图谱拿到全部实体名，按类型分组（人物 / 门派 / 武功）
@@ -38,9 +39,9 @@ MASTER_KEYWORDS = ("师父", "师傅", "师祖", "太师父", "徒弟", "弟子"
 # 非师徒的人物关系关键词（父子/配偶/结拜/仇敌，路由到 person_relation）
 PERSON_REL_KEYWORDS = (
     "父亲", "母亲", "爸爸", "妈妈", "爹", "娘", "儿子", "女儿", "子女", "孩子",
-    "父母", "父子", "父女", "母子", "母女",
+    "父母", "父子", "父女", "母子", "母女", "爹娘",
     "配偶", "妻子", "丈夫", "老婆", "老公", "夫人", "娘子", "夫妻",
-    "结拜", "义兄", "义弟", "结义",
+    "结拜", "义兄", "义弟", "结义", "义结金兰",
     "仇敌", "敌人", "对手", "死对头", "仇人",
 )
 
@@ -113,7 +114,7 @@ class IntentClassifier:
             return Intent("person", "master_chain", person, "人物", "path",
                           f"命中人物实体「{person}」，默认按人物关系处理")
 
-        # 5. 兜底 → 通用基线
+        # 7. 兜底 → 通用基线
         return Intent("general", "vector", "", "", "text", "未命中领域实体，走通用检索")
 
 
