@@ -92,7 +92,7 @@ EXTRACT_PROMPT = """你是一个知识图谱抽取专家。请从以下金庸小
 EMBED_DIM = 256  # 本地哈希嵌入的维度
 
 
-def hash_embed(text: str, dim: int = EMBED_DIM) -> List[float]:
+def hash_embed(text: str, dim: int = EMBED_DIM) -> List[float]:  # 该函数输入文本内容字符串，输出哈希向量
     """本地哈希嵌入（兜底方案）：不依赖外部服务。
 
     原理：对每个字符做 hash 投票，得到固定维度向量后归一化。
@@ -132,7 +132,7 @@ def make_embedder() -> Callable[[List[str]], List[List[float]]]:
 
 # ============ LLM 抽取 ============
 
-def get_llm_client() -> OpenAI:
+def get_llm_client() -> OpenAI:  # 该函数返回 LLM 客户端（默认 DeepSeek，OpenAI 兼容协议）
     """LLM 客户端（默认 DeepSeek，OpenAI 兼容协议）。"""
     return OpenAI(
         base_url=get_env("LLM_ENDPOINT", "https://api.deepseek.com"),
@@ -140,7 +140,7 @@ def get_llm_client() -> OpenAI:
     )
 
 
-def parse_llm_json(raw: str) -> Dict[str, List[Dict]]:
+def parse_llm_json(raw: str) -> Dict[str, List[Dict]]:  # 该函数输入 LLM 返回的 JSON 字符串，输出解析后的字典
     """解析 LLM 返回的 JSON，容错处理常见的格式问题。
 
     - 剥掉 ```json ... ``` 代码块包裹
@@ -209,11 +209,11 @@ def clean_relationship(rel: Dict, entity_names: set) -> Optional[Dict]:
     source = str(rel.get("source", "")).strip()
     target = str(rel.get("target", "")).strip()
     rtype = str(rel.get("type", "")).strip().upper()
-    if rtype not in RELATION_TYPES:
+    if rtype not in RELATION_TYPES:  # 如果关系类型不在白名单里，就跳过
         return None
-    if source not in entity_names or target not in entity_names:
+    if source not in entity_names or target not in entity_names:  # 如果两端实体都不在白名单里，就跳过
         return None
-    if source == target:
+    if source == target:  # 如果两端实体相同，就跳过
         return None
     return {"source": source, "target": target, "type": rtype}
 
@@ -262,17 +262,17 @@ class KGBuilder:
     方便测试时用假对象替换（见 tests/test_kg_builder.py）。"""
 
     def __init__(self, driver, llm: OpenAI, embedder: Callable,
-                 model: str = "deepseek-chat", default_era: str = "射雕"):
-        self.driver = driver
-        self.llm = llm
-        self.embedder = embedder
-        self.model = model
-        self.default_era = default_era
+                 model: str = "deepseek-chat", default_era: str = "射雕"):  # 初始化KGBuilder 类
+        self.driver = driver  # Neo4j 数据库驱动，用于写入数据
+        self.llm = llm  # LLM 客户端，用于调用 LLM 模型
+        self.embedder = embedder  # 嵌入函数，用于将文本转换为向量
+        self.model = model  # LLM 模型，默认 DeepSeek Chat
+        self.default_era = default_era  # 默认 era，用于处理 era 为空的情况
 
     # ---------- 抽取 ----------
 
     def extract_chunk(self, chunk: Dict,
-                      max_retries: int = 3) -> Dict[str, List[Dict]]:
+                      max_retries: int = 3) -> Dict[str, List[Dict]]:  # 该函数输入文本块字典，输出实体关系字典
         """调 LLM 抽取一个文本块的实体关系，带重试。"""
         prompt = EXTRACT_PROMPT.format(chunk_text=chunk["text"])
         last_err = None
@@ -291,7 +291,7 @@ class KGBuilder:
         print(f"[build_kg] chunk {chunk['chunk_id']} 抽取失败：{last_err}")
         return {"entities": [], "relationships": []}
 
-    def _postprocess(self, data: Dict[str, List[Dict]]) -> Dict[str, List[Dict]]:
+    def _postprocess(self, data: Dict[str, List[Dict]]) -> Dict[str, List[Dict]]:  # 该函数输入实体关系字典，输出清洗后的实体关系字典
         """清洗：实体规范化 + 关系白名单过滤 + 双向关系展开。"""
         entities = []
         seen = set()
@@ -325,14 +325,14 @@ class KGBuilder:
 
     # ---------- 入库 ----------
 
-    def ensure_indexes(self):
+    def ensure_indexes(self):  # 该函数确保向量索引和全文索引存在
         """建向量索引 + 全文索引（幂等，重复执行不报错）。"""
         with self.driver.session() as session:
             sample = self.embedder(["维度探测"])[0]
             session.run(CREATE_VECTOR_INDEX, dim=len(sample))
             session.run(CREATE_FULLTEXT_INDEX)
 
-    def write_result(self, chunk: Dict, result: Dict[str, List[Dict]]):
+    def write_result(self, chunk: Dict, result: Dict[str, List[Dict]]):  # 该函数输入文本块字典和实体关系字典，写入 Neo4j
         """把一个块的抽取结果写入 Neo4j（MERGE 幂等，可重复执行）。"""
         entities = result["entities"]
         embeddings = self.embedder([chunk["text"]])
@@ -372,8 +372,8 @@ class KGBuilder:
 
     # ---------- 主流程 ----------
 
-    def run(self, chunks: List[Dict], limit: Optional[int] = None,
-            resume: bool = False, dry_run: bool = False) -> Dict[str, int]:
+    def run(self, chunks: List[Dict], limit: Optional[int] = None, 
+            resume: bool = False, dry_run: bool = False) -> Dict[str, int]:  # 该函数输入文本块列表，输出统计信息字典，处理流程，实践开始
         """批量处理：抽取 → 入库 → 记 checkpoint。"""
         done = set()
         if resume and CHECKPOINT_PATH.exists():
@@ -414,7 +414,7 @@ class KGBuilder:
 
 # ============ 命令行入口 ============
 
-def main():
+def main():  # 主函数，处理命令行参数和流程控制
     parser = argparse.ArgumentParser(description="LLM 抽取 + Neo4j 入库")
     parser.add_argument("--chunks", type=str, default=str(DEFAULT_OUT_PATH))
     parser.add_argument("--limit", type=int, default=None, help="只处理前 N 块")

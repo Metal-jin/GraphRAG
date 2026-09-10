@@ -15,6 +15,6 @@ _BASE_DIR = Path(__file__).resolve().parents[2]  # src/core/config.py -> 仓库�
 load_dotenv(_BASE_DIR / ".env")
 
 
-def get_env(key: str, default: str = None) -> str:
+def get_env(key: str, default: str = None) -> str: # 读取环境变量，不存在时返回默认值
     """读取环境变量，不存在时返回默认值。"""
     return os.getenv(key, default)

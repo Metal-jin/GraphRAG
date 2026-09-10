@@ -1,7 +1,7 @@
 """向量检索的公共工具。
 
 本文件只负责“把文字变成向量”和“按照相似度找文本块”，不负责回答问题。
-这样 vector 基线、调库基线以及后续的 PPR 方法可以使用完全相同的向量工具，
+这样 vector 基线、调库基线以及后续的方法可以使用完全相同的向量工具，
 对比实验才是公平的。
 
 支持两种嵌入方式：
@@ -20,7 +20,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional
 from core.config import get_env
 
 
-def _text_of(item: Dict[str, Any]) -> str:
+def _text_of(item: Dict[str, Any]) -> str: # 从文本块字典中取出正文，这考虑到了所有的情况
     """从 B 可能返回的文本块字典中取出正文。
 
     B 的接口约定是 ``list[dict]``，但正文键名在联调早期可能不同；
@@ -37,7 +37,7 @@ def _hash_embedding(text: str, dimension: int = 256) -> List[float]:
     """生成无需模型的确定性词袋哈希向量。
 
     每个词被哈希到一个维度，并用正负号减少哈希碰撞的偏差；最后归一化。
-    这不是语义模型，只是离线兜底方案。配置真实嵌入服务后会自动替换它。
+    这不是语义模型，只是离线兜底方案。配置真实嵌入服务后会自动替换它。使用正负结合，区分度较高。
     """
     vector = [0.0] * dimension
     tokens = re.findall(r"[\u4e00-\u9fff]|[a-zA-Z0-9_]+", text.lower())
@@ -49,7 +49,7 @@ def _hash_embedding(text: str, dimension: int = 256) -> List[float]:
     return [x / norm for x in vector] if norm else vector
 
 
-class Embedder:
+class Embedder: # 嵌入器类
     """统一嵌入器。
 
     ``embedder=`` 参数主要给测试和离线实验使用；传入一个函数即可注入
@@ -78,7 +78,7 @@ class Embedder:
         return _hash_embedding(text)
 
 
-def cosine_similarity(left: List[float], right: List[float]) -> float:
+def cosine_similarity(left: List[float], right: List[float]) -> float: # 余弦相似度函数
     """计算余弦相似度；向量为空或维度不一致时返回 0。"""
     if not left or len(left) != len(right):
         return 0.0
@@ -109,7 +109,7 @@ def search_chunks(question: str, chunks: Iterable[Dict[str, Any]], top_k: int = 
 
 def embed_and_search(question: str, top_k: int = 5, chunks: Optional[Iterable[Dict[str, Any]]] = None,
                      data_loader: Any = None) -> List[Dict[str, Any]]:
-    """C/D 对接的便捷函数：优先使用 B 的 ``search_by_vector``，否则本地检索。"""
+    """C/D 对接的便捷函数：优先使用 B 的 ``search_by_vector``，从数据库中检索，否则使用本地检索。"""
     loader = data_loader
     if loader is None:
         try:

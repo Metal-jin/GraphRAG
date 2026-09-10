@@ -46,12 +46,12 @@ class MasterChainMethod(QAMethod):
         self.data_loader = data_loader
         self.chunks = chunks
 
-    def ask(self, question: str, top_k: int = 5) -> Answer:
+    def ask(self, question: str, top_k: int = 5) -> Answer: # 师徒链检索方法的 ask 方法
         if not isinstance(question, str) or not question.strip():
             raise ValueError("question 必须是非空字符串")
 
         seed = _find_seed_person(question)
-        if not seed:
+        if not seed: # 未能从问题中识别出人物实体
             return Answer(
                 answer_text="未能从问题中识别出人物实体。",
                 method_name=self.name,
@@ -92,13 +92,13 @@ class MasterChainMethod(QAMethod):
         chain = [{"name": seed, "depth": 0}]
         chain += [{"name": r["name"], "depth": r["depth"]} for r in rows]
 
-        # 生成答案文本：郭靖 的师父是 洪七公；洪七公 的师父是 ...
+        # 生成答案文本：郭靖 的师父是 马钰；马钰 的师父是 ...
         parts = []
         for i in range(1, len(chain)):
             parts.append(f"{chain[i - 1]['name']} 的师父是 {chain[i]['name']}")
         answer_text = "；".join(parts) + "。"
 
-        return Answer(
+        return Answer( # 师徒链检索方法的返回值
             answer_text=answer_text,
             method_name=self.name,
             evidence=chain,

@@ -9,10 +9,10 @@ from typing import Dict, Type
 from .interfaces import QAMethod
 
 
-_REGISTRY: Dict[str, Type[QAMethod]] = {}
+_REGISTRY: Dict[str, Type[QAMethod]] = {} # 注册表，键是方法名，值是方法类
 
 
-def register(name: str):
+def register(name: str): # 注册方法装饰器
     """装饰器：把一个方法类注册到注册表。
 
     用法：
@@ -20,7 +20,7 @@ def register(name: str):
         class VectorMethod(QAMethod):
             ...
     """
-    def decorator(cls: Type[QAMethod]) -> Type[QAMethod]:
+    def decorator(cls: Type[QAMethod]) -> Type[QAMethod]: # 装饰器函数，返回一个方法类
         if name in _REGISTRY:
             raise ValueError(f"方法名 '{name}' 已存在，请换一个名字")
         _REGISTRY[name] = cls
@@ -28,7 +28,7 @@ def register(name: str):
     return decorator
 
 
-def get_method(name: str, **kwargs) -> QAMethod:
+def get_method(name: str, **kwargs) -> QAMethod: # 获取方法实例函数
     """根据名字创建方法实例。
 
     例子：
@@ -39,7 +39,7 @@ def get_method(name: str, **kwargs) -> QAMethod:
         raise ValueError(
             f"未知方法: '{name}'，已注册的方法有: {list(_REGISTRY.keys())}"
         )
-    return _REGISTRY[name](**kwargs)
+    return _REGISTRY[name](**kwargs) #从注册表拿到类（_REGISTRY[name]），然后用 (**kwargs) 实例化一个对象
 
 
 def list_methods() -> list:

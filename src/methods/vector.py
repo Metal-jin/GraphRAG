@@ -12,18 +12,18 @@ from retrieve.vector_utils import embed_and_search
 
 
 @register("vector")
-class VectorMethod(QAMethod):
+class VectorMethod(QAMethod): # 向量检索方法类
     name = "vector"
 
     def __init__(self, data_loader: Any = None, chunks=None):
         self.data_loader = data_loader
         self.chunks = chunks
 
-    def ask(self, question: str, top_k: int = 5) -> Answer:
+    def ask(self, question: str, top_k: int = 5) -> Answer: # 向量检索方法的 ask 方法
         if not isinstance(question, str) or not question.strip():
             raise ValueError("question 必须是非空字符串")
         hits = embed_and_search(question, top_k, self.chunks, self.data_loader)
-        context = "\n\n".join(str(item.get("text", item.get("content", item.get("chunk", "")))) for item in hits)
+        context = "\n\n".join(str(item.get("text", item.get("content", item.get("chunk", "")))) for item in hits) # 棼接检索到的文本块
         return Answer(answer_text=context or "未检索到相关内容。", method_name=self.name,
                       evidence=hits, debug_info={"top_k": top_k, "hit_count": len(hits), "uses_graph": False},
                       raw_context=context)

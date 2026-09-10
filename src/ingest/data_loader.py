@@ -12,7 +12,7 @@ ingest/data_loader.py
 │ get_graph(era=None)          │ {"nodes": [...], "edges": [...]}         │
 │ search_by_vector(q, top_k)   │ [{"chunk_id", "text", "score"}, ...]     │
 │ search_by_text(q, top_k)     │ [{"chunk_id", "text", "score"}, ...]     │
-│ run_query(cypher, params)    │ [dict, ...]（Cypher 原样执行，给 D 用） │
+│ run_query(cypher, params)    │ [dict, ...]（Cypher 原样执行，给 D 用）   │
 └──────────────────────────────┴──────────────────────────────────────────┘
 
 节点结构：{"id": 内部id, "name", "type": 人物/门派/武功/地点, "era", ...}
@@ -37,7 +37,7 @@ _embedder = make_embedder()
 _driver = None
 
 
-def get_driver():
+def get_driver(): # 获取 Neo4j 连接驱动
     """惰性单例的 Neo4j driver。"""
     global _driver
     if _driver is None:
@@ -49,7 +49,7 @@ def get_driver():
     return _driver
 
 
-def close_driver():
+def close_driver(): # 关闭 Neo4j 连接驱动
     """用完关连接（评测脚本/服务退出时调用）。"""
     global _driver
     if _driver is not None:
@@ -111,7 +111,7 @@ def get_graph(era: Optional[str] = None) -> Dict[str, List[Dict]]:
         edges = [e for e in edges
                  if e["source"] in names and e["target"] in names]
 
-    # 统一节点字段（前端画图/PPR 算子直接用）
+    # 统一节点字段（前端画图直接用）
     for n in nodes:
         n.setdefault("era", None)
         n.setdefault("location", None)

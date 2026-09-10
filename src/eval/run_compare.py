@@ -58,7 +58,7 @@ class ItemResult:
     debug_info: dict[str, Any] = field(default_factory=dict)
 
 
-def normalize_text(text: str) -> str:
+def normalize_text(text: str) -> str: # 将文本归一化以方便实体匹配和比较
     """对中英文标点、空白和大小写做统一处理。
 
     这里不能使用激进分词或同义词模型，否则评测结果会混入第二套模型的偏差。
@@ -72,7 +72,7 @@ def normalize_text(text: str) -> str:
     return text
 
 
-def entity_hit(answer_text: str, acceptable_answers: Iterable[str]) -> bool:
+def entity_hit(answer_text: str, acceptable_answers: Iterable[str]) -> bool: # 判断回答中是否出现任意一个人工确认过的标准答案/别名
     """判断回答中是否出现任意一个人工确认过的标准答案/别名。"""
     answer = normalize_text(answer_text)
     if not answer:
@@ -80,7 +80,7 @@ def entity_hit(answer_text: str, acceptable_answers: Iterable[str]) -> bool:
     return any(normalize_text(alias) and normalize_text(alias) in answer for alias in acceptable_answers)
 
 
-def load_questions(path: Path = QUESTION_FILE) -> list[dict[str, Any]]:
+def load_questions(path: Path = QUESTION_FILE) -> list[dict[str, Any]]: # 加载问题集
     """读取并检查问题集的最小结构，尽早发现 JSON 被误改的问题。"""
     data = json.loads(path.read_text(encoding="utf-8"))
     questions = data.get("questions") if isinstance(data, dict) else data
@@ -98,7 +98,7 @@ def load_questions(path: Path = QUESTION_FILE) -> list[dict[str, Any]]:
     return questions
 
 
-def import_project_methods() -> None:
+def import_project_methods() -> None: # 导入项目方法包
     """导入方法包，触发各方法文件上的 @register 装饰器。
 
     当前仓库可能只有骨架，导入失败不能在这里静默吞掉；真正的缺失方法由
@@ -126,8 +126,8 @@ def _get_method(method_name: str):
 
 def run_one_method(method_name: str, question: Mapping[str, Any], top_k: int) -> ItemResult:
     """调用一个方法回答一道题，并把异常转换成可报告的失败记录。"""
-    result = ItemResult(question_id=question["id"], method=method_name, status="error")
-    started = time.perf_counter()
+    result = ItemResult(question_id=question["id"], method=method_name, status="error") # 初始化结果为失败
+    started = time.perf_counter() # 记录开始时间
     try:
         method = _get_method(method_name)
         answer = method.ask(question["question"], top_k=top_k)
@@ -142,7 +142,7 @@ def run_one_method(method_name: str, question: Mapping[str, Any], top_k: int) ->
         else:
             result.answer_text = getattr(answer, "answer_text", "") or ""
         result.debug_info = getattr(answer, "debug_info", {}) or {}
-        result.entity_hit = entity_hit(result.answer_text, question["acceptable_answers"])
+        result.entity_hit = entity_hit(result.answer_text, question["acceptable_answers"]) # 判断回答中是否出现任意一个人工确认过的标准答案/别名
         result.status = "ok"
     except Exception as exc:  # 评测不能因单个方法/单道题失败而丢掉其他结果
         result.error = f"{type(exc).__name__}: {exc}"

@@ -1,4 +1,4 @@
-"""调库 GraphRAG 基线。
+"""调库 GraphRAG 基线。其并没有真正实现，仅作为占位符。
 
 优先调用 B 数据接口中的 ``search_by_vector``（它应封装 neo4j-graphrag 的
 向量检索器）。这样 C 不需要重复编写数据库连接和 Cypher 查询；在数据库

@@ -37,13 +37,13 @@ ENTITY_LABELS = {"人物", "门派", "武功", "地点"}
 
 # ---------------- 纯函数：可单测 ----------------
 
-def quote_type(t: str) -> str:
+def quote_type(t: str) -> str:  # 该函数输入关系类型字符串，输出安全的 Cypher 动态语句（反引号包裹）
     """把关系类型安全地放进 Cypher 动态语句（反引号包裹）。"""
     return f"`{t}`"
 
 
-def validate_groups(alias_groups: Dict[str, Dict], drop_names: Iterable[str]) -> None:
-    """校验别名组/剔除名单的合法性，非法直接抛 ValueError。"""
+def validate_groups(alias_groups: Dict[str, Dict], drop_names: Iterable[str]) -> None: # 检查：正名不能出现在别名列表里，别名不能重复，一个名字不能属于两个组...
+    """校验别名组/剔除名单的合法性，非法直接抛 ValueError，例如别名重复、正名在别名列表里、一个名字被多个组引用。"""
     if not alias_groups:
         raise ValueError("alias_groups 不能为空")
     seen: Set[str] = set()
@@ -66,26 +66,26 @@ def validate_groups(alias_groups: Dict[str, Dict], drop_names: Iterable[str]) ->
             raise ValueError("剔除名单含空字符串")
 
 
-def rel_key(t: str, xid: str, direction: str) -> Tuple[str, str, str]:
+def rel_key(t: str, xid: str, direction: str) -> Tuple[str, str, str]: # 把三个信息（关系类型、对方节点ID、方向）打包成一个“三元素组合”，用来作为唯一标识，判断一条关系是否已经被处理过了
     """迁移去重用的边键。"""
     return (t, xid, direction)
 
 
 # ---------------- 数据库访问 ----------------
 
-def _driver():
+def _driver(): 
     return GraphDatabase.driver(
         get_env("NEO4J_URL", "bolt://localhost:7687"),
         auth=(get_env("NEO4J_USER", "neo4j"), get_env("NEO4J_PASSWORD", "")),
     )
 
 
-def audit(alias_groups: Dict[str, Dict], drop_names: List[str]) -> None:
+def audit(alias_groups: Dict[str, Dict], drop_names: List[str]) -> None: # 打印想要的名单现状（只读，不改库）
     """打印候选名单现状（只读，不改库）。"""
-    with _driver().session() as s:
+    with _driver().session() as s: # 连接到数据库，创建会话
         for canonical, cfg in alias_groups.items():
-            names = [canonical] + cfg["aliases"]
-            for nm in names:
+            names = [canonical] + cfg["aliases"] # 把正名和别名都放在一起，方便遍历
+            for nm in names: # 遍历每个实体名
                 rows = s.run(
                     "MATCH (n {name: $n}) RETURN labels(n) AS labels, "
                     "count { (n)--() } AS degree ORDER BY degree DESC",
@@ -96,7 +96,7 @@ def audit(alias_groups: Dict[str, Dict], drop_names: List[str]) -> None:
                 else:
                     for r in rows:
                         print(f"  {nm}: labels={r['labels']} degree={r['degree']}")
-        print("  --- 剔除名单 ---")
+        print("  --- 剔除名单 ---") # 打印剔除名单，对应之前的剔除
         for nm in drop_names:
             rows = s.run(
                 "MATCH (n {name: $n}) RETURN labels(n) AS labels, "
@@ -124,7 +124,7 @@ def _find_group_nodes(session, group_names: List[str],
 
 def _ensure_canonical(session, canonical: str, label: str,
                       existing_eids: Set[str]) -> str:
-    """确保正名节点存在，返回其 elementId。"""
+    """确保“正名”节点存在。如果已经存在，直接返回它的 ID；如果不存在，就新建一个，然后返回新节点的 ID"""
     rows = _find_group_nodes(session, [canonical], label)
     if rows:
         return rows[0]["eid"]
@@ -289,7 +289,7 @@ def main() -> None:
     parser.add_argument("--audit", action="store_true", help="打印候选名单现状后退出")
     args = parser.parse_args()
 
-    alias_groups: Dict[str, Dict] = {
+    alias_groups: Dict[str, Dict] = { # 别名组候选名单，保证正确率，提升效率
         "洪七公": {"label": "人物", "aliases": ["九指神丐", "北丐", "洪帮主", "洪恩师"]},
         "黄药师": {"label": "人物", "aliases": ["东邪", "黄岛主"]},
         "欧阳锋": {"label": "人物", "aliases": ["西毒", "欧阳先生"]},
