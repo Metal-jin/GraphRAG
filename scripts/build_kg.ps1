@@ -1,11 +1,14 @@
 # One-click KG build pipeline (B): chunk -> LLM extract -> load into Neo4j
 # Usage:
-#   powershell -File scripts\build_kg.ps1            # full build
-#   powershell -File scripts\build_kg.ps1 -Limit 20  # trial run on first 20 chunks
-#   powershell -File scripts\build_kg.ps1 -Resume    # resume from checkpoint
+#   powershell -File scripts\build_kg.ps1                            # full build (legacy: chunks.json / 射雕)
+#   powershell -File scripts\build_kg.ps1 -Book 神雕侠侣              # build a specific book (phase 2)
+#   powershell -File scripts\build_kg.ps1 -Book 神雕侠侣 -Limit 20    # trial run on first 20 chunks
+#   powershell -File scripts\build_kg.ps1 -Book 神雕侠侣 -Resume      # resume from checkpoint
 param(
+    [string]$Book = "",
     [int]$Limit = 0,
-    [switch]$Resume
+    [switch]$Resume,
+    [string]$Python = "D:\.conda\envs\hu\python.exe"   # 统一用 hu 环境
 )
 
 $ErrorActionPreference = "Stop"
@@ -26,19 +29,24 @@ if (-Not (Test-Path ".env")) {
     }
 }
 
-# 1. chunk raw novels into data/interim/chunks.json
-python src\ingest\corpus.py
+# 1. chunk raw novels: -Book 指定单书，否则处理 data/source/ 下所有 txt（每书一个 chunks_<书名>.json）
+if ($Book -ne "") {
+    & $Python "src\ingest\corpus.py" --source "data\source\$Book.txt"
+} else {
+    & $Python "src\ingest\corpus.py"
+}
 if ($LASTEXITCODE -ne 0) { throw "corpus.py failed" }
 
-# 2. LLM extraction + Neo4j loading (era field supported from day one)
+# 2. LLM extraction + Neo4j loading (era injected per-book; checkpoint per-book)
 $buildArgs = @()
-if ($Limit -gt 0) { $buildArgs += "--limit"; $buildArgs += $Limit }
-if ($Resume)      { $buildArgs += "--resume" }
-python src\ingest\build_kg.py @buildArgs
+if ($Book -ne "")      { $buildArgs += "--book"; $buildArgs += $Book }
+if ($Limit -gt 0)      { $buildArgs += "--limit"; $buildArgs += $Limit }
+if ($Resume)           { $buildArgs += "--resume" }
+& $Python "src\ingest\build_kg.py" @buildArgs
 if ($LASTEXITCODE -ne 0) { throw "build_kg.py failed" }
 
 # 3. sanity check: read back chunks and graph stats
-python src\ingest\data_loader.py
+& $Python "src\ingest\data_loader.py"
 if ($LASTEXITCODE -ne 0) { throw "data_loader.py sanity check failed" }
 
 Write-Host "[build_kg] Done." -ForegroundColor Green

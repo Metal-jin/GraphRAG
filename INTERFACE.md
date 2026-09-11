@@ -164,3 +164,54 @@ result = ask_auto("郭靖的师父是谁？")
 2. 用 `@register(name)` 注册
 3. 在 `src/methods/__init__.py` 里 `import` 该模块，触发注册
 4. 更新本文件
+
+---
+
+## 9. 阶段二新增：实体对齐系统（entity_alignment）
+
+文件：`src/ingest/entity_alignment.py`（B 维护）
+
+**作用**：把同一实体的多种称呼归并到同一节点 + 建立跨书血缘（DESCENDANT_OF）。
+
+**三层对齐机制**：
+
+| 层 | 机制 | 触发 | 落库？ |
+|---|---|---|---|
+| ① 规则层 `RuleNormalizer` | 称谓后缀剥离（"洪帮主"→"洪"）+ 姓氏归一（"诸葛氏"→"诸葛"） | 自动 | 是 |
+| ② 词典层 `AliasDictionary` | 人工别名词典（`data/processed/alias_dict.json`） | 自动 | 是 |
+| ③ 相似度层 `SimilarityAligner` | rapidfuzz + pypinyin 双路打分 | 自动 | **否（仅 CSV 候选）** |
+
+**安全设计**：相似度层在"同姓不同人"上有天然缺陷（如"郭京"vs"郭靖"），故默认只生成候选 CSV；人工审核后加入词典层才能落库。
+
+**CLI 用法**：
+
+```powershell
+$env:PYTHONPATH='D:\hu\GraphRAG\src'
+& "D:\.conda\envs\hu\python.exe" src/ingest/entity_alignment.py --dry-run          # 预览
+& "D:\.conda\envs\hu\python.exe" src/ingest/entity_alignment.py --apply           # 落库（词典+规则）
+& "D:\.conda\envs\hu\python.exe" src/ingest/entity_alignment.py --apply --include-similarity  # 含相似度
+& "D:\.conda\envs\hu\python.exe" src/ingest/entity_alignment.py --descendants-only # 只跑 DESCENDANT_OF
+& "D:\.conda\envs\hu\python.exe" src/ingest/entity_alignment.py --labels 人物      # 只对齐人物 label
+```
+
+候选 CSV 路径：`data/interim/alignment_candidates.csv`
+
+---
+
+## 10. 阶段二新增关系类型：`DESCENDANT_OF`
+
+**作用**：跨书血缘（D 给"黄衫女子→杨过"类问题用）。
+
+**生成方式**：B 的 `entity_alignment.py` 后处理扫描实体 description 字段中的 "X之后/之女/之子/后人"模式 + 大姓锚定，输出候选三元组 (ancestor, descendant, kind)，幂等落库。
+
+**查询示例**：
+
+```python
+from src.ingest.data_loader import run_query
+
+# 沿 DESCENDANT_OF 链路追溯任意后人
+run_query("""
+    MATCH (ancestor:人物 {name: $a})<-[:DESCENDANT_OF*1..5]-(d:人物)
+    RETURN d.name AS descendant
+""", {"a": "杨过"})
+```
