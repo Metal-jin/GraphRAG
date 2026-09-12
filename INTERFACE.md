@@ -164,3 +164,7 @@ result = ask_auto("郭靖的师父是谁？")
 2. 用 `@register(name)` 注册
 3. 在 `src/methods/__init__.py` 里 `import` 该模块，触发注册
 4. 更新本文件
+
+## 9. E1 评测接口
+
+`src/eval/metrics.py` 提供 `evaluate_result(question, answer_text, evidence)`，返回 `entity_hit`、`path_completeness`、`evidence_sufficiency` 和 `evidence_count`。`src/eval/run_compare.py` 会在逐题 `debug_info` 及报告中保留这些指标，并按人物、武功、门派、综合四类汇总。`src/eval/injection_experiment.py` 用统一评测集离线比较 `triples`、`path`、`subgraph` 三种知识注入形式。

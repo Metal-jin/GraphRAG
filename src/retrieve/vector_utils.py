@@ -110,6 +110,10 @@ def search_chunks(question: str, chunks: Iterable[Dict[str, Any]], top_k: int = 
 def embed_and_search(question: str, top_k: int = 5, chunks: Optional[Iterable[Dict[str, Any]]] = None,
                      data_loader: Any = None) -> List[Dict[str, Any]]:
     """C/D 对接的便捷函数：优先使用 B 的 ``search_by_vector``，从数据库中检索，否则使用本地检索。"""
+    # 显式传入 chunks 表示调用方要求本地、可复现检索（尤其是单元测试）；
+    # 此时不能再隐式连接默认 Neo4j loader。
+    if chunks is not None and data_loader is None:
+        return search_chunks(question, chunks, top_k)
     loader = data_loader
     if loader is None:
         try:

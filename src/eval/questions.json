@@ -1,8 +1,8 @@
 {
   "dataset_name": "金庸《射雕英雄传》知识图谱多跳问答评测集",
-  "version": "2.0",
+  "version": "2.1",
   "language": "zh-CN",
-  "description": "阶段一评测集：50 题，全部限定《射雕英雄传》范围。用于比较 vector、library_graphrag、master_chain、sect_agg、art_lineage 五种方法（两个基线 + 三个领域策略）。",
+  "description": "阶段二分类评测集：54 题，按人物、武功、门派、综合四类汇总。用于比较 vector、library_graphrag、master_chain、sect_agg、art_lineage 五种方法。",
   "scoring_hint": "程序使用 acceptable_answers 做实体命中判断；answer_entities 是规范名称。",
   "questions": [
     {"id":"q001","question":"郭靖的父亲是谁？","category":"亲属","relation":"父亲","hop":1,"difficulty":"easy","answer_entities":["郭啸天"],"acceptable_answers":["郭啸天"],"source_hint":"射雕英雄传"},
@@ -54,6 +54,10 @@
     {"id":"q047","question":"郭靖的义兄拖雷的父亲是谁？","category":"多跳亲属","relation":"义兄的父亲","hop":2,"difficulty":"medium","answer_entities":["成吉思汗"],"acceptable_answers":["成吉思汗","铁木真"],"source_hint":"射雕英雄传"},
     {"id":"q048","question":"梅超风的师父黄药师的女儿是谁？","category":"多跳亲属","relation":"师父的女儿","hop":2,"difficulty":"medium","answer_entities":["黄蓉"],"acceptable_answers":["黄蓉"],"source_hint":"射雕英雄传"},
     {"id":"q049","question":"丘处机的门派全真教的创派祖师是谁？","category":"多跳门派","relation":"门派的祖师","hop":2,"difficulty":"medium","answer_entities":["王重阳"],"acceptable_answers":["王重阳","中神通"],"source_hint":"射雕英雄传"},
-    {"id":"q050","question":"洪七公所在门派丐帮的绝技棒法是什么？","category":"多跳武功","relation":"门派的武功","hop":2,"difficulty":"medium","answer_entities":["打狗棒法"],"acceptable_answers":["打狗棒法"],"source_hint":"射雕英雄传"}
+    {"id":"q050","question":"洪七公所在门派丐帮的绝技棒法是什么？","category":"多跳武功","relation":"门派的武功","hop":2,"difficulty":"medium","answer_entities":["打狗棒法"],"acceptable_answers":["打狗棒法"],"source_hint":"射雕英雄传"},
+    {"id":"q051","question":"郭靖与黄蓉共同的师父是谁？","category":"综合","relation":"共同师父","hop":2,"difficulty":"hard","answer_entities":["洪七公"],"acceptable_answers":["洪七公","北丐"],"source_hint":"射雕英雄传"},
+    {"id":"q052","question":"郭靖的岳父与梅超风的师父是同一个人吗？是谁？","category":"综合","relation":"跨关系比较","hop":2,"difficulty":"hard","answer_entities":["黄药师"],"acceptable_answers":["黄药师","东邪"],"source_hint":"射雕英雄传"},
+    {"id":"q053","question":"丘处机所属门派的创派祖师是谁？","category":"综合","relation":"人物-门派-创始人","hop":2,"difficulty":"hard","answer_entities":["王重阳"],"acceptable_answers":["王重阳","中神通"],"source_hint":"射雕英雄传"},
+    {"id":"q054","question":"黄蓉的父亲和郭靖的师父分别属于五绝中的东邪与北丐，他们是谁？","category":"综合","relation":"人物综合比较","hop":2,"difficulty":"hard","answer_entities":["黄药师","洪七公"],"acceptable_answers":["黄药师","东邪","洪七公","北丐"],"source_hint":"射雕英雄传"}
   ]
 }

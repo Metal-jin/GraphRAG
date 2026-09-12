@@ -143,6 +143,9 @@ def run_one_method(method_name: str, question: Mapping[str, Any], top_k: int) ->
             result.answer_text = getattr(answer, "answer_text", "") or ""
         result.debug_info = getattr(answer, "debug_info", {}) or {}
         result.entity_hit = entity_hit(result.answer_text, question["acceptable_answers"]) # 判断回答中是否出现任意一个人工确认过的标准答案/别名
+        from eval.metrics import evaluate_result
+        evidence = getattr(answer, "evidence", [])
+        result.debug_info = {**result.debug_info, **evaluate_result(question, result.answer_text, evidence), "evidence": evidence}
         result.status = "ok"
     except Exception as exc:  # 评测不能因单个方法/单道题失败而丢掉其他结果
         result.error = f"{type(exc).__name__}: {exc}"
@@ -204,7 +207,16 @@ def markdown_report(summary: list[dict[str, Any]], results: list[ItemResult], to
         latency = "N/A" if row["avg_latency_ms"] is None else f"{row['avg_latency_ms']:.2f}"
         recall = "N/A" if row["entity_recall"] is None else f"{row['entity_recall']:.2%}"
         lines.append(f"| {row['method']} | {row['available']}/{row['questions']} | {row['availability']:.2%} | {row['entity_hits']} | {accuracy} | {recall} | {latency} |")
-    lines += ["", "## 指标解释", "", "- **可用率**：方法成功返回 `Answer` 的题数 / 总题数。", "- **准确率**：自动判分成功题数 / 方法成功返回题数；方法不可用不会被误算成回答错误。", "- **关键实体召回率**：标准实体被召回的题数 / 方法成功返回题数；当前每题只要求一个实体，因此数值与准确率相同。", "- **平均耗时**：从调用 `ask()` 到返回或抛出异常的单题平均耗时。", "- 本阶段未自动判“关系方向、证据完整性、答案幻觉”；这些应在有真实图谱和 LLM 输出后人工复核或继续扩展指标。", "", "## 逐题结果", "", "| 题号 | 方法 | 状态 | 实体命中 | 回答/错误 |", "|---|---|---|---|---|"]
+    from eval.metrics import category_name, summarize_by_category
+    questions_by_id = {q["id"]: q for q in load_questions()}
+    enriched = []
+    for row in results:
+        category = category_name(questions_by_id.get(row.question_id, {}))
+        enriched.append({"method": row.method, "category": category, "entity_hit": row.entity_hit, **row.debug_info})
+    lines += ["", "## 分类别结果", "", "| 方法 | 类别 | 题数 | 准确率 | 路径完整性 | 证据充分性 |", "|---|---|---:|---:|---:|---:|"]
+    for row in summarize_by_category(enriched):
+        lines.append(f"| {row['method']} | {row['category']} | {row['questions']} | {row['accuracy']:.2%} | {row['path_completeness']:.2%} | {row['evidence_sufficiency']:.2%} |")
+    lines += ["", "## 指标解释", "", "- **可用率**：方法成功返回 `Answer` 的题数 / 总题数。", "- **准确率**：自动判分成功题数 / 方法成功返回题数；方法不可用不会被误算成回答错误。", "- **路径完整性**：证据覆盖的关系跳数 / 问题预期跳数，范围 0~1。", "- **证据充分性**：答案命中标准实体与证据非空两项的平均值，范围 0~1。", "- **平均耗时**：从调用 `ask()` 到返回或抛出异常的单题平均耗时。", "", "## 逐题结果", "", "| 题号 | 方法 | 状态 | 实体命中 | 回答/错误 |", "|---|---|---|---|---|"]
     for row in results:
         text = row.answer_text if row.status == "ok" else row.error
         text = text.replace("|", "\\|").replace("\n", " ")[:240]

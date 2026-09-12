@@ -1,0 +1,1405 @@
+{
+  "description": "离线结构覆盖与推理结构适配实验；reasoning_structure_score 是结构代理指标，不冒充真实 LLM 准确率。",
+  "summary": [
+    {
+      "category": "人物",
+      "injection": "triples",
+      "questions": 26,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 19.81,
+      "reasoning_structure_score": 0.8462
+    },
+    {
+      "category": "人物",
+      "injection": "path",
+      "questions": 26,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 22.81,
+      "reasoning_structure_score": 0.6538
+    },
+    {
+      "category": "人物",
+      "injection": "subgraph",
+      "questions": 26,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 22.81,
+      "reasoning_structure_score": 0.5
+    },
+    {
+      "category": "武功",
+      "injection": "triples",
+      "questions": 11,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 24.27,
+      "reasoning_structure_score": 0.5
+    },
+    {
+      "category": "武功",
+      "injection": "path",
+      "questions": 11,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 27.27,
+      "reasoning_structure_score": 1.0
+    },
+    {
+      "category": "武功",
+      "injection": "subgraph",
+      "questions": 11,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 25.91,
+      "reasoning_structure_score": 0.5
+    },
+    {
+      "category": "门派",
+      "injection": "triples",
+      "questions": 13,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 22.31,
+      "reasoning_structure_score": 0.5
+    },
+    {
+      "category": "门派",
+      "injection": "path",
+      "questions": 13,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 25.31,
+      "reasoning_structure_score": 0.5
+    },
+    {
+      "category": "门派",
+      "injection": "subgraph",
+      "questions": 13,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 24.23,
+      "reasoning_structure_score": 1.0
+    },
+    {
+      "category": "综合",
+      "injection": "triples",
+      "questions": 4,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 42.75,
+      "reasoning_structure_score": 0.5
+    },
+    {
+      "category": "综合",
+      "injection": "path",
+      "questions": 4,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 46.5,
+      "reasoning_structure_score": 1.0
+    },
+    {
+      "category": "综合",
+      "injection": "subgraph",
+      "questions": 4,
+      "answer_entity_coverage": 1.0,
+      "avg_context_chars": 33.0,
+      "reasoning_structure_score": 0.5
+    }
+  ],
+  "conclusions": {
+    "人物": "单跳人物关系优先三元组；多跳人物题优先路径。",
+    "武功": "武功传承涉及方向和先后顺序，优先路径。",
+    "门派": "门派成员与绝学是聚合问题，优先子图摘要。",
+    "综合": "综合比较应保留更广上下文，优先子图摘要并结合原文。"
+  },
+  "results": [
+    {
+      "question_id": "q001",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 16,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q002",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 15,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 18,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q003",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 16,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q004",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 16,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q005",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 17,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q006",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 16,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q007",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 17,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q008",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 16,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q009",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 15,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 18,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q010",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 15,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 18,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q011",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 29,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q012",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q013",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 16,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q014",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 17,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q015",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 17,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q016",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 16,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q017",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q018",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q019",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q020",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q021",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 17,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q022",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q023",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q024",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q025",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 19,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q026",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q027",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q028",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q029",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q030",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q031",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q032",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 27,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q033",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 21,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q034",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 20,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q035",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q036",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 33,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 31,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q037",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 28,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q038",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 29,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 27,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q039",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 29,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 32,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q040",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 29,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 32,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q041",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 29,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 32,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 29,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q042",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 27,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 28,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q043",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 24,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 27,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q044",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q045",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 22,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q046",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 27,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 28,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q047",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 28,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q048",
+      "category": "人物",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 28,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q049",
+      "category": "门派",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 28,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 31,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 29,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        }
+      }
+    },
+    {
+      "question_id": "q050",
+      "category": "武功",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 33,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 31,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q051",
+      "category": "综合",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 23,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 26,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 25,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q052",
+      "category": "综合",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 33,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 36,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 34,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q053",
+      "category": "综合",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 30,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 33,
+          "evidence_items": 1,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 27,
+          "evidence_items": 1,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    },
+    {
+      "question_id": "q054",
+      "category": "综合",
+      "comparison": {
+        "triples": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 85,
+          "evidence_items": 2,
+          "reasoning_structure_score": 0.5
+        },
+        "path": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 91,
+          "evidence_items": 2,
+          "reasoning_structure_score": 1.0
+        },
+        "subgraph": {
+          "answer_entity_coverage": 1.0,
+          "context_chars": 46,
+          "evidence_items": 2,
+          "reasoning_structure_score": 0.5
+        }
+      }
+    }
+  ]
+}
