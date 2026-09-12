@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # 把 src 目录也加入路径，让 service.py 里的 `from core.xxx` 能找到模块
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 
-from src.generate.service import get_available_methods, ask_question
+from src.generate.service import get_available_methods, ask_question, ask_auto
 
 
 def application(environ, start_response):
@@ -45,6 +45,20 @@ def application(environ, start_response):
             return [json.dumps({"error": "请求格式错误"}).encode("utf-8")]
 
         result = ask_question(**params)
+        start_response("200 OK", headers)
+        return [json.dumps(result, ensure_ascii=False).encode("utf-8")]
+
+    # 自动问答接口（阶段二：意图识别 + 自动路由，无需 method_name）
+    elif path == "/api/ask_auto" and environ["REQUEST_METHOD"] == "POST":
+        content_length = int(environ.get("CONTENT_LENGTH", 0))
+        body = environ["wsgi.input"].read(content_length).decode("utf-8")
+        try:
+            params = json.loads(body)
+        except json.JSONDecodeError:
+            start_response("400 Bad Request", headers)
+            return [json.dumps({"error": "请求格式错误"}).encode("utf-8")]
+
+        result = ask_auto(question=params.get("question", ""), top_k=params.get("top_k", 5))
         start_response("200 OK", headers)
         return [json.dumps(result, ensure_ascii=False).encode("utf-8")]
 
