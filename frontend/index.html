@@ -2,261 +2,130 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>金庸武侠 GraphRAG 问答演示</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-            color: #333;
-            line-height: 1.6;
-        }
-        .input-section {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        #question {
-            flex: 1;
-            min-width: 300px;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        #method-select {
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            min-width: 150px;
-        }
-        #submit-btn {
-            padding: 10px 20px;
-            background: #2563eb;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        #submit-btn:disabled {
-            background: #93c5fd;
-            cursor: not-allowed;
-        }
-        .result-section { margin-bottom: 20px; }
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #1e293b;
-        }
-        .answer-box {
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            white-space: pre-wrap;
-        }
-        .method-tag {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #dbeafe;
-            color: #1e40af;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-        .evidence-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .evidence-item {
-            padding: 12px;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-        .debug-panel {
-            margin-top: 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .debug-header {
-            padding: 10px 15px;
-            background: #f1f5f9;
-            cursor: pointer;
-            user-select: none;
-            font-size: 14px;
-        }
-        .debug-content {
-            padding: 15px;
-            display: none;
-            font-family: monospace;
-            font-size: 12px;
-            background: #0f172a;
-            color: #e2e8f0;
-            white-space: pre-wrap;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .debug-content.show { display: block; }
-        .error-tip {
-            color: #dc2626;
-            padding: 10px;
-            background: #fef2f2;
-            border-radius: 6px;
-        }
-    </style>
+    <title>GraphRAG金庸武侠问答</title>
+    <!-- vis-network 图谱库 -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet">
 </head>
 <body>
-    <h2 style="margin-bottom: 20px; text-align: center;">GraphRAG 问答系统</h2>
-
-    <!-- 输入区域 -->
-    <div class="input-section">
-        <input type="text" id="question" placeholder="请输入你的问题..." />
-        <select id="method-select">
-            <option value="">加载中...</option>
-        </select>
-        <button id="submit-btn">提问</button>
-    </div>
-
-    <!-- 答案区域 -->
-    <div class="result-section" id="answer-section" style="display: none;">
-        <div class="section-title">回答结果</div>
-        <span class="method-tag" id="method-tag"></span>
-        <div class="answer-box" id="answer-text"></div>
-    </div>
-
-    <!-- 证据区域 -->
-    <div class="result-section" id="evidence-section" style="display: none;">
-        <div class="section-title">引用证据</div>
-        <div class="evidence-list" id="evidence-list"></div>
-    </div>
-
-    <!-- 调试信息面板 -->
-    <div class="debug-panel" id="debug-panel" style="display: none;">
-        <div class="debug-header" id="debug-header">
-            ▼ 调试信息 / 原始上下文
+<div style="display:flex;height:90vh;">
+    <!-- 左侧问答面板 -->
+    <div style="width:350px;padding:10px;border-right:1px solid #ccc;">
+        <h3>金庸武侠问答</h3>
+        <textarea id="questionInput" style="width:100%;height:100px;" placeholder="输入你的问题"></textarea>
+        <br>
+        <button id="askBtn">提问</button>
+        <div>
+            <h4>回答</h4>
+            <div id="answerBox"></div>
         </div>
-        <div class="debug-content" id="debug-content"></div>
     </div>
+    <!-- 右侧图谱画布，id=network 必须和js匹配 -->
+    <div style="flex:1;padding:10px;">
+        <div id="network" style="width:100%;height:100%;border:1px solid #ccc;"></div>
+    </div>
+</div>
+<!-- 底部时代滑块 -->
+<div style="padding:10px;">
+    <label>时代过滤：</label>
+    <input type="range" id="eraSlider" min="1" max="3" value="1">
+    <span id="eraText">射雕英雄传</span>
+</div>
 
-    <script>
-        const BASE_URL = "http://localhost:5000/api";
+<script>
+// ========= Step2：初始化vis-network =========
+const nodes = new vis.DataSet([]);
+const edges = new vis.DataSet([]);
+const container = document.getElementById("network");
+const data = { nodes, edges };
+const options = {
+    layout: { hierarchical: false }, // 关闭层级，力导向
+    nodes: {
+        shape: "dot",
+        size: 15,
+        font: { size: 14 }
+    },
+    edges: {
+        arrows: { to: { enabled: true } },
+        smooth: true
+    },
+    physics: {
+        enabled: true,
+        barnesHut: { gravitationalConstant: -2000 }
+    }
+};
+const network = new vis.Network(container, data, options);
 
-        // 页面加载时获取可用方法
-        window.onload = async () => {
-            try {
-                const res = await fetch(`${BASE_URL}/methods`);
-                const methods = await res.json();
-                const select = document.getElementById("method-select");
-                select.innerHTML = "";
-                methods.forEach(method => {
-                    const option = document.createElement("option");
-                    option.value = method;
-                    option.textContent = method;
-                    select.appendChild(option);
-                });
-            } catch (e) {
-                console.error("加载方法列表失败", e);
+// ========= Step3：提问按钮点击事件 =========
+document.getElementById("askBtn").onclick = async ()=>{
+    const q = document.getElementById("questionInput").value;
+    const resp = await fetch("/api/qa",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({question: q})
+    });
+    const res = await resp.json();
+    document.getElementById("answerBox").innerText = res.answer;
+    // 清空旧图谱，渲染本次子图
+    nodes.clear();
+    edges.clear();
+    nodes.add(res.subgraph.nodes);
+    edges.add(res.subgraph.edges);
+    // 高亮推理路径
+    highlightPath(res.path);
+}
+
+// ========= Step5：高亮推理路径函数 =========
+function highlightPath(pathArr){
+    // 重置全部颜色
+    nodes.update(nodes.getIds().map(id=>({id,color:undefined})));
+    edges.update(edges.getIds().map(id=>({id,color:undefined})));
+    // 高亮节点
+    for(const nid of pathArr){
+        nodes.update({id:nid, color:{background:"darkred"}});
+    }
+    // 高亮边
+    for(let i=0;i<pathArr.length-1;i++){
+        const from = pathArr[i];
+        const to = pathArr[i+1];
+        const allE = edges.get();
+        for(const e of allE){
+            if( (e.from===from && e.to===to) || (e.from===to && e.to===from) ){
+                edges.update({id:e.id, color:"red"});
             }
-        };
-
-        // 提交提问
-        document.getElementById("submit-btn").addEventListener("click", async () => {
-            const question = document.getElementById("question").value.trim();
-            const method = document.getElementById("method-select").value;
-            const btn = document.getElementById("submit-btn");
-
-            if (!question) {
-                alert("请输入问题");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.textContent = "加载中...";
-
-            try {
-                const res = await fetch(`${BASE_URL}/ask`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        question: question,
-                        method_name: method,
-                        top_k: 5
-                    })
-                });
-                const data = await res.json();
-
-                if (data.error) {
-                    showError(data.error);
-                } else {
-                    renderResult(data);
-                }
-            } catch (e) {
-                showError("请求失败，请检查后端服务是否启动");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "提问";
-            }
-        });
-
-        // 渲染结果
-        function renderResult(data) {
-            // 答案
-            document.getElementById("answer-section").style.display = "block";
-            document.getElementById("method-tag").textContent = data.method_name;
-            document.getElementById("answer-text").textContent = data.answer_text;
-
-            // 证据
-            const evidenceSection = document.getElementById("evidence-section");
-            const evidenceList = document.getElementById("evidence-list");
-            if (data.evidence && data.evidence.length > 0) {
-                evidenceSection.style.display = "block";
-                evidenceList.innerHTML = "";
-                data.evidence.forEach((item, index) => {
-                    const div = document.createElement("div");
-                    div.className = "evidence-item";
-                    div.textContent = `[证据${index+1}] ${JSON.stringify(item)}`;
-                    evidenceList.appendChild(div);
-                });
-            } else {
-                evidenceSection.style.display = "none";
-            }
-
-            // 调试信息
-            const debugPanel = document.getElementById("debug-panel");
-            const debugContent = document.getElementById("debug-content");
-            debugPanel.style.display = "block";
-            debugContent.textContent = 
-`调试信息:
-${JSON.stringify(data.debug_info, null, 2)}
-
----
-原始上下文:
-${data.raw_context || "无"}`;
         }
+    }
+}
 
-        // 显示错误
-        function showError(msg) {
-            document.getElementById("answer-section").style.display = "block";
-            document.getElementById("answer-text").innerHTML = `<div class="error-tip">${msg}</div>`;
-            document.getElementById("evidence-section").style.display = "none";
-            document.getElementById("debug-panel").style.display = "none";
-        }
+// ========= Step4：点击节点，展开邻居 =========
+network.on("click", async (params)=>{
+    if(params.nodes.length ===0) return;
+    const nodeId = params.nodes[0];
+    const r = await fetch(`/api/node/neighbor?nodeId=${encodeURIComponent(nodeId)}`);
+    const json = await r.json();
+    nodes.add(json.nodes);
+    edges.add(json.edges);
+})
 
-        // 调试面板折叠切换
-        document.getElementById("debug-header").addEventListener("click", () => {
-            document.getElementById("debug-content").classList.toggle("show");
-        });
-    </script>
+// ========= Step6：时代滑块过滤 =========
+const eraMap = {
+    1:"射雕英雄传",
+    2:"神雕侠侣",
+    3:"倚天屠龙记"
+};
+const slider = document.getElementById("eraSlider");
+const eraTextDom = document.getElementById("eraText");
+slider.oninput = async function(){
+    const val = this.value;
+    eraTextDom.innerText = eraMap[val];
+    const eraName = eraMap[val];
+    const resp = await fetch(`/api/graph/byera?era=${encodeURIComponent(eraName)}`);
+    const data = await resp.json();
+    nodes.clear();
+    edges.clear();
+    nodes.add(data.nodes);
+    edges.add(data.edges);
+}
+</script>
 </body>
 </html>
