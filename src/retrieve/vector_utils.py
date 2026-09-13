@@ -66,15 +66,14 @@ class Embedder: # 嵌入器类
         if self._custom:
             return list(self._custom(text))
         # 网络客户端采用惰性导入：未配置外部嵌入服务时不影响本地运行。
-        if self.endpoint and self.token:
+        if self.endpoint and self.model:
             try:
                 from openai import OpenAI
-                client = OpenAI(api_key=self.token, base_url=self.endpoint)
+                client = OpenAI(api_key=self.token or "EMPTY", base_url=self.endpoint)
                 result = client.embeddings.create(model=self.model, input=text)
                 return list(result.data[0].embedding)
-            except Exception:
-                # 外部服务不可用时回退，保证评测脚本能得到可诊断结果。
-                pass
+            except Exception as e:
+                print(f"[embed] 远程嵌入失败，回退本地哈希：{e}")
         return _hash_embedding(text)
 
 
