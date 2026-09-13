@@ -121,8 +121,8 @@
         const options = {
             nodes: {
                 shape: "dot", size: 16,
-                // font.size=0 表示节点不常显文字，改由 hover 的 tooltip 显示，避免 150 个节点文字挤成一团
-                font: { size: 0, color: "#e8e8f0", face: "PingFang SC, Microsoft YaHei" },
+                // 节点上直接显示名字（默认只有 30 个节点，不会乱）
+                font: { size: 12, color: "#e8e8f0", face: "PingFang SC, Microsoft YaHei", background: "#12122a" },
                 borderWidth: 1.5, borderWidthSelected: 3,
                 color: { background: "#4fc3f7", border: "#8fd4ff", highlight: { background: "#fff", border: "#fff" } },
             },
@@ -137,7 +137,7 @@
             physics: {
                 enabled: true,
                 // 减小引力、增大弹簧长度，让节点更分散，避免中心节点爆炸状辐射
-                barnesHut: { gravitationalConstant: -1000, springLength: 200, springConstant: 0.005 },
+                barnesHut: { gravitationalConstant: -800, springLength: 240, springConstant: 0.004 },
                 stabilization: { iterations: 250 },
             },
             interaction: {
