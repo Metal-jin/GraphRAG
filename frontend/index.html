@@ -119,7 +119,8 @@
             },
             physics: {
                 enabled: true,
-                barnesHut: { gravitationalConstant: -4000, springLength: 120, springConstant: 0.03 },
+                // 减小引力、增大弹簧长度，让节点更分散，避免中心节点爆炸状辐射
+                barnesHut: { gravitationalConstant: -1500, springLength: 180, springConstant: 0.01 },
                 stabilization: { iterations: 250 },
             },
             interaction: {

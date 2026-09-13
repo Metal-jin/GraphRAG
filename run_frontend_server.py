@@ -21,11 +21,11 @@ ERA_MAP = {
 }
 
 
-def _limit_nodes(graph, max_nodes=150):
-    """限制节点数量，只保留度数高的核心节点，避免前端渲染卡顿。"""
+def _limit_nodes(graph, max_nodes=120, max_edges=300):
+    """限制节点和边数量，只保留核心节点和重要边，避免图谱过于密集看不清。"""
     nodes = graph.get("nodes", []) if isinstance(graph, dict) else []
     edges = graph.get("edges", []) if isinstance(graph, dict) else []
-    if len(nodes) <= max_nodes:
+    if len(nodes) <= max_nodes and len(edges) <= max_edges:
         return graph if isinstance(graph, dict) else {"nodes": nodes, "edges": edges}
     degree = {}
     for e in edges:
@@ -33,8 +33,12 @@ def _limit_nodes(graph, max_nodes=150):
         degree[e.get("target")] = degree.get(e.get("target"), 0) + 1
     top_names = set(sorted(degree, key=lambda x: -degree[x])[:max_nodes])
     nodes2 = [n for n in nodes if n.get("name") in top_names]
+    # 只保留核心节点之间的边，并按两端度数之和排序取前 max_edges，
+    # 避免某个中心节点辐射出上百条线导致爆炸状
     edges2 = [e for e in edges
               if e.get("source") in top_names and e.get("target") in top_names]
+    edges2.sort(key=lambda e: -(degree.get(e.get("source"), 0) + degree.get(e.get("target"), 0)))
+    edges2 = edges2[:max_edges]
     return {"nodes": nodes2, "edges": edges2}
 
 
@@ -227,7 +231,7 @@ def application(environ, start_response):
         era = ERA_MAP.get(era_full, era_full) or None
         try:
             graph = get_graph(era=era)
-            graph = _limit_nodes(graph, max_nodes=150)
+            graph = _limit_nodes(graph, max_nodes=120, max_edges=300)
             result = _to_vis_format(graph.get("nodes", []), graph.get("edges", []))
         except Exception:
             result = {"nodes": [], "edges": []}
