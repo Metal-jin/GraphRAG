@@ -52,6 +52,15 @@
             display: flex; align-items: center; gap: 14px;
         }
         .footer label { font-size: 14px; color: #9ab8ff; white-space: nowrap; }
+        .legend {
+            position: absolute; top: 12px; left: 12px; z-index: 10;
+            background: rgba(18,18,42,.85); border: 1px solid #3a3a6a; border-radius: 10px;
+            padding: 10px 12px; font-size: 12px; color: #c8c8e0;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .legend .row { display: flex; align-items: center; gap: 6px; }
+        .legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .legend .hint { margin-top: 4px; color: #8a8ab0; font-size: 11px; }
         #eraSlider { flex: 1; accent-color: #7b4aff; }
         #eraText { font-size: 14px; color: #b48cff; font-weight: 600; min-width: 90px; }
     </style>
@@ -71,6 +80,13 @@
             <div class="answer-card" id="answerBox">（答案将显示在这里）</div>
         </div>
         <div class="graph-wrap">
+            <div class="legend">
+                <div class="row"><span class="dot" style="background:#4fc3f7"></span>人物</div>
+                <div class="row"><span class="dot" style="background:#ffb74d"></span>门派</div>
+                <div class="row"><span class="dot" style="background:#81c784"></span>武功</div>
+                <div class="row"><span class="dot" style="background:#ba68c8"></span>地点</div>
+                <div class="hint">滚轮缩放 · 拖拽平移 · 悬停看名 · 点击节点展开关系</div>
+            </div>
             <div id="network"></div>
         </div>
     </div>
@@ -90,12 +106,12 @@
             "武功": { color: "#81c784", shape: "diamond" },
             "地点": { color: "#ba68c8", shape: "triangle" },
         };
-        // 关系类型 → 边颜色
+        // 关系类型（中文简称）→ 边颜色
         const relColor = {
-            "MASTER_OF": "#4fc3f7", "SPOUSE_OF": "#f06292", "PARENT_OF": "#81c784",
-            "ENEMY_OF": "#e57373", "SWORN_BROTHER_OF": "#ffb74d", "BELONGS_TO": "#ffb74d",
-            "MASTERS": "#81c784", "FOUNDER_OF": "#ba68c8", "LOCATED_IN": "#90a4ae",
-            "BRANCHED_FROM": "#ba68c8", "DESCENDANT_OF": "#f06292",
+            "师徒": "#4fc3f7", "夫妻": "#f06292", "父母": "#81c784",
+            "仇敌": "#e57373", "结拜": "#ffb74d", "门派": "#ffb74d",
+            "精通": "#81c784", "创立": "#ba68c8", "位置": "#90a4ae",
+            "演化": "#ba68c8", "后裔": "#f06292",
         };
 
         // ============ 初始化 vis-network ============
@@ -114,13 +130,14 @@
                 arrows: { to: { enabled: true, scaleFactor: 0.6 } },
                 smooth: { type: "continuous" },
                 width: 1.2,
-                font: { size: 0 }, // 边不显示关系类型文字
+                // 边上显示关系类型（中文小字）
+                font: { size: 10, color: "#9a9ab0", face: "PingFang SC, Microsoft YaHei", background: "#12122a" },
                 color: { color: "#5a5a8a", highlight: "#ffd54f" },
             },
             physics: {
                 enabled: true,
                 // 减小引力、增大弹簧长度，让节点更分散，避免中心节点爆炸状辐射
-                barnesHut: { gravitationalConstant: -1500, springLength: 180, springConstant: 0.01 },
+                barnesHut: { gravitationalConstant: -1000, springLength: 200, springConstant: 0.005 },
                 stabilization: { iterations: 250 },
             },
             interaction: {

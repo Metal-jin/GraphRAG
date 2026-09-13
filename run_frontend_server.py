@@ -21,7 +21,21 @@ ERA_MAP = {
 }
 
 
-def _limit_nodes(graph, max_nodes=120, max_edges=300):
+# 关系类型 → 中文简称（边上显示用，简洁可读）
+REL_CN = {
+    "MASTER_OF": "师徒", "SPOUSE_OF": "夫妻", "PARENT_OF": "父母",
+    "SWORN_BROTHER_OF": "结拜", "ENEMY_OF": "仇敌", "BELONGS_TO": "门派",
+    "MASTERS": "精通", "FOUNDER_OF": "创立", "LOCATED_IN": "位置",
+    "BRANCHED_FROM": "演化", "DESCENDANT_OF": "后裔",
+}
+
+
+def _rel_label(rel):
+    """把英文关系类型映射成中文简称，未识别的显示原样。"""
+    return REL_CN.get(rel, rel)
+
+
+def _limit_nodes(graph, max_nodes=30, max_edges=50):
     """限制节点和边数量，只保留核心节点和重要边，避免图谱过于密集看不清。"""
     nodes = graph.get("nodes", []) if isinstance(graph, dict) else []
     edges = graph.get("edges", []) if isinstance(graph, dict) else []
@@ -62,7 +76,7 @@ def _to_vis_format(nodes, edges):
         if key in seen_e:
             continue
         seen_e.add(key)
-        vis_edges.append({"from": s, "to": t, "label": e.get("type", "")})
+        vis_edges.append({"from": s, "to": t, "label": _rel_label(e.get("type", ""))})
     return {"nodes": vis_nodes, "edges": vis_edges}
 
 
@@ -94,9 +108,15 @@ def _query_neighbors(name):
         key = (a, b, rel)
         if key not in seen_e:
             seen_e.add(key)
-            edges.append({"from": a, "to": b, "label": rel})
+            edges.append({"from": a, "to": b, "label": _rel_label(rel)})
+    # 限制邻居边数，避免子图太大
+    edges = edges[:30]
+    involved = set()
+    for e in edges:
+        involved.add(e["from"])
+        involved.add(e["to"])
     return {
-        "nodes": [{"id": v, "label": v} for v in node_names.values()],
+        "nodes": [{"id": v, "label": v} for v in node_names.values() if v in involved],
         "edges": edges,
     }
 
@@ -231,7 +251,7 @@ def application(environ, start_response):
         era = ERA_MAP.get(era_full, era_full) or None
         try:
             graph = get_graph(era=era)
-            graph = _limit_nodes(graph, max_nodes=120, max_edges=300)
+            graph = _limit_nodes(graph)  # 默认 30 节点 / 50 边，保持简洁
             result = _to_vis_format(graph.get("nodes", []), graph.get("edges", []))
         except Exception:
             result = {"nodes": [], "edges": []}
