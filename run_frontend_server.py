@@ -21,6 +21,23 @@ ERA_MAP = {
 }
 
 
+def _limit_nodes(graph, max_nodes=150):
+    """限制节点数量，只保留度数高的核心节点，避免前端渲染卡顿。"""
+    nodes = graph.get("nodes", []) if isinstance(graph, dict) else []
+    edges = graph.get("edges", []) if isinstance(graph, dict) else []
+    if len(nodes) <= max_nodes:
+        return graph if isinstance(graph, dict) else {"nodes": nodes, "edges": edges}
+    degree = {}
+    for e in edges:
+        degree[e.get("source")] = degree.get(e.get("source"), 0) + 1
+        degree[e.get("target")] = degree.get(e.get("target"), 0) + 1
+    top_names = set(sorted(degree, key=lambda x: -degree[x])[:max_nodes])
+    nodes2 = [n for n in nodes if n.get("name") in top_names]
+    edges2 = [e for e in edges
+              if e.get("source") in top_names and e.get("target") in top_names]
+    return {"nodes": nodes2, "edges": edges2}
+
+
 def _to_vis_format(nodes, edges):
     """把 data_loader 的节点/边转成 vis-network 格式（用 name 作节点 id）。"""
     vis_nodes = []
@@ -131,6 +148,20 @@ def application(environ, start_response):
     method = environ["REQUEST_METHOD"]
     query = parse_qs(environ.get("QUERY_STRING", ""))
 
+    # 静态页面：访问根路径或 /index.html 时返回前端页面
+    if path in ("/", "/index.html") and method == "GET":
+        html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "frontend", "index.html")
+        try:
+            with open(html_path, encoding="utf-8") as f:
+                html = f.read()
+            start_response("200 OK", [("Content-Type", "text/html; charset=utf-8"),
+                                      ("Access-Control-Allow-Origin", "*")])
+            return [html.encode("utf-8")]
+        except Exception:
+            start_response("404 Not Found", headers)
+            return [json.dumps({"error": "前端页面不存在"}).encode("utf-8")]
+
     # 获取方法列表
     if path == "/api/methods" and method == "GET":
         start_response("200 OK", headers)
@@ -196,6 +227,7 @@ def application(environ, start_response):
         era = ERA_MAP.get(era_full, era_full) or None
         try:
             graph = get_graph(era=era)
+            graph = _limit_nodes(graph, max_nodes=150)
             result = _to_vis_format(graph.get("nodes", []), graph.get("edges", []))
         except Exception:
             result = {"nodes": [], "edges": []}

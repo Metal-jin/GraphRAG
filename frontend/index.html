@@ -2,130 +2,251 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>GraphRAG金庸武侠问答</title>
-    <!-- vis-network 图谱库 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金庸武侠知识图谱问答系统</title>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #12122a;
+            color: #e8e8f0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .header {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a1e4f 100%);
+            border-bottom: 1px solid #3a3a6a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #7ec8ff, #b48cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .sub { font-size: 13px; color: #8a8ab0; }
+        .main {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+        }
+        .panel {
+            width: 360px;
+            padding: 18px;
+            background: #1a1a36;
+            border-right: 1px solid #3a3a6a;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+        .panel h2 { font-size: 15px; color: #9ab8ff; font-weight: 600; }
+        #questionInput {
+            width: 100%;
+            height: 90px;
+            padding: 12px;
+            background: #12122a;
+            border: 1px solid #3a3a6a;
+            border-radius: 10px;
+            color: #e8e8f0;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color .2s;
+        }
+        #questionInput:focus { border-color: #7ec8ff; }
+        #askBtn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4a7dff, #7b4aff);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity .2s, transform .1s;
+        }
+        #askBtn:hover { opacity: .9; }
+        #askBtn:active { transform: scale(.98); }
+        .answer-card {
+            background: #12122a;
+            border: 1px solid #3a3a6a;
+            border-radius: 10px;
+            padding: 14px;
+            min-height: 80px;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .graph-wrap {
+            flex: 1;
+            position: relative;
+            min-width: 0;
+        }
+        #network {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 40%, #1a1a3a 0%, #12122a 100%);
+        }
+        .footer {
+            padding: 12px 24px;
+            background: #1a1a36;
+            border-top: 1px solid #3a3a6a;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .footer label { font-size: 14px; color: #9ab8ff; white-space: nowrap; }
+        #eraSlider { flex: 1; accent-color: #7b4aff; }
+        #eraText { font-size: 14px; color: #b48cff; font-weight: 600; min-width: 90px; }
+    </style>
 </head>
 <body>
-<div style="display:flex;height:90vh;">
-    <!-- 左侧问答面板 -->
-    <div style="width:350px;padding:10px;border-right:1px solid #ccc;">
-        <h3>金庸武侠问答</h3>
-        <textarea id="questionInput" style="width:100%;height:100px;" placeholder="输入你的问题"></textarea>
-        <br>
-        <button id="askBtn">提问</button>
-        <div>
-            <h4>回答</h4>
-            <div id="answerBox"></div>
+    <div class="header">
+        <h1>金庸武侠知识图谱问答系统</h1>
+        <span class="sub">GraphRAG · 意图分类 + 领域检索</span>
+    </div>
+
+    <div class="main">
+        <div class="panel">
+            <h2>🔍 提问</h2>
+            <textarea id="questionInput" placeholder="例如：郭靖的师父的师父是谁？"></textarea>
+            <button id="askBtn">提 问</button>
+            <h2>💬 回答</h2>
+            <div class="answer-card" id="answerBox">（答案将显示在这里）</div>
+        </div>
+        <div class="graph-wrap">
+            <div id="network"></div>
         </div>
     </div>
-    <!-- 右侧图谱画布，id=network 必须和js匹配 -->
-    <div style="flex:1;padding:10px;">
-        <div id="network" style="width:100%;height:100%;border:1px solid #ccc;"></div>
+
+    <div class="footer">
+        <label>时代过滤</label>
+        <input type="range" id="eraSlider" min="1" max="3" value="1">
+        <span id="eraText">射雕英雄传</span>
     </div>
-</div>
-<!-- 底部时代滑块 -->
-<div style="padding:10px;">
-    <label>时代过滤：</label>
-    <input type="range" id="eraSlider" min="1" max="3" value="1">
-    <span id="eraText">射雕英雄传</span>
-</div>
 
-<script>
-// ========= Step2：初始化vis-network =========
-const nodes = new vis.DataSet([]);
-const edges = new vis.DataSet([]);
-const container = document.getElementById("network");
-const data = { nodes, edges };
-const options = {
-    layout: { hierarchical: false }, // 关闭层级，力导向
-    nodes: {
-        shape: "dot",
-        size: 15,
-        font: { size: 14 }
-    },
-    edges: {
-        arrows: { to: { enabled: true } },
-        smooth: true
-    },
-    physics: {
-        enabled: true,
-        barnesHut: { gravitationalConstant: -2000 }
-    }
-};
-const network = new vis.Network(container, data, options);
+    <script>
+        // 实体类型 → 颜色/形状
+        const typeStyle = {
+            "人物": { color: "#4fc3f7", shape: "dot" },
+            "门派": { color: "#ffb74d", shape: "square" },
+            "武功": { color: "#81c784", shape: "diamond" },
+            "地点": { color: "#ba68c8", shape: "triangle" },
+        };
+        // 关系类型 → 颜色
+        const relColor = {
+            "MASTER_OF": "#4fc3f7", "SPOUSE_OF": "#f06292", "PARENT_OF": "#81c784",
+            "ENEMY_OF": "#e57373", "SWORN_BROTHER_OF": "#ffb74d", "BELONGS_TO": "#ffb74d",
+            "MASTERS": "#81c784", "FOUNDER_OF": "#ba68c8", "LOCATED_IN": "#90a4ae",
+            "BRANCHED_FROM": "#ba68c8", "DESCENDANT_OF": "#f06292",
+        };
 
-// ========= Step3：提问按钮点击事件 =========
-document.getElementById("askBtn").onclick = async ()=>{
-    const q = document.getElementById("questionInput").value;
-    const resp = await fetch("/api/qa",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({question: q})
-    });
-    const res = await resp.json();
-    document.getElementById("answerBox").innerText = res.answer;
-    // 清空旧图谱，渲染本次子图
-    nodes.clear();
-    edges.clear();
-    nodes.add(res.subgraph.nodes);
-    edges.add(res.subgraph.edges);
-    // 高亮推理路径
-    highlightPath(res.path);
-}
+        const nodes = new vis.DataSet([]);
+        const edges = new vis.DataSet([]);
+        const container = document.getElementById("network");
+        const options = {
+            nodes: {
+                shape: "dot", size: 18,
+                font: { size: 14, color: "#e8e8f0", face: "PingFang SC, Microsoft YaHei" },
+                borderWidth: 1.5, borderWidthSelected: 3,
+                color: { background: "#4fc3f7", border: "#8fd4ff", highlight: { background: "#fff", border: "#fff" } },
+            },
+            edges: {
+                arrows: { to: { enabled: true, scaleFactor: 0.6 } },
+                smooth: { type: "continuous" },
+                width: 1.2,
+                color: { color: "#5a5a8a", highlight: "#ffd54f" },
+            },
+            physics: {
+                enabled: true,
+                barnesHut: { gravitationalConstant: -4000, springLength: 120, springConstant: 0.03 },
+                stabilization: { iterations: 200 },
+            },
+            interaction: { hover: true, tooltipDelay: 100 },
+        };
+        const network = new vis.Network(container, { nodes, edges }, options);
 
-// ========= Step5：高亮推理路径函数 =========
-function highlightPath(pathArr){
-    // 重置全部颜色
-    nodes.update(nodes.getIds().map(id=>({id,color:undefined})));
-    edges.update(edges.getIds().map(id=>({id,color:undefined})));
-    // 高亮节点
-    for(const nid of pathArr){
-        nodes.update({id:nid, color:{background:"darkred"}});
-    }
-    // 高亮边
-    for(let i=0;i<pathArr.length-1;i++){
-        const from = pathArr[i];
-        const to = pathArr[i+1];
-        const allE = edges.get();
-        for(const e of allE){
-            if( (e.from===from && e.to===to) || (e.from===to && e.to===from) ){
-                edges.update({id:e.id, color:"red"});
+        // 给节点套上类型样式
+        function styleNodes(nodeArr) {
+            return nodeArr.map(n => {
+                const s = typeStyle[n.type] || typeStyle["人物"];
+                return { ...n, shape: s.shape, color: { background: s.color, border: "#ffffff", highlight: { background: "#fff" } } };
+            });
+        }
+        function styleEdges(edgeArr) {
+            return edgeArr.map(e => {
+                const c = relColor[e.label] || "#5a5a8a";
+                return { ...e, color: { color: c, highlight: "#ffd54f" } };
+            });
+        }
+
+        document.getElementById("askBtn").onclick = async () => {
+            const q = document.getElementById("questionInput").value.trim();
+            if (!q) { alert("请输入问题"); return; }
+            const resp = await fetch("/api/qa", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: q })
+            });
+            const res = await resp.json();
+            document.getElementById("answerBox").innerText = res.answer || "（无答案）";
+            nodes.clear(); edges.clear();
+            if (res.subgraph) {
+                nodes.add(styleNodes(res.subgraph.nodes || []));
+                edges.add(styleEdges(res.subgraph.edges || []));
+            }
+            highlightPath(res.path || []);
+        };
+
+        function highlightPath(pathArr) {
+            nodes.update(nodes.getIds().map(id => ({ id, color: undefined })));
+            edges.update(edges.getIds().map(id => ({ id, color: undefined })));
+            for (const nid of pathArr) {
+                nodes.update({ id: nid, color: { background: "#ff5252", border: "#fff" } });
+            }
+            for (let i = 0; i < pathArr.length - 1; i++) {
+                const from = pathArr[i], to = pathArr[i + 1];
+                for (const e of edges.get()) {
+                    if ((e.from === from && e.to === to) || (e.from === to && e.to === from)) {
+                        edges.update({ id: e.id, color: { color: "#ff5252", highlight: "#ff5252" } });
+                    }
+                }
             }
         }
-    }
-}
 
-// ========= Step4：点击节点，展开邻居 =========
-network.on("click", async (params)=>{
-    if(params.nodes.length ===0) return;
-    const nodeId = params.nodes[0];
-    const r = await fetch(`/api/node/neighbor?nodeId=${encodeURIComponent(nodeId)}`);
-    const json = await r.json();
-    nodes.add(json.nodes);
-    edges.add(json.edges);
-})
+        network.on("click", async (params) => {
+            if (params.nodes.length === 0) return;
+            const nodeId = params.nodes[0];
+            const r = await fetch(`/api/node/neighbor?nodeId=${encodeURIComponent(nodeId)}`);
+            const json = await r.json();
+            nodes.add(styleNodes(json.nodes || []));
+            edges.add(styleEdges(json.edges || []));
+        });
 
-// ========= Step6：时代滑块过滤 =========
-const eraMap = {
-    1:"射雕英雄传",
-    2:"神雕侠侣",
-    3:"倚天屠龙记"
-};
-const slider = document.getElementById("eraSlider");
-const eraTextDom = document.getElementById("eraText");
-slider.oninput = async function(){
-    const val = this.value;
-    eraTextDom.innerText = eraMap[val];
-    const eraName = eraMap[val];
-    const resp = await fetch(`/api/graph/byera?era=${encodeURIComponent(eraName)}`);
-    const data = await resp.json();
-    nodes.clear();
-    edges.clear();
-    nodes.add(data.nodes);
-    edges.add(data.edges);
-}
-</script>
+        const eraMap = { 1: "射雕英雄传", 2: "神雕侠侣", 3: "倚天屠龙记" };
+        const slider = document.getElementById("eraSlider");
+        const eraTextDom = document.getElementById("eraText");
+        slider.oninput = async function () {
+            const val = this.value;
+            eraTextDom.innerText = eraMap[val];
+            const resp = await fetch(`/api/graph/byera?era=${encodeURIComponent(eraMap[val])}`);
+            const data = await resp.json();
+            nodes.clear(); edges.clear();
+            nodes.add(styleNodes(data.nodes || []));
+            edges.add(styleEdges(data.edges || []));
+        };
+    </script>
 </body>
 </html>
