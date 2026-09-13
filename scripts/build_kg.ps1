@@ -8,7 +8,7 @@ param(
     [string]$Book = "",
     [int]$Limit = 0,
     [switch]$Resume,
-    [string]$Python = "D:\.conda\envs\hu\python.exe"   # 统一用 hu 环境
+    [string]$Python = "python"   # 用 PATH 里的 python（组长 Anaconda 环境）
 )
 
 $ErrorActionPreference = "Stop"
