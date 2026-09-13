@@ -4,7 +4,7 @@
 根据问题关键词识别关系类型，用 Cypher 查询对应关系并返回三元组证据。
 
 与 master_chain（专做师徒多跳链）互补：本策略针对 PARENT_OF / SPOUSE_OF /
-SWORN_BROTHER_OF / ENEMY_OF 等单跳关系，证据以三元组形式返回。
+SWORN_BROTHER_OF / ENEMY_OF 等单跳关系。
 """
 
 from typing import Any, Dict, List, Optional
@@ -33,7 +33,11 @@ REL_NAMES = {
 
 
 def _find_seed_person(question: str) -> Optional[str]:
-    """从问题中识别起始人物（长名优先）。"""
+    """从问题中识别起始人物（长名优先，过滤含连接词的指称节点）。
+
+    图谱里可能存在「郭靖的妻子」这类未归并的指称节点，
+    长名优先会误匹配到它；这里优先用不含连接词的正名。
+    """
     try:
         graph = get_graph()
     except Exception:
@@ -41,14 +45,17 @@ def _find_seed_person(question: str) -> Optional[str]:
     people = [n.get("name", "") for n in graph.get("nodes", [])
               if n.get("type") == "人物"]
     people = [p for p in people if p]
-    for name in sorted(people, key=len, reverse=True):
+    clean = [p for p in people
+             if not any(c in p for c in ("的", "之", "与", "和", "跟"))]
+    pool = clean if clean else people
+    for name in sorted(pool, key=len, reverse=True):
         if name in question:
             return name
     return None
 
 
 def _detect_relation_type(question: str) -> Optional[str]:
-    """根据关键词识别关系类型（长关键词优先，避免「父亲」误匹配「父母」）。"""
+    """根据关键词识别关系类型（长关键词优先）。"""
     for rel_type, keywords in RELATION_KEYWORDS.items():
         for kw in sorted(keywords, key=len, reverse=True):
             if kw in question:
@@ -87,7 +94,7 @@ class PersonRelationMethod(QAMethod):
         rel_name = REL_NAMES.get(rel_type, rel_type)
 
         try:
-            # 出边：seed 是关系起点（如「郭靖的儿子」→ 郭靖 -PARENT_OF-> 儿子）
+            # 出边：seed 是关系起点（如「郭靖的儿子」）
             out_rows = run_query(
                 """
                 MATCH (p:人物 {name: $name})-[r]->(other:人物)
@@ -96,7 +103,7 @@ class PersonRelationMethod(QAMethod):
                 """,
                 {"name": seed, "rel_type": rel_type},
             )
-            # 入边：seed 是关系终点（如「黄蓉的父亲」→ 父亲 -PARENT_OF-> 黄蓉）
+            # 入边：seed 是关系终点（如「黄蓉的父亲」）
             in_rows = run_query(
                 """
                 MATCH (p:人物 {name: $name})<-[r]-(other:人物)
@@ -130,7 +137,6 @@ class PersonRelationMethod(QAMethod):
                 raw_context=f"{seed} 无{rel_name}关系",
             )
 
-        # 答案文本只做概述，具体回答交给 LLM 根据三元组生成
         answer_text = f"找到 {seed} 的{rel_name}关系 {len(triples)} 条。"
 
         return Answer(

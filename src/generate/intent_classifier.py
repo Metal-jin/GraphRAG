@@ -48,6 +48,14 @@ PERSON_REL_KEYWORDS = (
 # 综合比较类关键词（路由到通用检索）
 COMPARE_KEYWORDS = ("谁厉害", "谁强", "谁更", "比较", "区别", "对比", "哪个厉害", "谁武功高", "谁高")
 
+# 武功精通问法（问人物精通什么武功，图 MASTERS 关系缺失，走通用检索）
+ART_SKILL_KEYWORDS = ("精通", "掌法", "棒法", "剑法", "拳法", "刀法", "棍法", "指法", "爪法",
+                      "绝技", "成名武功", "独门武功", "所学武功")
+
+# 门派/地点归属问法（BELONGS_TO / LOCATED_IN 关系缺失，走通用检索）
+SECT_LOCATION_KEYWORDS = ("属于哪个门派", "哪个帮派", "哪个门派", "来自哪里", "来自何处",
+                          "创立的门派", "创立了什么门派", "哪里的岛主", "哪里的")
+
 
 class IntentClassifier:
     """规则 + 实体识别的意图分类器。"""
@@ -93,8 +101,18 @@ class IntentClassifier:
             return Intent("sect", "sect_agg", sect, "门派", "subgraph",
                           f"命中门派实体「{sect}」且含聚合关键词")
 
-        # 3. 人物实体 + 父子/配偶/结拜/仇敌 → 人物关系检索
+        # 2.5 人物实体 + 武功精通问法 → 通用检索（MASTERS 关系缺失）
         person = self._match_entity(q, "人物")
+        if person and any(k in q for k in ART_SKILL_KEYWORDS):
+            return Intent("general", "vector", person, "人物", "text",
+                          f"命中人物实体「{person}」且含武功精通问法，走通用检索")
+
+        # 2.6 人物实体 + 门派/地点问法 → 通用检索（BELONGS_TO/LOCATED_IN 缺失）
+        if person and any(k in q for k in SECT_LOCATION_KEYWORDS):
+            return Intent("general", "vector", person, "人物", "text",
+                          f"命中人物实体「{person}」且含门派/地点问法，走通用检索")
+
+        # 3. 人物实体 + 父子/配偶/结拜/仇敌 → 人物关系检索
         if person and any(k in q for k in PERSON_REL_KEYWORDS):
             return Intent("person_relation", "person_relation", person, "人物", "triples",
                           f"命中人物实体「{person}」且含人物关系关键词（父子/配偶/结拜/仇敌）")
