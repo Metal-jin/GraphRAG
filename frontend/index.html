@@ -10,102 +10,46 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: #12122a;
-            color: #e8e8f0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: #12122a; color: #e8e8f0; height: 100vh;
+            display: flex; flex-direction: column; overflow: hidden;
         }
         .header {
-            padding: 14px 24px;
-            background: linear-gradient(135deg, #1e1e3f 0%, #2a1e4f 100%);
-            border-bottom: 1px solid #3a3a6a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 14px 24px; background: linear-gradient(135deg, #1e1e3f 0%, #2a1e4f 100%);
+            border-bottom: 1px solid #3a3a6a; display: flex; align-items: center; justify-content: space-between;
         }
         .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 1px;
+            font-size: 20px; font-weight: 600; letter-spacing: 1px;
             background: linear-gradient(90deg, #7ec8ff, #b48cff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .header .sub { font-size: 13px; color: #8a8ab0; }
-        .main {
-            flex: 1;
-            display: flex;
-            min-height: 0;
-        }
+        .main { flex: 1; display: flex; min-height: 0; }
         .panel {
-            width: 360px;
-            padding: 18px;
-            background: #1a1a36;
-            border-right: 1px solid #3a3a6a;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            overflow-y: auto;
+            width: 360px; padding: 18px; background: #1a1a36; border-right: 1px solid #3a3a6a;
+            display: flex; flex-direction: column; gap: 14px; overflow-y: auto;
         }
         .panel h2 { font-size: 15px; color: #9ab8ff; font-weight: 600; }
         #questionInput {
-            width: 100%;
-            height: 90px;
-            padding: 12px;
-            background: #12122a;
-            border: 1px solid #3a3a6a;
-            border-radius: 10px;
-            color: #e8e8f0;
-            font-size: 14px;
-            resize: vertical;
-            outline: none;
+            width: 100%; height: 90px; padding: 12px; background: #12122a; border: 1px solid #3a3a6a;
+            border-radius: 10px; color: #e8e8f0; font-size: 14px; resize: vertical; outline: none;
             transition: border-color .2s;
         }
         #questionInput:focus { border-color: #7ec8ff; }
         #askBtn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #4a7dff, #7b4aff);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity .2s, transform .1s;
+            width: 100%; padding: 12px; background: linear-gradient(135deg, #4a7dff, #7b4aff);
+            border: none; border-radius: 10px; color: #fff; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: opacity .2s, transform .1s;
         }
-        #askBtn:hover { opacity: .9; }
-        #askBtn:active { transform: scale(.98); }
+        #askBtn:hover { opacity: .9; } #askBtn:active { transform: scale(.98); }
         .answer-card {
-            background: #12122a;
-            border: 1px solid #3a3a6a;
-            border-radius: 10px;
-            padding: 14px;
-            min-height: 80px;
-            font-size: 14px;
-            line-height: 1.7;
-            white-space: pre-wrap;
-            word-break: break-word;
+            background: #12122a; border: 1px solid #3a3a6a; border-radius: 10px; padding: 14px;
+            min-height: 80px; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
         }
-        .graph-wrap {
-            flex: 1;
-            position: relative;
-            min-width: 0;
-        }
-        #network {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 40%, #1a1a3a 0%, #12122a 100%);
-        }
+        .graph-wrap { flex: 1; position: relative; min-width: 0; }
+        #network { width: 100%; height: 100%; background: radial-gradient(circle at 50% 40%, #1a1a3a 0%, #12122a 100%); }
         .footer {
-            padding: 12px 24px;
-            background: #1a1a36;
-            border-top: 1px solid #3a3a6a;
-            display: flex;
-            align-items: center;
-            gap: 14px;
+            padding: 12px 24px; background: #1a1a36; border-top: 1px solid #3a3a6a;
+            display: flex; align-items: center; gap: 14px;
         }
         .footer label { font-size: 14px; color: #9ab8ff; white-space: nowrap; }
         #eraSlider { flex: 1; accent-color: #7b4aff; }
@@ -138,14 +82,15 @@
     </div>
 
     <script>
-        // 实体类型 → 颜色/形状
+        // ============ 颜色映射 ============
+        // 实体类型 → 颜色/形状（人物圆、门派方、武功菱形、地点三角）
         const typeStyle = {
             "人物": { color: "#4fc3f7", shape: "dot" },
             "门派": { color: "#ffb74d", shape: "square" },
             "武功": { color: "#81c784", shape: "diamond" },
             "地点": { color: "#ba68c8", shape: "triangle" },
         };
-        // 关系类型 → 颜色
+        // 关系类型 → 边颜色
         const relColor = {
             "MASTER_OF": "#4fc3f7", "SPOUSE_OF": "#f06292", "PARENT_OF": "#81c784",
             "ENEMY_OF": "#e57373", "SWORN_BROTHER_OF": "#ffb74d", "BELONGS_TO": "#ffb74d",
@@ -153,13 +98,15 @@
             "BRANCHED_FROM": "#ba68c8", "DESCENDANT_OF": "#f06292",
         };
 
+        // ============ 初始化 vis-network ============
         const nodes = new vis.DataSet([]);
         const edges = new vis.DataSet([]);
         const container = document.getElementById("network");
         const options = {
             nodes: {
-                shape: "dot", size: 18,
-                font: { size: 14, color: "#e8e8f0", face: "PingFang SC, Microsoft YaHei" },
+                shape: "dot", size: 16,
+                // font.size=0 表示节点不常显文字，改由 hover 的 tooltip 显示，避免 150 个节点文字挤成一团
+                font: { size: 0, color: "#e8e8f0", face: "PingFang SC, Microsoft YaHei" },
                 borderWidth: 1.5, borderWidthSelected: 3,
                 color: { background: "#4fc3f7", border: "#8fd4ff", highlight: { background: "#fff", border: "#fff" } },
             },
@@ -167,22 +114,31 @@
                 arrows: { to: { enabled: true, scaleFactor: 0.6 } },
                 smooth: { type: "continuous" },
                 width: 1.2,
+                font: { size: 0 }, // 边不显示关系类型文字
                 color: { color: "#5a5a8a", highlight: "#ffd54f" },
             },
             physics: {
                 enabled: true,
                 barnesHut: { gravitationalConstant: -4000, springLength: 120, springConstant: 0.03 },
-                stabilization: { iterations: 200 },
+                stabilization: { iterations: 250 },
             },
-            interaction: { hover: true, tooltipDelay: 100 },
+            interaction: {
+                hover: true, tooltipDelay: 100,
+                zoomView: true,         // 滚轮缩放
+                dragView: true,         // 拖拽平移
+                navigationButtons: true, // 右下角显示 +/- 缩放按钮
+                keyboard: true,          // 键盘方向键平移
+            },
         };
         const network = new vis.Network(container, { nodes, edges }, options);
 
-        // 给节点套上类型样式
+        // ============ 给节点/边套样式 ============
+        // title 用于 hover 时显示名字（因为 label 文字被隐藏了）
         function styleNodes(nodeArr) {
             return nodeArr.map(n => {
                 const s = typeStyle[n.type] || typeStyle["人物"];
-                return { ...n, shape: s.shape, color: { background: s.color, border: "#ffffff", highlight: { background: "#fff" } } };
+                return { ...n, title: n.label, shape: s.shape,
+                         color: { background: s.color, border: "#ffffff", highlight: { background: "#fff" } } };
             });
         }
         function styleEdges(edgeArr) {
@@ -192,6 +148,7 @@
             });
         }
 
+        // ============ 提问 ============
         document.getElementById("askBtn").onclick = async () => {
             const q = document.getElementById("questionInput").value.trim();
             if (!q) { alert("请输入问题"); return; }
@@ -210,6 +167,7 @@
             highlightPath(res.path || []);
         };
 
+        // ============ 高亮推理路径 ============
         function highlightPath(pathArr) {
             nodes.update(nodes.getIds().map(id => ({ id, color: undefined })));
             edges.update(edges.getIds().map(id => ({ id, color: undefined })));
@@ -226,6 +184,7 @@
             }
         }
 
+        // ============ 点击节点展开邻居 ============
         network.on("click", async (params) => {
             if (params.nodes.length === 0) return;
             const nodeId = params.nodes[0];
@@ -235,6 +194,7 @@
             edges.add(styleEdges(json.edges || []));
         });
 
+        // ============ 时代滑块过滤 ============
         const eraMap = { 1: "射雕英雄传", 2: "神雕侠侣", 3: "倚天屠龙记" };
         const slider = document.getElementById("eraSlider");
         const eraTextDom = document.getElementById("eraText");
