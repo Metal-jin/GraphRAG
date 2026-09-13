@@ -29,10 +29,26 @@ from openai import OpenAI
 from neo4j import GraphDatabase
 
 from core.config import get_env
-from ingest.corpus import DEFAULT_OUT_PATH
+from ingest.corpus import DEFAULT_OUT_PATH, infer_era
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CHECKPOINT_PATH = PROJECT_ROOT / "data" / "interim" / "kg_checkpoint.json"
+DEFAULT_INTERIM = PROJECT_ROOT / "data" / "interim"
+CHECKPOINT_PATH = DEFAULT_INTERIM / "kg_checkpoint.json"  # 阶段一遗留（射雕），保持兼容
+
+
+def checkpoint_path_for(chunks_path: Path) -> Path:
+    """由 chunks 文件路径推出对应的 checkpoint 文件路径（每本书独立断点）。
+
+    chunks_神雕侠侣.json -> kg_checkpoint_神雕侠侣.json
+    chunks.json          -> kg_checkpoint.json（阶段一遗留名，保持兼容）
+    """
+    chunks_path = Path(chunks_path)
+    stem = chunks_path.stem
+    if stem.startswith("chunks"):
+        stem = "kg_checkpoint" + stem[len("chunks"):]
+    else:
+        stem = stem + "_kg_checkpoint"
+    return chunks_path.parent / (stem + ".json")
 
 # ============ 本体定义（与 docs/ontology.md 保持一致） ============
 
@@ -234,7 +250,8 @@ MERGE (a)-[:`{rtype}`]->(b)
 
 MERGE_CHUNK = """
 MERGE (c:Chunk {chunk_id: $chunk_id})
-SET c.chapter = $chapter, c.text = $text, c.embedding = $embedding
+SET c.chapter = $chapter, c.text = $text, c.embedding = $embedding,
+    c.book = $book, c.era = $era
 """
 
 MERGE_MENTIONS = """
@@ -262,18 +279,24 @@ class KGBuilder:
     方便测试时用假对象替换（见 tests/test_kg_builder.py）。"""
 
     def __init__(self, driver, llm: OpenAI, embedder: Callable,
-                 model: str = "deepseek-chat", default_era: str = "射雕"):  # 初始化KGBuilder 类
+                 model: str = "deepseek-chat", default_era: str = "射雕",
+                 checkpoint_path: Path = CHECKPOINT_PATH):  # 初始化KGBuilder 类
         self.driver = driver  # Neo4j 数据库驱动，用于写入数据
         self.llm = llm  # LLM 客户端，用于调用 LLM 模型
         self.embedder = embedder  # 嵌入函数，用于将文本转换为向量
         self.model = model  # LLM 模型，默认 DeepSeek Chat
         self.default_era = default_era  # 默认 era，用于处理 era 为空的情况
+        self.checkpoint_path = Path(checkpoint_path)  # 断点文件（每本书独立）
 
     # ---------- 抽取 ----------
 
     def extract_chunk(self, chunk: Dict,
                       max_retries: int = 3) -> Dict[str, List[Dict]]:  # 该函数输入文本块字典，输出实体关系字典
-        """调 LLM 抽取一个文本块的实体关系，带重试。"""
+        """调 LLM 抽取一个文本块的实体关系，带重试。
+
+        era 优先级：chunk 自带的 era（corpus.py 按书名注入）> default_era。
+        """
+        era = str(chunk.get("era") or "").strip() or self.default_era
         prompt = EXTRACT_PROMPT.format(chunk_text=chunk["text"])
         last_err = None
         for attempt in range(max_retries):
@@ -284,19 +307,24 @@ class KGBuilder:
                     temperature=0.0,
                 )
                 raw = resp.choices[0].message.content or ""
-                return self._postprocess(parse_llm_json(raw))
+                return self._postprocess(parse_llm_json(raw), era)
             except Exception as e:  # 网络/限流等临时错误，退避重试
                 last_err = e
                 time.sleep(2 ** attempt)
         print(f"[build_kg] chunk {chunk['chunk_id']} 抽取失败：{last_err}")
         return {"entities": [], "relationships": []}
 
-    def _postprocess(self, data: Dict[str, List[Dict]]) -> Dict[str, List[Dict]]:  # 该函数输入实体关系字典，输出清洗后的实体关系字典
-        """清洗：实体规范化 + 关系白名单过滤 + 双向关系展开。"""
+    def _postprocess(self, data: Dict[str, List[Dict]],
+                     era: Optional[str] = None) -> Dict[str, List[Dict]]:  # 该函数输入实体关系字典，输出清洗后的实体关系字典
+        """清洗：实体规范化 + 关系白名单过滤 + 双向关系展开。
+
+        era 参数缺省时用 self.default_era（兼容旧调用方式）。
+        """
+        era = era or self.default_era
         entities = []
         seen = set()
         for ent in data["entities"]:
-            cleaned = clean_entity(ent, self.default_era)
+            cleaned = clean_entity(ent, era)
             if cleaned and (cleaned["type"], cleaned["name"]) not in seen:
                 seen.add((cleaned["type"], cleaned["name"]))
                 entities.append(cleaned)
@@ -338,10 +366,11 @@ class KGBuilder:
         embeddings = self.embedder([chunk["text"]])
 
         with self.driver.session() as session:
-            # 1. Chunk 节点（文本 + 向量）
+            # 1. Chunk 节点（文本 + 向量 + 书名/era 元信息）
             session.run(MERGE_CHUNK, chunk_id=chunk["chunk_id"],
                         chapter=chunk.get("chapter", ""),
-                        text=chunk["text"], embedding=embeddings[0])
+                        text=chunk["text"], embedding=embeddings[0],
+                        book=chunk.get("book", ""), era=chunk.get("era", ""))
 
             # 2. 实体节点
             for ent in entities:
@@ -374,11 +403,11 @@ class KGBuilder:
 
     def run(self, chunks: List[Dict], limit: Optional[int] = None, 
             resume: bool = False, dry_run: bool = False) -> Dict[str, int]:  # 该函数输入文本块列表，输出统计信息字典，处理流程，实践开始
-        """批量处理：抽取 → 入库 → 记 checkpoint。"""
+        """批量处理：抽取 → 入库 → 记 checkpoint（每本书独立断点文件）。"""
         done = set()
-        if resume and CHECKPOINT_PATH.exists():
-            done = set(json.loads(CHECKPOINT_PATH.read_text(encoding="utf-8")))
-            print(f"[build_kg] 断点续跑，已完成 {len(done)} 块")
+        if resume and self.checkpoint_path.exists():
+            done = set(json.loads(self.checkpoint_path.read_text(encoding="utf-8")))
+            print(f"[build_kg] 断点续跑（{self.checkpoint_path.name}），已完成 {len(done)} 块")
 
         todo = [c for c in chunks if c["chunk_id"] not in done]
         if limit is not None:
@@ -401,7 +430,7 @@ class KGBuilder:
             else:
                 self.write_result(chunk, result)
                 done.add(chunk["chunk_id"])
-                CHECKPOINT_PATH.write_text(
+                self.checkpoint_path.write_text(
                     json.dumps(sorted(done)), encoding="utf-8")
 
             if (i + 1) % 20 == 0:
@@ -415,18 +444,38 @@ class KGBuilder:
 # ============ 命令行入口 ============
 
 def main():  # 主函数，处理命令行参数和流程控制
-    parser = argparse.ArgumentParser(description="LLM 抽取 + Neo4j 入库")
-    parser.add_argument("--chunks", type=str, default=str(DEFAULT_OUT_PATH))
+    parser = argparse.ArgumentParser(description="LLM 抽取 + Neo4j 入库（多书）")
+    parser.add_argument("--chunks", type=str, default=None,
+                        help="chunks 文件路径；默认按 --book 定位，都不填用阶段一的 chunks.json")
+    parser.add_argument("--book", type=str, default=None,
+                        help="书名（如 神雕侠侣）：自动定位 data/interim/chunks_<书名>.json 并推断 era")
     parser.add_argument("--limit", type=int, default=None, help="只处理前 N 块")
     parser.add_argument("--resume", action="store_true", help="断点续跑")
     parser.add_argument("--dry-run", action="store_true",
                         help="只抽取打印结果，不写库")
-    parser.add_argument("--era", type=str, default="射雕",
-                        help="era 缺省值（当前处理的这本书所属时代）")
+    parser.add_argument("--era", type=str, default=None,
+                        help="era 缺省值；不填则按书名自动推断（射雕/神雕/倚天）")
     args = parser.parse_args()
 
-    chunks = json.loads(Path(args.chunks).read_text(encoding="utf-8"))
-    print(f"[build_kg] 读入 {len(chunks)} 块，era 缺省值 = {args.era}")
+    # 定位 chunks 文件：--chunks 显式指定 > --book 书名定位 > 阶段一默认
+    if args.chunks:
+        chunks_path = Path(args.chunks)
+    elif args.book:
+        chunks_path = DEFAULT_INTERIM / f"chunks_{args.book}.json"
+    else:
+        chunks_path = DEFAULT_OUT_PATH
+
+    if not chunks_path.exists():
+        hint = f"，请先跑：python corpus.py --source data/source/{args.book}.txt" if args.book else ""
+        raise SystemExit(f"找不到 chunks 文件：{chunks_path}{hint}")
+
+    # era 推断：显式 --era > 书名/chunks 文件名推断 > 射雕（阶段一默认）
+    era = args.era or infer_era(args.book or chunks_path.stem) or "射雕"
+    ckpt_path = checkpoint_path_for(chunks_path)
+
+    chunks = json.loads(chunks_path.read_text(encoding="utf-8"))
+    print(f"[build_kg] 读入 {len(chunks)} 块（{chunks_path.name}），"
+          f"era 缺省值 = {era}，checkpoint = {ckpt_path.name}")
 
     if not get_env("LLM_TOKEN"):
         raise SystemExit("缺少 LLM_TOKEN，请先复制 .env.example 为 .env 并填写")
@@ -437,7 +486,7 @@ def main():  # 主函数，处理命令行参数和流程控制
     if args.dry_run:
         builder = KGBuilder(driver=None, llm=llm, embedder=embedder,
                             model=get_env("LLM_MODEL", "deepseek-chat"),
-                            default_era=args.era)
+                            default_era=era, checkpoint_path=ckpt_path)
         builder.run(chunks, limit=args.limit, dry_run=True)
         return
 
@@ -449,7 +498,7 @@ def main():  # 主函数，处理命令行参数和流程控制
     try:
         builder = KGBuilder(driver=driver, llm=llm, embedder=embedder,
                             model=get_env("LLM_MODEL", "deepseek-chat"),
-                            default_era=args.era)
+                            default_era=era, checkpoint_path=ckpt_path)
         builder.run(chunks, limit=args.limit, resume=args.resume)
     finally:
         driver.close()

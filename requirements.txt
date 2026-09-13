@@ -6,3 +6,6 @@ numpy
 flask
 flask-cors
 pytest
+# 阶段二实体对齐系统依赖（B）
+rapidfuzz
+pypinyin

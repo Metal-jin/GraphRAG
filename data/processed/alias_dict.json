@@ -1,0 +1,374 @@
+[
+  {
+    "alias": "九指神丐",
+    "canonical": "洪七公",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工",
+    "note": "射雕五绝之一，北丐"
+  },
+  {
+    "alias": "北丐",
+    "canonical": "洪七公",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "洪帮主",
+    "canonical": "洪七公",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "洪恩师",
+    "canonical": "洪七公",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "东邪",
+    "canonical": "黄药师",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "黄岛主",
+    "canonical": "黄药师",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "西毒",
+    "canonical": "欧阳锋",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "欧阳先生",
+    "canonical": "欧阳锋",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "老顽童",
+    "canonical": "周伯通",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "中神通",
+    "canonical": "王重阳",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "重阳真人",
+    "canonical": "王重阳",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "南帝",
+    "canonical": "一灯大师",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "段智兴",
+    "canonical": "一灯大师",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "长春子",
+    "canonical": "丘处机",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "丹阳子",
+    "canonical": "马钰",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "蓉儿",
+    "canonical": "黄蓉",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "靖哥哥",
+    "canonical": "郭靖",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "江南六怪",
+    "canonical": "江南七怪",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "江南七侠",
+    "canonical": "江南七怪",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "六怪",
+    "canonical": "江南七怪",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "神雕大侠",
+    "canonical": "杨过",
+    "label": "人物",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "过儿",
+    "canonical": "杨过",
+    "label": "人物",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "龙儿",
+    "canonical": "小龙女",
+    "label": "人物",
+    "applicable_eras": ["神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "郭二小姐",
+    "canonical": "郭襄",
+    "label": "人物",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "襄儿",
+    "canonical": "郭襄",
+    "label": "人物",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "张教主",
+    "canonical": "张无忌",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "教主",
+    "canonical": "张无忌",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工",
+    "note": "上下文必须是明教/倚天情境"
+  },
+  {
+    "alias": "金毛狮王",
+    "canonical": "谢逊",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "白眉鹰王",
+    "canonical": "殷天正",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "青翼蝠王",
+    "canonical": "韦一笑",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "紫衫龙王",
+    "canonical": "黛绮丝",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "周姑娘",
+    "canonical": "周芷若",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "赵姑娘",
+    "canonical": "赵敏",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "绍敏郡主",
+    "canonical": "赵敏",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "老顽童",
+    "canonical": "周伯通",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "明教",
+    "canonical": "明教",
+    "label": "门派",
+    "applicable_eras": ["倚天"],
+    "source": "人工",
+    "note": "正名保留"
+  },
+  {
+    "alias": "魔教",
+    "canonical": "明教",
+    "label": "门派",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "活死人墓",
+    "canonical": "古墓派",
+    "label": "门派",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "全真派",
+    "canonical": "全真教",
+    "label": "门派",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "全真道教",
+    "canonical": "全真教",
+    "label": "门派",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "铁掌帮",
+    "canonical": "铁掌帮",
+    "label": "门派",
+    "applicable_eras": ["射雕"],
+    "source": "人工",
+    "note": "正名保留"
+  },
+  {
+    "alias": "铁掌帮主",
+    "canonical": "裘千仞",
+    "label": "人物",
+    "applicable_eras": ["射雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "慈恩",
+    "canonical": "裘千仞",
+    "label": "人物",
+    "applicable_eras": ["神雕"],
+    "source": "人工",
+    "note": "裘千仞出家后法号"
+  },
+  {
+    "alias": "郭大侠",
+    "canonical": "郭靖",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "黄女侠",
+    "canonical": "黄蓉",
+    "label": "人物",
+    "applicable_eras": ["射雕", "神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "老顽童",
+    "canonical": "周伯通",
+    "label": "人物",
+    "applicable_eras": ["神雕"],
+    "source": "人工"
+  },
+  {
+    "alias": "神雕侠",
+    "canonical": "杨过",
+    "label": "人物",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "黄帮主",
+    "canonical": "黄蓉",
+    "label": "人物",
+    "applicable_eras": ["神雕"],
+    "source": "人工",
+    "note": "神雕时期黄蓉继任丐帮帮主"
+  },
+  {
+    "alias": "小东邪",
+    "canonical": "郭襄",
+    "label": "人物",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "张三丰",
+    "canonical": "张三丰",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工",
+    "note": "正名保留（首次正式出场在倚天，但神雕结尾已提及少年张君宝）"
+  },
+  {
+    "alias": "张真人",
+    "canonical": "张三丰",
+    "label": "人物",
+    "applicable_eras": ["倚天"],
+    "source": "人工"
+  },
+  {
+    "alias": "张君宝",
+    "canonical": "张三丰",
+    "label": "人物",
+    "applicable_eras": ["神雕", "倚天"],
+    "source": "人工",
+    "note": "张三丰出家前的俗名"
+  }
+]
