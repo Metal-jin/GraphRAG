@@ -1,0 +1,899 @@
+{
+ "summary": {
+  "total": 100,
+  "hits": 84,
+  "accuracy": 84.0
+ },
+ "by_intent": {
+  "person_relation": {
+   "hit": 30,
+   "total": 39
+  },
+  "person": {
+   "hit": 31,
+   "total": 34
+  },
+  "general": {
+   "hit": 23,
+   "total": 27
+  }
+ },
+ "by_category": {
+  "亲属": {
+   "hit": 21,
+   "total": 22
+  },
+  "婚姻": {
+   "hit": 5,
+   "total": 5
+  },
+  "师徒": {
+   "hit": 10,
+   "total": 11
+  },
+  "武功": {
+   "hit": 7,
+   "total": 8
+  },
+  "门派": {
+   "hit": 14,
+   "total": 16
+  },
+  "结拜": {
+   "hit": 1,
+   "total": 1
+  },
+  "仇敌": {
+   "hit": 1,
+   "total": 1
+  },
+  "多跳亲属": {
+   "hit": 3,
+   "total": 8
+  },
+  "多跳师徒": {
+   "hit": 1,
+   "total": 4
+  },
+  "多跳门派": {
+   "hit": 8,
+   "total": 9
+  },
+  "多跳武功": {
+   "hit": 2,
+   "total": 3
+  },
+  "多跳属性": {
+   "hit": 3,
+   "total": 4
+  },
+  "多跳婚姻": {
+   "hit": 3,
+   "total": 3
+  },
+  "综合": {
+   "hit": 4,
+   "total": 4
+  },
+  "多跳人物属性": {
+   "hit": 1,
+   "total": 1
+  }
+ },
+ "by_method": {
+  "person_relation": {
+   "hit": 30,
+   "total": 39
+  },
+  "master_chain": {
+   "hit": 31,
+   "total": 34
+  },
+  "vector": {
+   "hit": 23,
+   "total": 27
+  }
+ },
+ "results": [
+  {
+   "id": "q001",
+   "question": "郭靖的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "郭啸天"
+  },
+  {
+   "id": "q002",
+   "question": "郭靖的母亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "李萍"
+  },
+  {
+   "id": "q003",
+   "question": "黄蓉的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄药师"
+  },
+  {
+   "id": "q004",
+   "question": "杨康的母亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "包惜弱"
+  },
+  {
+   "id": "q005",
+   "question": "欧阳克是谁的侄子？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "欧阳锋"
+  },
+  {
+   "id": "q006",
+   "question": "黄药师的女儿是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄蓉"
+  },
+  {
+   "id": "q007",
+   "question": "杨铁心的妻子是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "包惜弱"
+  },
+  {
+   "id": "q008",
+   "question": "周伯通的情人是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "瑛姑"
+  },
+  {
+   "id": "q009",
+   "question": "郭靖的妻子是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄蓉"
+  },
+  {
+   "id": "q010",
+   "question": "黄蓉的丈夫是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "郭靖"
+  },
+  {
+   "id": "q011",
+   "question": "郭靖的启蒙师父（江南七怪之首）是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "柯镇恶"
+  },
+  {
+   "id": "q012",
+   "question": "郭靖向谁学习降龙十八掌？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "洪七公"
+  },
+  {
+   "id": "q013",
+   "question": "杨康的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "丘处机、梅超风、欧阳锋、汤祖德、洪七公、王处一、王道士、王道长、裘千仞、马道长、马钰、黄药师"
+  },
+  {
+   "id": "q014",
+   "question": "梅超风的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "黄药师"
+  },
+  {
+   "id": "q015",
+   "question": "王重阳的师弟是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "周伯通"
+  },
+  {
+   "id": "q016",
+   "question": "黄蓉的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "黄药师、洪七公、一灯大师、朱聪、杨过、梅超风、欧阳克、段皇爷、程英、耶律齐、陆乘风、陆无双、鲁有脚"
+  },
+  {
+   "id": "q017",
+   "question": "郭靖向谁学习全真教内功心法？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "马钰"
+  },
+  {
+   "id": "q018",
+   "question": "洪七公属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "丐帮"
+  },
+  {
+   "id": "q019",
+   "question": "黄药师是哪里的岛主？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "桃花岛"
+  },
+  {
+   "id": "q020",
+   "question": "王重阳创立了什么门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "全真教"
+  },
+  {
+   "id": "q021",
+   "question": "欧阳锋来自哪里？",
+   "intent": "general",
+   "method": "vector",
+   "hit": false,
+   "answer": "西域"
+  },
+  {
+   "id": "q022",
+   "question": "一灯大师属于哪个家族？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "大理段氏"
+  },
+  {
+   "id": "q023",
+   "question": "裘千仞是哪个帮派的帮主？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "铁掌帮"
+  },
+  {
+   "id": "q024",
+   "question": "柯镇恶是哪个组合的成员？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "江南七怪"
+  },
+  {
+   "id": "q025",
+   "question": "马钰属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "全真教"
+  },
+  {
+   "id": "q026",
+   "question": "郭靖精通什么掌法？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "降龙十八掌、空明拳。"
+  },
+  {
+   "id": "q027",
+   "question": "洪七公的招牌棒法是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": false,
+   "answer": "降龙十八掌"
+  },
+  {
+   "id": "q028",
+   "question": "欧阳锋的成名武功是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "蛤蟆功"
+  },
+  {
+   "id": "q029",
+   "question": "一灯大师的绝技是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "一阳指、先天功、千里传音。"
+  },
+  {
+   "id": "q030",
+   "question": "周伯通的独门武功是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "空明拳、双手互搏（双手两用术）。"
+  },
+  {
+   "id": "q031",
+   "question": "黄药师的指法绝技是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "弹指神通"
+  },
+  {
+   "id": "q032",
+   "question": "梅超风的爪法武功是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "九阴白骨爪"
+  },
+  {
+   "id": "q033",
+   "question": "郭靖的蒙古结拜兄弟是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "拖雷"
+  },
+  {
+   "id": "q034",
+   "question": "郭靖的仇敌（西毒）是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "欧阳锋"
+  },
+  {
+   "id": "q035",
+   "question": "郭靖的妻子的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄药师"
+  },
+  {
+   "id": "q036",
+   "question": "黄蓉的父亲的徒弟（黑风双煞之一）是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "图谱中没有找到 黑风双煞 的父母子女关系。"
+  },
+  {
+   "id": "q037",
+   "question": "郭靖的师父洪七公属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "丐帮"
+  },
+  {
+   "id": "q038",
+   "question": "杨康的师父丘处机属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "全真教"
+  },
+  {
+   "id": "q039",
+   "question": "郭靖的师父柯镇恶是哪个组合的成员？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "江南七怪"
+  },
+  {
+   "id": "q040",
+   "question": "黄蓉的师父洪七公的成名武功是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": false,
+   "answer": "降龙十八掌"
+  },
+  {
+   "id": "q041",
+   "question": "郭靖向洪七公学习的掌法叫什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "降龙十八掌"
+  },
+  {
+   "id": "q042",
+   "question": "王重阳的师弟周伯通的外号是什么？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": false,
+   "answer": "根据现有资料无法回答。"
+  },
+  {
+   "id": "q043",
+   "question": "黄药师的女儿黄蓉的丈夫是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "郭靖"
+  },
+  {
+   "id": "q044",
+   "question": "郭靖的妻子的师父是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "根据现有资料无法回答。"
+  },
+  {
+   "id": "q045",
+   "question": "黄蓉的师父属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": false,
+   "answer": "桃花岛"
+  },
+  {
+   "id": "q046",
+   "question": "欧阳锋的侄子欧阳克追求的姑娘是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "根据现有资料无法回答"
+  },
+  {
+   "id": "q047",
+   "question": "郭靖的义兄拖雷的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "根据现有资料无法回答。"
+  },
+  {
+   "id": "q048",
+   "question": "梅超风的师父黄药师的女儿是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "图谱中没有找到 梅超风 的父母子女关系。"
+  },
+  {
+   "id": "q049",
+   "question": "丘处机的门派全真教的创派祖师是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "王重阳"
+  },
+  {
+   "id": "q050",
+   "question": "洪七公所在门派丐帮的绝技棒法是什么？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "打狗棒法"
+  },
+  {
+   "id": "q051",
+   "question": "郭靖与黄蓉共同的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "洪七公"
+  },
+  {
+   "id": "q052",
+   "question": "郭靖的岳父与梅超风的师父是同一个人吗？是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "是，黄药师。"
+  },
+  {
+   "id": "q053",
+   "question": "丘处机所属门派的创派祖师是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "王重阳"
+  },
+  {
+   "id": "q054",
+   "question": "黄蓉的父亲和郭靖的师父分别属于五绝中的东邪与北丐，他们是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄药师、洪七公"
+  },
+  {
+   "id": "q055",
+   "question": "穆念慈的儿子是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "杨过"
+  },
+  {
+   "id": "q056",
+   "question": "杨过的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "杨康"
+  },
+  {
+   "id": "q057",
+   "question": "杨过的母亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "穆念慈"
+  },
+  {
+   "id": "q058",
+   "question": "杨过的妻子是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "小龙女、杨大嫂、郭芙、陆无双"
+  },
+  {
+   "id": "q059",
+   "question": "杨过的义父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "欧阳锋"
+  },
+  {
+   "id": "q060",
+   "question": "杨过主要向谁学习古墓派武功？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "小龙女、孙婆婆、李莫愁。"
+  },
+  {
+   "id": "q061",
+   "question": "小龙女的丈夫是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "杨过、公孙止、谷主、公孙先生"
+  },
+  {
+   "id": "q062",
+   "question": "周芷若的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "灭绝师太"
+  },
+  {
+   "id": "q063",
+   "question": "周芷若属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "峨嵋派"
+  },
+  {
+   "id": "q064",
+   "question": "张无忌的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "张翠山"
+  },
+  {
+   "id": "q065",
+   "question": "张无忌的母亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "殷素素"
+  },
+  {
+   "id": "q066",
+   "question": "张无忌的义父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "谢逊"
+  },
+  {
+   "id": "q067",
+   "question": "张无忌的妻子是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "周芷若、赵敏、殷离、小昭"
+  },
+  {
+   "id": "q068",
+   "question": "赵敏的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "汝阳王察罕特穆尔"
+  },
+  {
+   "id": "q069",
+   "question": "张无忌在武当山主要向谁学习武功？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "张三丰"
+  },
+  {
+   "id": "q070",
+   "question": "张三丰创建了哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "武当派"
+  },
+  {
+   "id": "q071",
+   "question": "杨过的妻子的丈夫是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "杨过"
+  },
+  {
+   "id": "q072",
+   "question": "张无忌的妻子的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "根据现有资料无法回答。"
+  },
+  {
+   "id": "q073",
+   "question": "周芷若的师父所在的门派是什么？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "峨眉派"
+  },
+  {
+   "id": "q074",
+   "question": "张无忌的义父的外号是什么？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "金毛狮王"
+  },
+  {
+   "id": "q075",
+   "question": "郭靖的小女儿是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "郭襄"
+  },
+  {
+   "id": "q076",
+   "question": "郭靖的大女儿是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "郭芙"
+  },
+  {
+   "id": "q077",
+   "question": "郭芙的父亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "郭靖"
+  },
+  {
+   "id": "q078",
+   "question": "郭襄的母亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄蓉"
+  },
+  {
+   "id": "q079",
+   "question": "郭芙的母亲是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄蓉"
+  },
+  {
+   "id": "q080",
+   "question": "杨过的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": false,
+   "answer": "图谱中没有找到 杨过的师父 的师父信息。"
+  },
+  {
+   "id": "q081",
+   "question": "小龙女属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "古墓派"
+  },
+  {
+   "id": "q082",
+   "question": "杨过的义父欧阳锋的绰号是什么？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "西毒"
+  },
+  {
+   "id": "q083",
+   "question": "郭靖的岳父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "黄药师"
+  },
+  {
+   "id": "q084",
+   "question": "杨过的妻子小龙女属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "古墓派"
+  },
+  {
+   "id": "q085",
+   "question": "张无忌成为哪个教派的教主？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "明教"
+  },
+  {
+   "id": "q086",
+   "question": "谢逊的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "成昆"
+  },
+  {
+   "id": "q087",
+   "question": "杨逍属于哪个教派？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "明教"
+  },
+  {
+   "id": "q088",
+   "question": "灭绝师太属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "峨嵋派"
+  },
+  {
+   "id": "q089",
+   "question": "张翠山属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "武当派"
+  },
+  {
+   "id": "q090",
+   "question": "张无忌的母亲殷素素的丈夫是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "根据现有资料无法回答。"
+  },
+  {
+   "id": "q091",
+   "question": "明教的金毛狮王是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": false,
+   "answer": "图谱中没有找到 狮王 的师父信息。"
+  },
+  {
+   "id": "q092",
+   "question": "张无忌的父亲张翠山的师父是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "根据现有资料无法回答"
+  },
+  {
+   "id": "q093",
+   "question": "张无忌的义父谢逊的师父是谁？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "成昆"
+  },
+  {
+   "id": "q094",
+   "question": "周芷若的师父灭绝师太属于哪个门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "峨嵋派"
+  },
+  {
+   "id": "q095",
+   "question": "张三丰的徒弟张翠山是谁的父亲？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": false,
+   "answer": "图谱中没有找到 张三丰 的父母子女关系。"
+  },
+  {
+   "id": "q096",
+   "question": "谢逊的师父成昆的绰号是什么？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "混元霹雳手"
+  },
+  {
+   "id": "q097",
+   "question": "杨过的师父小龙女的丈夫是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "杨过、公孙止、谷主、公孙先生"
+  },
+  {
+   "id": "q098",
+   "question": "郭靖的岳父黄药师的女儿是谁？",
+   "intent": "person_relation",
+   "method": "person_relation",
+   "hit": true,
+   "answer": "黄蓉"
+  },
+  {
+   "id": "q099",
+   "question": "张无忌的父亲张翠山的师父张三丰创立了什么门派？",
+   "intent": "general",
+   "method": "vector",
+   "hit": true,
+   "answer": "武当派"
+  },
+  {
+   "id": "q100",
+   "question": "张无忌的义父谢逊的师父成昆的绰号是什么？",
+   "intent": "person",
+   "method": "master_chain",
+   "hit": true,
+   "answer": "混元霹雳手"
+  }
+ ]
+}

@@ -4,6 +4,8 @@
 这是"检索 → 生成"的最后一环，补上它系统才是完整的"问答系统"，
 而不是只返回一段原文的"检索器"。
 """
+import time
+
 from openai import OpenAI
 
 from core.config import get_env
@@ -20,6 +22,7 @@ def generate_answer(question: str, context: str) -> str:
     client = OpenAI(
         api_key=get_env("LLM_TOKEN"),
         base_url=get_env("LLM_ENDPOINT", "https://api.deepseek.com"),
+        timeout=30,  # 30 秒超时，避免请求卡死
     )
 
     prompt = f"""你是金庸武侠知识问答助手。请根据下面检索到的资料，简洁准确地回答用户的问题。
@@ -37,9 +40,16 @@ def generate_answer(question: str, context: str) -> str:
 
 回答："""
 
-    response = client.chat.completions.create(
-        model=get_env("LLM_MODEL", "deepseek-chat"),
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0,
-    )
-    return response.choices[0].message.content.strip()
+    last_err = None
+    for attempt in range(3):  # 最多重试 3 次，指数退避
+        try:
+            response = client.chat.completions.create(
+                model=get_env("LLM_MODEL", "deepseek-chat"),
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            last_err = e
+            time.sleep(2 ** attempt)
+    raise last_err

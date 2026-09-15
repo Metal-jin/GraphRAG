@@ -87,7 +87,7 @@ EXTRACT_PROMPT = """你是一个知识图谱抽取专家。请从以下金庸小
 3. 武功：type（内功/外功/轻功/暗器）
 4. 地点
 
-关系类型（方向要正确）：
+关系类型（方向要正确，严格只用以下 10 种，不要自造其他关系）：
 - MASTER_OF（师徒）：A 是 B 的师父
 - SPOUSE_OF（夫妻，双向）
 - PARENT_OF（父母子女）：A 是 B 的父母
@@ -98,6 +98,8 @@ EXTRACT_PROMPT = """你是一个知识图谱抽取专家。请从以下金庸小
 - FOUNDER_OF（创立门派）：A 创立门派 B
 - LOCATED_IN（位于地点）：A 位于地点 B
 - BRANCHED_FROM（门派演化，可选）
+
+注意：FATHER_OF/MOTHER_OF/SON_OF 等一律统一为 PARENT_OF；HUSBAND_OF/WIFE_OF 统一为 SPOUSE_OF。
 
 只返回 JSON，格式：
 {{"entities": [{{"name": "...", "type": "人物", "era": "射雕"}}], "relationships": [{{"source": "...", "target": "...", "type": "MASTER_OF"}}]}}
