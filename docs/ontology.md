@@ -140,3 +140,36 @@
 3. **关系方向要对**：师徒、父母、所属、精通、创立、位于都有方向；夫妻、结拜、仇敌是双向。
 4. **实体名要规范**：用全称，不要用昵称简称（除非文本里只出现简称）。
 5. **`era` 属性尽量填**：能判断时代就填（射雕/神雕/倚天），判断不了可留空，不要瞎填。
+
+---
+
+## 七、阶段二新增关系：DESCENDANT_OF（跨书血缘）
+
+| 关系类型 | 含义 | 方向说明 | 例子 |
+|---|---|---|---|
+| `DESCENDANT_OF` | 血缘 | **祖先 -> 后代**：`(祖先)-[:DESCENDANT_OF]->(后代)` | 杨过 -> 黄衫女子 |
+
+生成方式：`entity_alignment.py` 的后处理扫描实体 `description` 中的
+「X之后 / 之女 / 之子 / 后人」模式，**只生成候选**；候选必须两端都能链接到图谱中
+真实的人物节点才会落库，且写入 `confidence='inferred'` 与来源描述片段。
+
+查询示例：
+
+```cypher
+MATCH (ancestor:人物 {name: $a})-[r:DESCENDANT_OF*1..5]->(d:人物)
+RETURN d.name AS descendant, r.kind AS kind
+```
+
+---
+
+## 八、本体的代码来源（重要）
+
+本文件是**说明文档**；代码里的唯一权威定义是 `src/core/ontology.py`：
+
+- 实体类型：`ENTITY_LABELS`
+- 关系定义（允许的起终点、是否对称、证据要求）：`RELATIONS`
+- 时代：`VALID_ERAS` / `BOOK_TO_ERA`
+- 噪声名单：`NOISE_NAMES` / `is_noise_name()`
+
+抽取 prompt 的关系清单由 `relation_prompt_block()` 生成，
+**改本体时必须改代码**，文档随代码同步；不要在两个地方各改一半。

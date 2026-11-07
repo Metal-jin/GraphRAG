@@ -21,6 +21,18 @@ output/*.zip
 
 # 测试缓存
 .pytest_cache/
+.tmp_pytest*/
+
+# 本地评测产物与备份（体积大且含原文）
+eval_output/
+backup/
+output/*.jsonl
+data/interim/raw/
+
+# PPT 生成过程的临时目录/中间产物（工具自动生成，可重建）
+.chart-data-*/
+output/.ppt-original-qa/
+*.pptx.bak
 
 # IDE 配置
 .vscode/

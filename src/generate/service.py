@@ -1,114 +1,194 @@
-from typing import List, Dict, Any
-from core.registry import get_method, list_methods
-from core.interfaces import Answer
-from generate.llm import generate_answer
-from generate.intent_classifier import classify
-from generate.injection import build_context
+"""统一问答服务（任务 18 / 25 / 26 重写）。
 
-# 导入 methods 包，触发各方法文件上的 @register 装饰器，否则注册表为空
-import methods  # noqa: F401
+三条链路（手动问答 / 自动路由 / 评测）现在共用同一个
+"检索 -> 注入 -> 生成" 流程，生成输入可复现：
+
+    retrieve()  -> Answer（含统一证据）
+    inject()    -> 注入文本（按方法选择 path/subgraph/triples/text）
+    generate()  -> GenerationResult（含状态/降级原因/模型/耗时）
+
+所有入口都做输入校验，并返回可解释的状态字段。
+"""
+from __future__ import annotations
+
+import time
+from dataclasses import replace
+from typing import Any, Dict, List, Optional
+
+from core.interfaces import Answer
+from core.query import MAX_TOP_K, normalize_top_k
+from core.registry import get_method, list_methods
+from generate.injection import build_context, injection_name
+from generate.intent_classifier import classify, get_classifier
+from generate.llm import generate
+
+import methods  # noqa: F401  触发 @register
+
+MAX_QUESTION_CHARS = 500
+_GRAPH_METHODS = {"master_chain", "person_relation", "sect_agg", "art_lineage",
+                  "cross_novel"}
+_MISSING_GRAPH_EVIDENCE = {"no_entity", "no_result", "no_relation", "unsupported_relation"}
+
+
+class RequestError(ValueError):
+    """请求参数非法（对应 HTTP 400）。"""
+
+
+def _validate_question(question: Any) -> str:
+    if not isinstance(question, str):
+        raise RequestError("question 必须是字符串")
+    text = question.strip()
+    if not text:
+        raise RequestError("question 不能为空")
+    if len(text) > MAX_QUESTION_CHARS:
+        raise RequestError(f"question 过长（>{MAX_QUESTION_CHARS} 字符）")
+    return text
+
+
+def _validate_method(method_name: Any) -> str:
+    if not isinstance(method_name, str) or not method_name:
+        raise RequestError("method_name 必须是非空字符串")
+    available = list_methods()
+    if method_name not in available:
+        raise RequestError(f"未知方法：{method_name}；可用：{available}")
+    return method_name
 
 
 def get_available_methods() -> List[str]:
-    """
-    获取所有已注册的检索方法名
-    返回值：方法名字符串列表，直接给前端下拉框用
-    """
+    """所有已注册的检索方法名（前端下拉框用）。"""
     return list_methods()
 
 
+def retrieve(question: str, method_name: str, top_k: int = 5) -> Answer:
+    """只做检索，不生成（评测/调试复用）。"""
+    method = get_method(method_name)
+    return method.ask(question, top_k=top_k)
+
+
+def _retrieve_auto(question: str, method_name: str, top_k: int) -> Answer:
+    answer = retrieve(question, method_name, top_k)
+    status = (answer.debug_info or {}).get("status")
+    if method_name not in _GRAPH_METHODS or status not in _MISSING_GRAPH_EVIDENCE:
+        return answer
+    fallback = retrieve(question, "vector", top_k)
+    if not fallback.evidence or not fallback.raw_context.strip():
+        return answer
+    return replace(fallback, debug_info={
+        **fallback.debug_info,
+        "fallback_from": method_name,
+        "fallback_reason": status,
+    })
+
+
+def _build_result(question: str, answer: Answer, *, method_name: str,
+                  intent: Optional[Any] = None, started: float) -> Dict[str, Any]:
+    injected = build_context(method_name, answer.evidence, answer.raw_context)
+    generation = generate(question, injected)
+    if generation.status == "ok":
+        answer_text = generation.text
+    elif generation.status == "no_context":
+        answer_text = answer.answer_text
+    else:
+        answer_text = answer.answer_text  # 显式降级，保留检索结果
+
+    retrieval_status = str((answer.debug_info or {}).get("status") or "")
+    status = "ok"
+    if retrieval_status in ("error", "degraded"):
+        status = "error" if retrieval_status == "error" else "degraded"
+    elif generation.status == "unavailable":
+        status = "degraded"
+    elif generation.status == "no_context" and not injected.strip():
+        status = "no_context"
+
+    result: Dict[str, Any] = {
+        "answer_text": answer_text,
+        "method_name": method_name,
+        "injection": injection_name(method_name),
+        "evidence": answer.evidence,
+        "debug_info": answer.debug_info,
+        "raw_context": injected,
+        "retrieval_context": answer.raw_context,
+        "status": status,
+        "generation": generation.to_dict(),
+        "latency_ms": round((time.perf_counter() - started) * 1000, 2),
+    }
+    if intent is not None:
+        result.update({
+            "intent": intent.intent,
+            "seed_entity": intent.seed_entity,
+            "reason": intent.reason,
+            "confidence": intent.confidence,
+            "scope": intent.scope.to_dict(),
+            "matches": intent.matches,
+            "classification": intent.to_dict(),
+        })
+    return result
+
+
 def ask_question(question: str, method_name: str = "vector", top_k: int = 5) -> Dict[str, Any]:
-    """
-    统一问答入口：检索 + 生成
-    :param question: 用户输入的问题字符串
-    :param method_name: 检索方法名，默认 vector
-    :param top_k: 召回证据数量，默认 5
-    :return: 标准结果字典，字段与 Answer 完全对应；出错时包含 error 字段
-    """
+    """手动指定方法的问答入口（阶段一用法，保留）。"""
+    started = time.perf_counter()
     try:
-        # 从注册表获取方法实例
-        method_instance = get_method(method_name)
-        # 调用检索
-        result: Answer = method_instance.ask(question, top_k=top_k)
+        text = _validate_question(question)
+        method_name = _validate_method(method_name)
+        top_k = normalize_top_k(top_k)
+    except RequestError as exc:
+        return {"error": str(exc), "code": "invalid_request", "answer_text": "",
+                "method_name": method_name if isinstance(method_name, str) else "",
+                "evidence": [], "debug_info": {}, "raw_context": "",
+                "status": "invalid_request", "injection": ""}
 
-        # 检索 → 生成：把检索到的上下文喂给 LLM，生成简洁答案
-        raw_context = result.raw_context or ""
-        if raw_context:
-            try:
-                answer_text = generate_answer(question, raw_context)
-            except Exception:
-                # LLM 失败（没配 key/网络问题）时退回检索原文，不中断
-                answer_text = result.answer_text
-        else:
-            answer_text = result.answer_text
+    try:
+        answer = retrieve(text, method_name, top_k)
+    except ValueError as exc:
+        return {"error": str(exc), "code": "invalid_request", "answer_text": "",
+                "method_name": method_name, "evidence": [], "debug_info": {},
+                "raw_context": "", "status": "invalid_request", "injection": ""}
+    except Exception as exc:  # 检索层未捕获的异常
+        return {"error": f"{type(exc).__name__}: {exc}", "code": "retrieval_failed",
+                "answer_text": "", "method_name": method_name, "evidence": [],
+                "debug_info": {}, "raw_context": "",
+                "status": "error", "injection": ""}
 
-        # 转为字典返回，保持字段和 Answer 完全一致
-        return {
-            "answer_text": answer_text,
-            "method_name": result.method_name,
-            "evidence": result.evidence,
-            "debug_info": result.debug_info,
-            "raw_context": result.raw_context
-        }
-
-    except ValueError as e:
-        # 方法不存在等异常，返回统一格式的错误信息
-        return {
-            "error": str(e),
-            "answer_text": "",
-            "method_name": method_name,
-            "evidence": [],
-            "debug_info": {},
-            "raw_context": ""
-        }
+    return _build_result(question, answer, method_name=method_name, started=started)
 
 
 def ask_auto(question: str, top_k: int = 5) -> Dict[str, Any]:
-    """全自动问答入口：意图识别 → 路由 → 注入 → 生成。
-
-    阶段二的核心入口：用户只需提问，系统自动判断意图、路由到领域策略、
-    选择知识注入形式，最后生成答案。
-    """
+    """全自动问答入口：意图识别 -> 路由 -> 注入 -> 生成。"""
+    started = time.perf_counter()
     try:
-        # 1. 意图识别
-        intent = classify(question)
+        text = _validate_question(question)
+        top_k = normalize_top_k(top_k)
+    except RequestError as exc:
+        return {"error": str(exc), "code": "invalid_request", "answer_text": "",
+                "method_name": "", "intent": "", "evidence": [], "debug_info": {},
+                "raw_context": "", "status": "invalid_request", "injection": ""}
 
-        # 2. 路由到检索方法
-        method_instance = get_method(intent.method_name)
-        result: Answer = method_instance.ask(question, top_k=top_k)
+    try:
+        intent = classify(text)
+        method_name = intent.method_name
+        if method_name not in list_methods():
+            method_name = "vector"
+        answer = _retrieve_auto(text, method_name, top_k)
+        return _build_result(text, answer, method_name=answer.method_name, intent=intent,
+                             started=started)
+    except Exception as exc:  # 分类或检索失败
+        return {"error": f"{type(exc).__name__}: {exc}", "code": "pipeline_failed",
+                "answer_text": "", "method_name": "", "intent": "",
+                "evidence": [], "debug_info": {}, "raw_context": "",
+                "status": "error", "injection": ""}
 
-        # 3. 知识注入：把证据转成最适合该意图的注入形式
-        context = build_context(intent.method_name, result.evidence, result.raw_context)
 
-        # 4. 生成答案
-        if context and context.strip():
-            try:
-                answer_text = generate_answer(question, context)
-            except Exception:
-                # LLM 失败时退回检索原文，不中断
-                answer_text = result.answer_text
-        else:
-            answer_text = result.answer_text
+def health() -> Dict[str, Any]:
+    """服务健康信息（配置/索引/数据库）。"""
+    from core.config import validate_config
+    from ingest.data_loader import health_check
+    from generate.intent_classifier import get_classifier
+    return {"config_problems": validate_config(require_neo4j=True),
+            "neo4j": health_check(),
+            "intent_index_degraded": get_classifier().degraded_reason,
+            "methods": list_methods()}
 
-        return {
-            "answer_text": answer_text,
-            "method_name": intent.method_name,
-            "intent": intent.intent,
-            "seed_entity": intent.seed_entity,
-            "injection": intent.injection,
-            "reason": intent.reason,
-            "evidence": result.evidence,
-            "debug_info": result.debug_info,
-            "raw_context": context,
-        }
 
-    except ValueError as e:
-        return {
-            "error": str(e),
-            "answer_text": "",
-            "method_name": "",
-            "intent": "",
-            "evidence": [],
-            "debug_info": {},
-            "raw_context": "",
-        }
+__all__ = ["ask_question", "ask_auto", "retrieve", "get_available_methods",
+           "health", "RequestError", "MAX_TOP_K"]

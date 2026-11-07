@@ -1,110 +1,181 @@
-"""师徒链检索（master_chain）。
+"""师徒链检索（master_chain）——任务 12 重写。
 
-领域策略之一：针对"跨代际师徒关系"问题（如"郭靖的师父的师父是谁"），
-沿 MASTER_OF 关系反向走多跳，返回完整师徒链作为证据。
+修复内容：
+- 不再固定"向上 1~3 跳"：按问题判断方向（师父 / 徒弟）与跳数；
+- 返回**真实有向路径**（节点 + 关系 + 方向 + 来源块），可还原整条推理链；
+- 保留分支；同一 depth 只表示"第几代"，不再推断师兄弟关系；
+- 遵守 top_k，证据规模有界。
 
-与通用基线（vector / library_graphrag）的区别：
-- 基线只做"找相似文本块"，不理解"师徒"这种领域关系；
-- 本策略定向沿 MASTER_OF 反向遍历，直接得到师徒链，证据更可解释。
+Cypher 示例：
+    MATCH path = (p:人物 {name: $name})<-[:MASTER_OF*N..N]-(m:人物)
+    RETURN [n IN nodes(path) | n.name] AS names, length(path) AS depth
 """
+from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
+from core.entity_link import EntityIndex
+from core.evidence import entity_id, make_edge, make_node
 from core.interfaces import Answer, QAMethod
+from core.ontology import BIDIRECTIONAL_RELS, RELATIONS
+from core.question_plan import focus_person_question, is_person_reference
 from core.registry import register
-from ingest.data_loader import get_graph, run_query
+from methods._common import (current_index, ensure_question,
+                             no_entity_answer, resolve_scope, resolve_top_k,
+                             unavailable_answer)
+
+DISCIPLE_KEYWORDS = ("徒弟", "弟子", "徒儿", "门徒", "传人")
+MASTER_KEYWORDS = ("师父", "师傅", "师祖", "太师父", "恩师", "师承", "师从", "师门")
 
 
-def _find_seed_person(question: str) -> Optional[str]:
-    """从问题中识别起始人物（简单字符串匹配，长名优先）。
+def _direction(question: str) -> str:
+    """up = 找师父（沿 MASTER_OF 反向）；down = 找徒弟。"""
+    if any(word in question for word in DISCIPLE_KEYWORDS):
+        return "down"
+    return "up"
 
-    阶段一用简单匹配够用；阶段二可换成 LLM 实体链接提高准确率。
-    长名优先是为了避免"黄"误匹配到"黄蓉"而非"黄药师"。
-    """
-    try:
-        graph = get_graph()
-    except Exception:
-        return None
-    people = [
-        n.get("name", "")
-        for n in graph.get("nodes", [])
-        if n.get("type") == "人物"
-    ]
-    people = [p for p in people if p]
-    for name in sorted(people, key=len, reverse=True):
-        if name in question:
-            return name
-    return None
+
+def _max_hops(question: str) -> int:
+    """从问法推断跳数：师祖/太师父 = 2~3 跳，连续"师父"按次数计算。"""
+    hops = max(1, question.count("师父") + question.count("师傅"))
+    if "太师父" in question:
+        hops = max(hops, 3)
+    elif "师祖" in question:
+        hops = max(hops, 2)
+    return max(1, min(hops, 4))
 
 
 @register("master_chain")
 class MasterChainMethod(QAMethod):
     name = "master_chain"
 
-    def __init__(self, data_loader: Any = None, chunks=None):
-        # 领域策略直接复用 data_loader 的 run_query，data_loader 参数保留以对齐接口
+    def __init__(self, data_loader: Any = None, chunks=None,
+                 entity_index: Optional[EntityIndex] = None,
+                 run_query: Any = None):
         self.data_loader = data_loader
         self.chunks = chunks
+        self.entity_index = entity_index
+        self._run_query = run_query
 
-    def ask(self, question: str, top_k: int = 5) -> Answer: # 师徒链检索方法的 ask 方法
-        if not isinstance(question, str) or not question.strip():
-            raise ValueError("question 必须是非空字符串")
+    # ---------- 依赖 ----------
 
-        seed = _find_seed_person(question)
-        if not seed: # 未能从问题中识别出人物实体
-            return Answer(
-                answer_text="未能从问题中识别出人物实体。",
-                method_name=self.name,
-                evidence=[],
-                debug_info={"question": question, "seed": None},
-                raw_context="",
-            )
+    def _query(self):
+        if self._run_query is not None:
+            return self._run_query
+        from ingest.data_loader import run_query
+        return run_query
 
-        # 沿 MASTER_OF 反向走 1~3 跳，得到各代师父（含深度，便于整理成链）
+    # ---------- 主流程 ----------
+
+    def ask(self, question: str, top_k: int = 5) -> Answer:
+        question = ensure_question(question, self.name)
+        top_k = resolve_top_k(top_k)
+        scope = resolve_scope(question)
+
+        index = current_index(self.data_loader, self.entity_index)
+        aliases = index.alias_mapping("人物")
+        focused, people = focus_person_question(question, index.link(question, labels=["人物"]), aliases)
+        if not people:
+            return no_entity_answer(self.name, question, "人物", scope)
+        seed = people[0]
+
+        direction = _direction(focused)
+        hops = _max_hops(focused)
+        rel_pattern = (f"<-[:MASTER_OF*{hops}..{hops}]-" if direction == "up"
+                       else f"-[:MASTER_OF*{hops}..{hops}]->")
+        cypher = (
+            "MATCH path = (p:人物 {name: $name})" + rel_pattern + "(m:人物) "
+            "WHERE m <> p "
+            "RETURN [n IN nodes(path) | n.name] AS names, "
+            "       [r IN relationships(path) | {chunk_ids: coalesce(r.chunk_ids, []), "
+            "                                      snippets: coalesce(r.snippets, [])}] AS rels, "
+            "       length(path) AS depth "
+            "ORDER BY depth, names LIMIT $limit")
+
         try:
-            rows: List[Dict[str, Any]] = run_query(
-                """
-                MATCH path = (p:人物 {name: $name})<-[:MASTER_OF*1..3]-(master:人物)
-                RETURN master.name AS name, length(path) AS depth
-                ORDER BY depth, master.name
-                """,
-                {"name": seed},
-            )
-        except Exception as e:  # Neo4j 未启动 / 未入库时给出友好提示
-            return Answer(
-                answer_text=f"查询师徒链失败（请确认 Neo4j 已启动、数据已入库）：{e}",
-                method_name=self.name,
-                evidence=[],
-                debug_info={"seed": seed, "error": str(e)},
-                raw_context="",
-            )
+            rows = self._query()(cypher, {"name": seed.canonical,
+                                          "limit": max(top_k * 4, top_k)})
+        except Exception as exc:
+            return unavailable_answer(self.name, question, exc)
 
         if not rows:
+            subject = "师父" if direction == "up" else "徒弟"
             return Answer(
-                answer_text=f"图谱中没有找到 {seed} 的师父信息。",
+                answer_text=f"图谱中没有找到 {seed.canonical} 的{subject}信息。",
                 method_name=self.name,
-                evidence=[{"seed": seed, "chain": []}],
-                debug_info={"seed": seed, "hit_count": 0},
-                raw_context=f"{seed} 无师徒链",
-            )
+                evidence=[],
+                debug_info={"question": question, "seed": seed.canonical,
+                            "direction": direction, "hops": hops,
+                            "hit_count": 0, "status": "no_result"},
+                raw_context="")
 
-        # 整理成可解释的师徒链：[(名字, 深度), ...]
-        chain = [{"name": seed, "depth": 0}]
-        chain += [{"name": r["name"], "depth": r["depth"]} for r in rows]
+        # 构造真实路径证据（去重、限制规模）
+        seen_paths = set()
+        evidence: List[Dict] = []
+        first_generation: List[str] = []
+        deeper: List[str] = []
+        for row in rows:
+            names = [aliases.get(n, n) for n in row.get("names") or [] if n]
+            if (len(names) != hops + 1 or len(set(names)) != len(names)
+                    or any(is_person_reference(n) for n in names)):
+                continue
+            key = tuple(names)
+            if key in seen_paths:
+                continue
+            seen_paths.add(key)
+            if len(evidence) >= top_k:
+                break
+            nodes = [make_node(name, "人物") for name in names]
+            edges = []
+            for position in range(len(names) - 1):
+                relations = row.get("rels") or []
+                rel = relations[position] if position < len(relations) else {}
+                if direction == "up":
+                    source, target, edge_dir = names[position], names[position + 1], "backward"
+                else:
+                    source, target, edge_dir = names[position], names[position + 1], "forward"
+                edges.append(make_edge(source, target, "MASTER_OF", direction=edge_dir,
+                                       chunk_ids=rel.get("chunk_ids") or [],
+                                       snippets=rel.get("snippets") or []))
+            evidence.append({"kind": "path", "source_method": self.name,
+                             "confidence": "extracted", "seed": seed.canonical,
+                             "complete": True,
+                             "nodes": nodes, "edges": edges,
+                             "chunk_ids": sorted({c for e in edges for c in e["chunk_ids"]}),
+                             "text": " -> ".join(names),
+                             "legacy": {"names": names, "depth": row.get("depth")}})
+            target_name = names[-1]
+            if row.get("depth") == 1:
+                if target_name not in first_generation:
+                    first_generation.append(target_name)
+            else:
+                label = f"{target_name}（第{row.get('depth')}代）"
+                if label not in deeper:
+                    deeper.append(label)
 
-        # 按代分组展示：同一 depth 是同一代师父（彼此是兄弟，不是父子）
-        by_depth = {}
-        for c in chain:
-            by_depth.setdefault(c["depth"], []).append(c["name"])
-        parts = [f"第{d}代师父：{'、'.join(by_depth[d])}" for d in sorted(by_depth) if d > 0]
-        answer_text = f"{seed} 的师父链：" + "；".join(parts) + "。"
+        if not evidence:
+            return Answer(
+                answer_text=f"图谱中没有找到 {seed.canonical} 的有效师徒路径。",
+                method_name=self.name, evidence=[],
+                debug_info={"seed": seed.canonical, "status": "no_result"},
+                raw_context="")
 
-        return Answer( # 师徒链检索方法的返回值
-            answer_text=answer_text,
-            method_name=self.name,
-            evidence=chain,
-            debug_info={"seed": seed, "hit_count": len(rows)},
-            raw_context="\n".join(
-                f"{c['name']}（第 {c['depth']} 代）" for c in chain
-            ),
-        )
+        parts = []
+        if first_generation:
+            parts.append(f"第1代：{'、'.join(first_generation)}")
+        if deeper:
+            parts.append("更上层：" + "、".join(deeper[:10]))
+        if direction == "up":
+            answer_text = f"{seed.canonical} 的师父链：" + "；".join(parts) + "。"
+        else:
+            answer_text = f"{seed.canonical} 的徒弟：" + "、".join(
+                sorted({e["nodes"][-1]["name"] for e in evidence})) + "。"
+
+        raw_context = "\n".join(e["text"] for e in evidence)
+        return Answer(
+            answer_text=answer_text, method_name=self.name, evidence=evidence,
+            debug_info={"question": question, "seed": seed.canonical,
+                        "direction": direction, "hops": hops,
+                        "path_count": len(evidence),
+                        "scope": scope.to_dict(), "status": "ok"},
+            raw_context=raw_context)

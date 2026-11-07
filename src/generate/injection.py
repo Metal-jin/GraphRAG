@@ -1,94 +1,167 @@
-"""知识注入层：把检索到的证据按问题类型转成最适合 LLM 的注入形式。
+"""知识注入层（任务 18 重写）。
 
-三种注入形式：
-    1. 关系路径（path）    ：多跳追溯类，如「郭靖 --师父--> 马钰 --师父--> 王重阳」
-    2. 子图摘要（subgraph） ：聚合类，如「丐帮门下：郭靖（会降龙十八掌）…」
-    3. 原文（text）        ：通用兜底，直接给检索到的文本块
+统一证据契约（core.evidence）之后，注入只需按 kind 渲染，不再为每个方法
+写一套字段解析；同时按字符预算裁剪，保留方向与来源。
 
-设计目标（对应整改方案「子问题 3」）：不是比较哪种注入更好，
-而是根据问题类型动态选择最合适的证据呈现形式，提升 LLM 的推理效果。
+四种展示形式：
+    1. 关系路径（path）   ：师徒 / 传承 / 跨书关联
+    2. 子图摘要（subgraph）：门派聚合
+    3. 三元组（triples）  ：单跳人物关系
+    4. 原文（text）       ：向量基线 / 通用兜底
 """
-from typing import Dict, List
+from __future__ import annotations
+
+from typing import Dict, List, Optional, Sequence
+
+from core.config import get_settings
+from core.evidence import normalize_evidence
+from core.ontology import RELATIONS
+
+RELATION_CN = {
+    "MASTER_OF": "师徒", "SPOUSE_OF": "夫妻", "PARENT_OF": "父母",
+    "SWORN_BROTHER_OF": "结拜", "ENEMY_OF": "仇敌", "BELONGS_TO": "属于",
+    "MASTERS": "精通", "FOUNDER_OF": "创立", "LOCATED_IN": "位于",
+    "BRANCHED_FROM": "演化", "DESCENDANT_OF": "血缘（祖先→后代）",
+}
+
+_DIRECTION_ARROW = {"forward": "->", "backward": "<-", "symmetric": "--"}
 
 
-def _chain_to_path(evidence: List[Dict], relation: str) -> str:
-    """师徒链（带 depth 的扁平列表）→ 分代关系文本。
+def _rel_cn(rel_type: str) -> str:
+    return RELATION_CN.get(rel_type, rel_type)
 
-    master_chain 的 evidence 形如：
-        [{"name": "郭靖", "depth": 0}, {"name": "洪七公", "depth": 1}, ...]
-    同一 depth 是「同一代师父」，彼此是兄弟而不是父子关系，
-    因此按代分组展示，避免把兄弟节点误串成「X 的师父是 Y」的错误链。
-    """
-    by_depth: Dict[int, List[str]] = {}
-    for e in evidence:
-        name = str(e.get("name", "") or "").strip()
-        if not name:
+
+def _render_edge(edge: Dict) -> str:
+    arrow = _DIRECTION_ARROW.get(edge.get("direction", "forward"), "->")
+    confidence = "（推断）" if edge.get("confidence") == "inferred" else ""
+    line = (f"{edge.get('source')} {arrow}[{_rel_cn(edge.get('type', ''))}] "
+            f"{edge.get('target')}{confidence}")
+    snippets = [s for s in (edge.get("snippets") or []) if s]
+    if snippets:
+        line += f"｜原文：{snippets[0][:60]}"
+    return line
+
+
+def _render_paths(evidence: Sequence[Dict]) -> List[str]:
+    lines: List[str] = []
+    for item in evidence:
+        if item.get("kind") == "chunk":
+            lines.append(str(item.get("text") or ""))
             continue
-        depth = e.get("depth", 0)
-        by_depth.setdefault(depth, []).append(name)
-
-    lines = []
-    for depth in sorted(by_depth.keys()):
-        names = by_depth[depth]
-        if depth == 0:
-            lines.append(f"{names[0]}（第0代）")
-        else:
-            lines.append(f"第{depth}代{relation}：{'、'.join(names)}")
-    return "\n".join(lines)
-
-
-def _lineage_to_path(evidence: List[Dict], relation: str) -> str:
-    """传承对列表 → 关系路径文本。
-
-    evidence: [{"from": "洪七公", "to": "郭靖"}, ...]
-    输出: 洪七公 --传承--> 郭靖
-    """
-    steps = [f"{e.get('from', '')} --{relation}--> {e.get('to', '')}" for e in evidence]
-    return "，".join(steps)
-
-
-def _members_to_subgraph(evidence: List[Dict]) -> str:
-    """门派成员列表 → 子图摘要文本。
-
-    evidence: [{"person": "郭靖", "arts": ["降龙十八掌"]}, ...]
-    输出: 郭靖（会：降龙十八掌）
-         黄蓉（会：打狗棒法）
-    """
-    lines = []
-    for m in evidence:
-        person = m.get("person", "")
-        arts = m.get("arts") or []
-        if not person:
+        if not item.get("edges"):
             continue
-        if arts:
-            lines.append(f"{person}（会：{'、'.join(str(a) for a in arts)}）")
-        else:
-            lines.append(person)
-    return "\n".join(lines)
+        for edge in item["edges"]:
+            lines.append(_render_edge(edge))
+    return lines
 
 
-def _triples_injection(evidence: List[Dict]) -> str:
-    """三元组列表 → 文本。
+def _render_subgraph(evidence: Sequence[Dict]) -> List[str]:
+    """门派子图：<门派> 下的人物 + 人物精通的武功。"""
+    lines: List[str] = []
+    for item in evidence:
+        sect = item.get("seed") or ""
+        members: Dict[str, List[str]] = {}
+        for edge in item.get("edges") or []:
+            if edge.get("type") == "BELONGS_TO":
+                members.setdefault(edge.get("source", ""), [])
+            elif edge.get("type") == "MASTERS":
+                members.setdefault(edge.get("source", ""), []).append(edge.get("target", ""))
+            elif edge.get("type") == "FOUNDER_OF":
+                lines.append(f"{edge.get('source')} 创立 {edge.get('target')}")
+        for person, arts in members.items():
+            if not person:
+                continue
+            if arts:
+                lines.append(f"{person}（会：{'、'.join(arts)}）")
+            else:
+                lines.append(person)
+        if lines and sect:
+            lines.insert(0, f"门派：{sect}")
+    return lines
 
-    evidence: [{"source": "黄药师", "rel": "父母子女", "target": "黄蓉"}, ...]
-    输出: （黄药师，父母子女，黄蓉）
-    """
-    lines = [f"（{e.get('source', '')}，{e.get('rel', '关系')}，{e.get('target', '')}）" for e in evidence]
-    return "\n".join(lines)
+
+def _render_triples(evidence: Sequence[Dict]) -> List[str]:
+    lines: List[str] = []
+    for item in evidence:
+        if item.get("kind") == "chunk":
+            lines.append(str(item.get("text") or ""))
+            continue
+        for edge in item.get("edges") or []:
+            lines.append(f"（{edge.get('source')}，{_rel_cn(edge.get('type',''))}，"
+                         f"{edge.get('target')}）")
+        if not item.get("edges"):
+            for node in item.get("nodes") or []:
+                if node.get("name"):
+                    lines.append(str(node["name"]))
+    return lines
 
 
-def build_context(method_name: str, evidence: List[Dict], raw_context: str = "") -> str:
-    """根据路由到的方法，把证据转成对应的注入形式。
+def _render_person_paths(evidence: Sequence[Dict]) -> List[str]:
+    """同一条人物关系路径作为一个上下文单元，边保持图谱中的方向。"""
+    return [
+        "；".join(_render_edge({**edge, "direction": "forward"})
+                  for edge in item["edges"])
+        for item in evidence
+        if item.get("kind") == "path" and item.get("complete") and item.get("edges")
+    ]
 
-    返回的字符串将作为 LLM 的「检索到的资料」。
-    """
-    if method_name == "master_chain":
-        return _chain_to_path(evidence, "师父")
-    if method_name == "art_lineage":
-        return _lineage_to_path(evidence, "传承")
-    if method_name == "sect_agg":
-        return _members_to_subgraph(evidence)
-    if method_name == "person_relation":
-        return _triples_injection(evidence)
-    # general / vector / library_graphrag：直接用原始检索文本
-    return raw_context or ""
+
+def _render_text(evidence: Sequence[Dict], raw_context: str) -> List[str]:
+    if raw_context and raw_context.strip():
+        return [raw_context.strip()]
+    return [str(item.get("text") or "") for item in evidence if item.get("text")]
+
+
+def _truncate(lines: Sequence[str], budget: int) -> str:
+    """按字符预算裁剪（先保留前面的高相关证据）。"""
+    out: List[str] = []
+    used = 0
+    seen = set()
+    for line in lines:
+        line = (line or "").strip()
+        if not line or line in seen:
+            continue
+        seen.add(line)
+        if used + len(line) > budget and out:
+            break
+        out.append(line)
+        used += len(line) + 1
+    return "\n".join(out)
+
+
+def build_context(method_name: str, evidence: Optional[Sequence[Dict]],
+                  raw_context: str = "", *,
+                  budget: Optional[int] = None) -> str:
+    """按方法选择注入形式，返回给 LLM 的"检索到的资料"。"""
+    bundles = normalize_evidence(method_name or "", list(evidence or []))
+    limit = budget or get_settings().max_context_chars
+
+    if bundles and all(isinstance(b, dict) and b.get("kind") for b in bundles):
+        pass  # 已是统一契约
+
+    if method_name in ("vector", "library_graphrag", "general"):
+        lines = _render_text(bundles, raw_context)
+    elif method_name == "sect_agg":
+        lines = _render_subgraph(bundles) or _render_text(bundles, raw_context)
+    elif method_name == "person_relation":
+        lines = _render_person_paths(bundles) or _render_triples(bundles)
+    elif method_name == "cross_novel":
+        lines = _render_paths(bundles) or _render_triples(bundles)
+    elif method_name in ("master_chain", "art_lineage"):
+        lines = _render_paths(bundles) or _render_triples(bundles)
+    else:
+        lines = _render_text(bundles, raw_context)
+
+    if not lines and raw_context:
+        lines = [raw_context]
+    return _truncate(lines, limit)
+
+
+def injection_name(method_name: str) -> str:
+    """方法 -> 注入形式名（写进 debug/评测，便于统计）。"""
+    return {"master_chain": "path", "art_lineage": "path", "sect_agg": "subgraph",
+            "person_relation": "triples", "cross_novel": "path",
+            "vector": "text", "library_graphrag": "text"}.get(method_name, "text")
+
+
+__all__ = ["build_context", "injection_name", "RELATION_CN"]

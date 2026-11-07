@@ -1,31 +1,28 @@
-"""向量检索的公共工具。
+"""向量检索公共工具（任务 03 / 04 / 29 / 30）。
 
-本文件只负责“把文字变成向量”和“按照相似度找文本块”，不负责回答问题。
-这样 vector 基线、调库基线以及后续的方法可以使用完全相同的向量工具，
-对比实验才是公平的。
+历史问题：
+- 这里有一套 sha256 哈希嵌入，build_kg 里还有一套内置 hash() 嵌入，两者算出的
+  向量语义不同，入库与查询不一致；
+- 远程嵌入失败时按单条文本退回本地哈希，同一次检索里可能混用不同模型的向量；
+- 每次检索都重新嵌入全部文本块。
 
-支持两种嵌入方式：
-1. 配置了 EMBED_ENDPOINT/EMBED_TOKEN 时，调用 OpenAI 兼容的嵌入接口；
-2. 没有配置外部服务时，使用本地哈希嵌入作为兜底。它不追求生产效果，
-   但不需要下载模型、不需要联网，适合课程实践和单元测试。
+现在统一改为调用 core.embedding 的进程级 EmbeddingService：
+
+- 同一份算法、同一份缓存、同一份 spec；
+- 远程失败默认直接报错（不静默降级），显式配置才允许整批降级；
+- search_chunks 用 embed_documents 批量嵌入并命中缓存。
 """
-
 from __future__ import annotations
 
-import hashlib
 import math
-import re
-from typing import Any, Callable, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
-from core.config import get_env
+from core.embedding import EmbeddingService, get_embedder, local_hash_embed
+from core.errors import DataUnavailableError, EmbeddingError
 
 
-def _text_of(item: Dict[str, Any]) -> str: # 从文本块字典中取出正文，这考虑到了所有的情况
-    """从 B 可能返回的文本块字典中取出正文。
-
-    B 的接口约定是 ``list[dict]``，但正文键名在联调早期可能不同；
-    这里集中兼容常见键名，避免两个基线各自重复写一套脆弱逻辑。
-    """
+def _text_of(item: Dict[str, Any]) -> str:
+    """从文本块字典中取出正文（兼容联调早期的多种键名）。"""
     for key in ("text", "content", "chunk", "page_content"):
         value = item.get(key)
         if value is not None and str(value).strip():
@@ -33,51 +30,32 @@ def _text_of(item: Dict[str, Any]) -> str: # 从文本块字典中取出正文�
     return ""
 
 
-def _hash_embedding(text: str, dimension: int = 256) -> List[float]:
-    """生成无需模型的确定性词袋哈希向量。
+class Embedder:
+    """统一嵌入器（薄封装，真正实现在 core.embedding）。
 
-    每个词被哈希到一个维度，并用正负号减少哈希碰撞的偏差；最后归一化。
-    这不是语义模型，只是离线兜底方案。配置真实嵌入服务后会自动替换它。使用正负结合，区分度较高。
-    """
-    vector = [0.0] * dimension
-    tokens = re.findall(r"[\u4e00-\u9fff]|[a-zA-Z0-9_]+", text.lower())
-    for token in tokens:
-        digest = hashlib.sha256(token.encode("utf-8")).digest()
-        index = int.from_bytes(digest[:4], "big") % dimension
-        vector[index] += 1.0 if digest[4] % 2 else -1.0
-    norm = math.sqrt(sum(x * x for x in vector))
-    return [x / norm for x in vector] if norm else vector
-
-
-class Embedder: # 嵌入器类
-    """统一嵌入器。
-
-    ``embedder=`` 参数主要给测试和离线实验使用；传入一个函数即可注入
-    任何真实模型，而不用修改检索方法。
+    embedder= 参数主要给测试和离线实验使用；传入一个函数即可注入任意模型。
     """
 
-    def __init__(self, embedder: Optional[Callable[[str], List[float]]] = None):
+    def __init__(self, embedder=None, service: Optional[EmbeddingService] = None):
         self._custom = embedder
-        self.endpoint = get_env("EMBED_ENDPOINT", "").strip()
-        self.model = get_env("EMBED_MODEL", "").strip()
-        self.token = get_env("EMBED_TOKEN", "").strip()
+        self._service = service or get_embedder()
+
+    @property
+    def spec(self):
+        return self._service.spec
 
     def embed(self, text: str) -> List[float]:
         if self._custom:
             return list(self._custom(text))
-        # 网络客户端采用惰性导入：未配置外部嵌入服务时不影响本地运行。
-        if self.endpoint and self.model:
-            try:
-                from openai import OpenAI
-                client = OpenAI(api_key=self.token or "EMPTY", base_url=self.endpoint)
-                result = client.embeddings.create(model=self.model, input=text)
-                return list(result.data[0].embedding)
-            except Exception as e:
-                print(f"[embed] 远程嵌入失败，回退本地哈希：{e}")
-        return _hash_embedding(text)
+        return self._service.embed_query(text)
+
+    def embed_many(self, texts: List[str]) -> List[List[float]]:
+        if self._custom:
+            return [list(self._custom(t)) for t in texts]
+        return self._service.embed_documents(texts)
 
 
-def cosine_similarity(left: List[float], right: List[float]) -> float: # 余弦相似度函数
+def cosine_similarity(left: List[float], right: List[float]) -> float:
     """计算余弦相似度；向量为空或维度不一致时返回 0。"""
     if not left or len(left) != len(right):
         return 0.0
@@ -87,40 +65,69 @@ def cosine_similarity(left: List[float], right: List[float]) -> float: # 余弦�
 
 def search_chunks(question: str, chunks: Iterable[Dict[str, Any]], top_k: int = 5,
                   embedder: Optional[Embedder] = None) -> List[Dict[str, Any]]:
-    """在文本块列表中返回最相似的前 ``top_k`` 个块。
-
-    返回值会复制原字典并增加 ``score``，不会修改 B 提供的原始数据。
-    ``top_k`` 被限制为非负整数，避免评测传入异常参数时产生反直觉结果。
-    """
+    """在文本块列表里返回最相似的前 top_k 个（批量嵌入 + 缓存）。"""
     if top_k <= 0:
+        return []
+    items = list(chunks or [])
+    if not items:
         return []
     encoder = embedder or Embedder()
     query_vector = encoder.embed(question)
+    chunk_vectors = encoder.embed_many([_text_of(item) for item in items])
     scored = []
-    for position, chunk in enumerate(chunks):
-        item = dict(chunk)
-        item["score"] = cosine_similarity(query_vector, encoder.embed(_text_of(item)))
-        item.setdefault("_position", position)
-        scored.append(item)
+    for position, (item, vector) in enumerate(zip(items, chunk_vectors)):
+        scored_item = dict(item)
+        scored_item["score"] = cosine_similarity(query_vector, vector)
+        scored_item["_position"] = position
+        scored.append(scored_item)
     scored.sort(key=lambda item: (-item["score"], item["_position"]))
     return [{k: v for k, v in item.items() if k != "_position"} for item in scored[:top_k]]
 
 
-def embed_and_search(question: str, top_k: int = 5, chunks: Optional[Iterable[Dict[str, Any]]] = None,
+def embed_and_search(question: str, top_k: int = 5,
+                     chunks: Optional[Iterable[Dict[str, Any]]] = None,
                      data_loader: Any = None) -> List[Dict[str, Any]]:
-    """C/D 对接的便捷函数：优先使用 B 的 ``search_by_vector``，从数据库中检索，否则使用本地检索。"""
-    # 显式传入 chunks 表示调用方要求本地、可复现检索（尤其是单元测试）；
-    # 此时不能再隐式连接默认 Neo4j loader。
+    """优先用数据源接口做向量检索，失败时**显式**退回本地文本块检索。
+
+    与旧实现的区别：数据库异常不再被静默吞掉后"看似成功"，而是记录
+    degraded 信息（通过返回值里的 score/source 字段无法表达，故用模块级状态）。
+    """
     if chunks is not None and data_loader is None:
         return search_chunks(question, chunks, top_k)
+
     loader = data_loader
     if loader is None:
         try:
             from ingest import data_loader as loader  # type: ignore
         except ImportError:
             loader = None
+
     if loader is not None and hasattr(loader, "search_by_vector"):
-        return list(loader.search_by_vector(question, top_k))
+        try:
+            return list(loader.search_by_vector(question, top_k))
+        except Exception as exc:  # 数据库/索引不可用
+            global _last_degrade_reason
+            _last_degrade_reason = f"vector-search degraded: {type(exc).__name__}: {exc}"
+            if chunks is None and hasattr(loader, "get_chunks"):
+                try:
+                    chunks = loader.get_chunks()
+                except Exception:
+                    chunks = None
+            if chunks is None:
+                raise DataUnavailableError("向量检索不可用且没有可回退的文本块",
+                                           detail=str(exc)) from exc
+
     if chunks is None and loader is not None and hasattr(loader, "get_chunks"):
         chunks = loader.get_chunks()
     return search_chunks(question, chunks or [], top_k)
+
+
+_last_degrade_reason: str = ""
+
+
+def last_degrade_reason() -> str:
+    return _last_degrade_reason
+
+
+__all__ = ["Embedder", "cosine_similarity", "search_chunks", "embed_and_search",
+           "last_degrade_reason", "local_hash_embed"]

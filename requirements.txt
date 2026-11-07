@@ -1,11 +1,14 @@
-python-dotenv
-neo4j
-neo4j-graphrag
-openai
-numpy
-flask
-flask-cors
-pytest
+# 运行依赖（实测环境：Python 3.13 / 3.10，Neo4j 5-community）
+# 采用最小版本约束，避免锁死；需要完全可复现时请自行 pip freeze 生成锁文件。
+python-dotenv>=1.0
+neo4j>=5.0
+neo4j-graphrag>=1.0
+openai>=1.40
+httpx>=0.27
+numpy>=1.24
+flask>=3.0
+flask-cors>=4.0
+pytest>=8.0
 # 阶段二实体对齐系统依赖（B）
-rapidfuzz
-pypinyin
+rapidfuzz>=3.0
+pypinyin>=0.50

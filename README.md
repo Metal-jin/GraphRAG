@@ -58,19 +58,23 @@ LLM 生成答案（generate/service.py）
 
 ```
 src/
-  core/       框架核心：接口、方法注册表、配置
-  methods/    检索方法实现（vector / library_graphrag / master_chain / sect_agg / art_lineage）
-  retrieve/   领域检索策略实现（师徒链、门派聚合、武功传承）
-  ingest/     数据构建：切块、抽取、入库、数据读取
-  generate/   统一问答入口
-  eval/       评测：问题集、指标、对比脚本
-docs/         文档：本体、算法说明、评测报告
-frontend/     前端界面
-scripts/      一键运行脚本
-tests/        测试
-data/         语料（默认不进 git）
+  core/       框架核心：接口、注册表、配置、本体、嵌入、证据、实体链接、问题解析
+  methods/    检索方法实现（vector / library_graphrag / master_chain / sect_agg /
+              art_lineage / person_relation / cross_novel）
+  retrieve/   向量工具与图算法（PageRank / 最短路径 / 单源 BFS / 社区发现）
+  ingest/     数据构建：切块、抽取、入库、数据读取、图谱清洗、实体对齐
+  generate/   意图分类、知识注入、LLM 生成、统一问答服务
+  eval/       评测：问题集、指标、对比脚本、注入实验
+docs/         文档：本体、算法说明、评测报告、优化实施报告
+frontend/     前端界面（vis-network 力导向图 + 证据面板）
+scripts/      一键运行脚本（构建、测试、数据迁移）
+tests/        离线回归测试（190 个用例，不依赖 Neo4j/LLM）
+data/         语料与中间产物（默认不进 git）
 output/       评测输出
 ```
+
+> 阶段二优化（32 项）的完整实施说明见
+> [docs/optimization_report.md](docs/optimization_report.md)。
 
 ---
 
@@ -88,7 +92,35 @@ output/       评测输出
 
 ---
 
-## 三、快速开始（组员必读）
+## 三、快速开始（改造后）
+
+```powershell
+# 0. 依赖与环境变量
+pip install -r requirements.txt
+Copy-Item .env.example .env      # 填 NEO4J_PASSWORD / LLM_TOKEN
+
+# 1. 离线回归（不需要 Neo4j / LLM）
+$env:PYTHONUTF8='1'; $env:PYTHONPATH='src'
+python -m pytest -q
+
+# 2. 数据现状盘点（只读）
+python scripts/migrate_data.py --report
+
+# 3. 切块 + 抽取预览（不调 LLM）
+python src/ingest/corpus.py
+python src/ingest/build_kg.py --book 射雕英雄传 --preview
+
+# 4. 真实入库（会调用付费 LLM）
+python src/ingest/build_kg.py --book 射雕英雄传 --limit 20
+
+# 5. 启动问答服务
+python run_frontend_server.py --port 5000
+```
+
+> 说明：切块默认已改为 **1500 字 / 200 字重叠**（chunker-v2）。
+> 旧数据是 600/80，版本不一致时 `--resume` 会**显式拒绝**而不是静默跳过。
+
+## 四、快速开始（历史版本，保留备查）
 
 ### 第 0 步：准备环境
 
@@ -133,7 +165,7 @@ Copy-Item .env.example .env
 
 ---
 
-## 四、各组员的具体任务
+## 五、各组员的具体任务（历史分工，供回顾）
 
 ### B（数据 + 图谱构建）
 
@@ -173,7 +205,7 @@ Copy-Item .env.example .env
 
 ---
 
-## 五、日常开发流程（提交代码）
+## 六、日常开发流程（提交代码）
 
 每次改完代码，走这三步：
 
@@ -189,7 +221,7 @@ git push
 
 ---
 
-## 六、常见问题（FAQ）
+## 七、常见问题（FAQ）
 
 ### 1. clone 时提示输入用户名密码，密码填什么？
 
@@ -246,7 +278,7 @@ git push
 
 ---
 
-## 七、注意事项（铁律）
+## 八、注意事项（铁律）
 
 1. **`.env` 绝对不能提交**。里面是真实密码，泄漏了要改密码。
 2. **金庸原文不要提交**。`data/source/` 已被忽略，原文留在本地即可。
@@ -258,20 +290,25 @@ git push
 
 ---
 
-## 八、评测方案
+## 九、评测方案
 
 - **问题集**：约 50 个金庸问题，按类型分类（人物关系 / 门派归属 / 武功传承 / 综合）（由 E1 负责，见 `src/eval/questions.json`）。
 - **指标**：答案准确率、关键实体命中率。
 - **公平性**：五种方法用同一套问题、同一个 LLM、同一个 `top_k` 对比，保证结论可信。
-- **对比实验**：`src/eval/run_compare.py` 自动跑两个基线 + 三个领域策略，输出 `output/compare_table.md` 对比表。
+- **对比实验**：`src/eval/run_compare.py` 自动跑两个基线 + 四个领域策略（含跨书关联），
+  输出 `output/compare_table.md` 对比表；同时报告端到端与条件两种口径，
+  并按类别 / 书目 / 跳数分组。
+- **状态区分**：`ok` / `no_context` / `degraded` / `error` 分别统计，
+  生成降级不会再被算成"回答错误"。
+- **自动路由评测**：`python run_auto_eval.py --limit 20 --resume`（增量保存到 JSONL）。
 
-## 九、数据与诚实性
+## 十、数据与诚实性
 
 - 实体关系由 LLM 自动抽取，**可能存在错误**，构建前会做 Schema 校验、重复实体合并，并允许人工校正。
 - **只抽取本体清单（`docs/ontology.md`）中定义的类型**，不编造不存在的实体和关系。
 - 金庸小说文本仅用于课程学习研究，**不用于任何商业用途**。
 - `.env`、金庸原文、Neo4j 数据均不进 Git，公开仓库只保留代码、文档和脱敏样本。
 
-## 十、接口约定
+## 十一、接口约定
 
 详见 [`INTERFACE.md`](INTERFACE.md)。所有检索方法都必须实现 `QAMethod` 接口、返回统一的 `Answer` 结构，这是全组的对接基础。

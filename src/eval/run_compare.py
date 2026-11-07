@@ -1,93 +1,81 @@
+"""E1 评测脚本（任务 22 / 23 重写）。
+
+修复内容：
+- 走**真实业务流程**：检索 -> 注入 -> 生成，与 ask_auto / 手动问答共用同一套函数；
+- 分类统计使用**本次实际题集**，不再重新加载默认 questions.json；
+- 区分四种状态：ok / no_context / degraded / error，降级与异常不再被算成"回答错误"；
+- 题集、书目、类型、跳数、难度都可分组统计；
+- 同时报告"以全部题目为分母"的端到端表现与"成功返回后"的条件表现。
+
+运行示例（仓库根目录）：
+    python -m src.eval.run_compare --methods vector master_chain person_relation
+    python -m src.eval.run_compare --questions src/eval/questions_stage2.json --top-k 5
 """
-E1 评测脚本：用同一套问题、同一个 top_k，批量比较多个问答方法。
-
-这份代码特意只依赖 Python 标准库和项目已有的 core 接口，原因是：
-1. 评测脚本不应该自己实现检索算法；它只负责“出题、调用、打分、汇总”。
-2. C/D 的方法可能还没有合并到当前分支，所以缺失的方法要被记录为 unavailable，
-   而不是让整场评测直接崩溃。
-3. 中文答案可能带有“答案是……”等解释文字，因此评分先做轻量归一化，
-   再判断标准答案实体是否出现在回答中。最终报告必须同时保留原始答案，便于人工复核。
-
-运行示例（在仓库根目录）：
-    python -m src.eval.run_compare --methods vector library_graphrag master_chain sect_agg art_lineage
-    python -m src.eval.run_compare --methods vector --top-k 5 --output output/compare_table.md
-
-也可以使用 pytest 对本文件中的纯函数做回归测试；不需要 Neo4j 或 LLM。
-"""
-
 from __future__ import annotations
 
 import argparse
 import importlib
 import json
-import re
 import sys
 import time
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping
-
+from typing import Any, Dict, Iterable, List, Mapping, Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = PROJECT_ROOT / "src"
-# 允许从项目根目录执行 `python -m src.eval.run_compare` 时，方法内部仍然
-# 可以按照项目约定使用 `from core...` 导入。pytest.ini 也采用同样的 src 布局。
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
+
+from eval.metrics import (  # noqa: E402
+    category_name, entity_hit, entity_string_hit, evaluate_result, normalize_text,
+    summarize_by)
+
 QUESTION_FILE = Path(__file__).with_name("questions.json")
 DEFAULT_OUTPUT = PROJECT_ROOT / "output" / "compare_table.md"
 DEFAULT_RESULT_JSON = PROJECT_ROOT / "output" / "compare_results.json"
 
-# README 中约定的五个方法名（两个基线 + 三个领域策略）。用户可以通过 --methods 只跑其中几个。
-DEFAULT_METHODS = ("vector", "library_graphrag", "master_chain", "sect_agg", "art_lineage")
+DEFAULT_METHODS = ("vector", "library_graphrag", "master_chain", "sect_agg",
+                   "art_lineage", "person_relation")
+
+STATUS_OK = "ok"
+STATUS_NO_CONTEXT = "no_context"
+STATUS_DEGRADED = "degraded"
+STATUS_ERROR = "error"
 
 
 @dataclass
 class ItemResult:
-    """一道题、一个方法的一次运行结果。"""
+    """一道题、一个方法的一次完整运行结果。"""
 
     question_id: str
     method: str
-    status: str
+    status: str = STATUS_ERROR
     answer_text: str = ""
-    entity_hit: bool = False
-    latency_ms: float | None = None
+    evidence: List[Dict[str, Any]] = field(default_factory=list)
+    latency_ms: Optional[float] = None
     error: str = ""
-    debug_info: dict[str, Any] = field(default_factory=dict)
+    debug_info: Dict[str, Any] = field(default_factory=dict)
+    injection: str = ""
+    generation_status: str = ""
+    fallback_reason: str = ""
+    retrieval_context: str = ""
+    injected_context: str = ""
+    entity_hit: bool = False
+    metrics: Dict[str, Any] = field(default_factory=dict)
 
 
-def normalize_text(text: str) -> str: # 将文本归一化以方便实体匹配和比较
-    """对中英文标点、空白和大小写做统一处理。
-
-    这里不能使用激进分词或同义词模型，否则评测结果会混入第二套模型的偏差。
-    归一化只删除明显不影响实体匹配的字符；真正的“是否答对”仍由 gold 别名决定。
-    """
-    if text is None:
-        return ""
-    text = str(text).strip().lower()
-    # 去除 Markdown、常见中文标点和空白，但保留中文、英文、数字。
-    text = re.sub(r"[`*_#~。，、；：！？（）()【】\[\]{}“”‘’\"'：:,.!?;\s]+", "", text)
-    return text
-
-
-def entity_hit(answer_text: str, acceptable_answers: Iterable[str]) -> bool: # 判断回答中是否出现任意一个人工确认过的标准答案/别名
-    """判断回答中是否出现任意一个人工确认过的标准答案/别名。"""
-    answer = normalize_text(answer_text)
-    if not answer:
-        return False
-    return any(normalize_text(alias) and normalize_text(alias) in answer for alias in acceptable_answers)
-
-
-def load_questions(path: Path = QUESTION_FILE) -> list[dict[str, Any]]: # 加载问题集
-    """读取并检查问题集的最小结构，尽早发现 JSON 被误改的问题。"""
+def load_questions(path: Optional[Path] = None) -> List[Dict[str, Any]]:
+    """读取并校验题集结构。"""
+    path = Path(path or QUESTION_FILE)
     data = json.loads(path.read_text(encoding="utf-8"))
     questions = data.get("questions") if isinstance(data, dict) else data
     if not isinstance(questions, list) or not questions:
         raise ValueError("问题集必须是非空的 questions 数组")
     required = {"id", "question", "answer_entities", "acceptable_answers"}
-    seen: set[str] = set()
+    seen = set()
     for item in questions:
         missing = required - set(item)
         if missing:
@@ -98,56 +86,52 @@ def load_questions(path: Path = QUESTION_FILE) -> list[dict[str, Any]]: # 加载
     return questions
 
 
-def import_project_methods() -> None: # 导入项目方法包
-    """导入方法包，触发各方法文件上的 @register 装饰器。
-
-    当前仓库可能只有骨架，导入失败不能在这里静默吞掉；真正的缺失方法由
-    run_one_method 捕获并写入报告。这样既保留异常信息，也可以继续跑其他方法。
-    """
+def import_project_methods() -> None:
     try:
         importlib.import_module("methods")
     except ModuleNotFoundError:
-        # 使用 python -m src.eval.run_compare 时，src 会作为包根目录；下面的兼容
-        # 分支让直接设置 PYTHONPATH=src 后执行也能工作。
         try:
             importlib.import_module("src.methods")
         except ModuleNotFoundError:
             return
 
 
-def _get_method(method_name: str):
-    """从统一注册表取得方法实例，并兼容两种导入方式。"""
-    try:
-        from core.registry import get_method
-    except ModuleNotFoundError:
-        from src.core.registry import get_method
-    return get_method(method_name)
-
-
 def run_one_method(method_name: str, question: Mapping[str, Any], top_k: int) -> ItemResult:
-    """调用一个方法回答一道题，并把异常转换成可报告的失败记录。"""
-    result = ItemResult(question_id=question["id"], method=method_name, status="error") # 初始化结果为失败
-    started = time.perf_counter() # 记录开始时间
+    """调用统一链路回答一道题，并把异常/降级转换成可报告状态。"""
+    result = ItemResult(question_id=question["id"], method=method_name)
+    started = time.perf_counter()
     try:
-        method = _get_method(method_name)
-        answer = method.ask(question["question"], top_k=top_k)
-        # 检索 → 生成：把检索上下文喂给 LLM，生成简洁答案
-        raw_context = getattr(answer, "raw_context", "") or ""
-        if raw_context:
-            try:
-                from generate.llm import generate_answer
-                result.answer_text = generate_answer(question["question"], raw_context)
-            except Exception:
-                result.answer_text = getattr(answer, "answer_text", "") or ""
+        from generate.injection import build_context, injection_name
+        from generate.llm import generate
+        from generate.service import retrieve
+
+        answer = retrieve(question["question"], method_name, top_k)
+        result.evidence = list(getattr(answer, "evidence", []) or [])
+        result.debug_info = dict(getattr(answer, "debug_info", {}) or {})
+        result.injection = injection_name(method_name)
+        result.retrieval_context = getattr(answer, "raw_context", "") or ""
+        context = build_context(method_name, result.evidence,
+                                result.retrieval_context)
+        result.injected_context = context
+        generation = generate(question["question"], context)
+        result.generation_status = generation.status
+        result.fallback_reason = generation.fallback_reason
+
+        if generation.status == "ok":
+            result.answer_text = generation.text
+            result.status = STATUS_OK
+        elif generation.status == "no_context":
+            result.answer_text = getattr(answer, "answer_text", "") or ""
+            result.status = (STATUS_NO_CONTEXT if not context.strip() else STATUS_OK)
         else:
             result.answer_text = getattr(answer, "answer_text", "") or ""
-        result.debug_info = getattr(answer, "debug_info", {}) or {}
-        result.entity_hit = entity_hit(result.answer_text, question["acceptable_answers"]) # 判断回答中是否出现任意一个人工确认过的标准答案/别名
-        from eval.metrics import evaluate_result
-        evidence = getattr(answer, "evidence", [])
-        result.debug_info = {**result.debug_info, **evaluate_result(question, result.answer_text, evidence), "evidence": evidence}
-        result.status = "ok"
-    except Exception as exc:  # 评测不能因单个方法/单道题失败而丢掉其他结果
+            result.status = STATUS_DEGRADED
+
+        result.entity_hit = entity_string_hit(result.answer_text,
+                                              question.get("acceptable_answers", []))
+        result.metrics = evaluate_result(question, result.answer_text, result.evidence)
+    except Exception as exc:  # 单题失败不影响其它题
+        result.status = STATUS_ERROR
         result.error = f"{type(exc).__name__}: {exc}"
         result.debug_info = {"traceback": traceback.format_exc(limit=3)}
     finally:
@@ -155,87 +139,147 @@ def run_one_method(method_name: str, question: Mapping[str, Any], top_k: int) ->
     return result
 
 
-def summarize(results: list[ItemResult], question_count: int) -> list[dict[str, Any]]:
-    """按方法汇总核心指标。
+def _summary_rows(results: List[ItemResult],
+                  questions_by_id: Mapping[str, Mapping[str, Any]]) -> List[Dict[str, Any]]:
+    """把结果展开成可供 summarize_by 分组的行。"""
+    rows = []
+    for result in results:
+        question = questions_by_id.get(result.question_id, {})
+        rows.append({
+            "method": result.method,
+            "category": category_name(question),
+            "book": question.get("source_hint", "未知"),
+            "hop": str(question.get("hop", 1)),
+            "difficulty": question.get("difficulty", "未标注"),
+            "status": result.status,
+            "entity_string_hit": result.entity_hit,
+            **result.metrics,
+        })
+    return rows
 
-    accuracy 的分母是该方法实际返回成功结果的题数；availability 另列出成功率，
-    避免把“方法没装好”与“方法回答错误”混成一个数字。
-    """
+
+def summarize(results: List[ItemResult],
+              questions_by_id: Mapping[str, Mapping[str, Any]]) -> List[Dict[str, Any]]:
+    """按方法汇总：端到端（全部题）与条件（成功题）两种口径。"""
     methods = sorted({r.method for r in results})
     summary = []
     for method in methods:
         rows = [r for r in results if r.method == method]
-        ok = [r for r in rows if r.status == "ok"]
-        hits = [r for r in ok if r.entity_hit]
-        latencies = [r.latency_ms for r in ok if r.latency_ms is not None]
+        ok = [r for r in rows if r.status in (STATUS_OK, STATUS_NO_CONTEXT)]
+        degraded = [r for r in rows if r.status == STATUS_DEGRADED]
+        errors = [r for r in rows if r.status == STATUS_ERROR]
+        hits = [r for r in rows if r.entity_hit]
+        latencies = [r.latency_ms for r in rows if r.latency_ms is not None]
+        eager_hits = [r for r in ok if r.entity_hit]
         summary.append({
             "method": method,
-            "questions": question_count,
-            "available": len(ok),
-            "availability": round(len(ok) / question_count, 4) if question_count else 0,
+            "questions": len(rows),
+            "ok": len(ok),
+            "degraded": len(degraded),
+            "errors": len(errors),
+            "availability": round(len(ok) / len(rows), 4) if rows else 0.0,
             "entity_hits": len(hits),
-            "accuracy": round(len(hits) / len(ok), 4) if ok else None,
-            # 当前问题集每题要求一个答案实体（部分题允许多个等价答案），
-            # 所以“关键实体召回率”与准确率数值相同，但保留这个字段是为了
-            # 对齐课程要求；以后扩展到多实体问题时可改成实体级分母。
-            "entity_recall": round(len(hits) / len(ok), 4) if ok else None,
+            # 端到端：所有题做分母（降级/异常也计入未答对）
+            "e2e_accuracy": round(len(hits) / len(rows), 4) if rows else 0.0,
+            # 条件准确率：只在成功返回的题上计算
+            "accuracy": round(len(eager_hits) / len(ok), 4) if ok else None,
             "avg_latency_ms": round(sum(latencies) / len(latencies), 2) if latencies else None,
         })
     return summary
 
 
-def markdown_report(summary: list[dict[str, Any]], results: list[ItemResult], top_k: int) -> str:
-    """生成可直接放进答辩材料的 Markdown 对比表。"""
+def markdown_report(summary: List[Dict[str, Any]], results: List[ItemResult],
+                    questions: List[Dict[str, Any]], top_k: int,
+                    question_path: Path) -> str:
+    """生成对比报告（分类统计使用本次题集，而不是默认文件）。"""
     generated = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
+    questions_by_id = {q["id"]: q for q in questions}
+    rows = _summary_rows(results, questions_by_id)
+
     lines = [
         "# GraphRAG 方法对比评测结果",
         "",
-        "> 本表由 `src/eval/run_compare.py` 自动生成。准确率和关键实体召回率是当前阶段的自动指标，最终结论仍需结合证据和人工复核。",
+        "> 由 src/eval/run_compare.py 自动生成。entity_string_hit 只是**辅助指标**，"
+        "不等于事实准确率；结论需结合证据与人工复核。",
         "",
-        f"- 生成时间：`{generated}`",
-        f"- 评测问题数：`{summary[0]['questions'] if summary else 0}`",
-        f"- 统一 `top_k`：`{top_k}`",
-        "- 自动判分：回答文本命中该题 `acceptable_answers` 中任一实体或别名即记为命中。",
+        f"- 生成时间：{generated}",
+        f"- 题集：{question_path}（{len(questions)} 题）",
+        f"- 统一 top_k：{top_k}",
+        f"- 判分：答案文本命中 acceptable_answers 且非否定表述记为命中；"
+        f"exact_match 要求 answer_entities 全部命中。",
         "",
-        "## 汇总",
+        "## 汇总（端到端 vs 条件）",
         "",
-        "| 方法 | 可用题数 | 可用率 | 实体命中数 | 准确率 | 关键实体召回率 | 平均耗时(ms) |",
-        "|---|---:|---:|---:|---:|---:|---:|",
+        "| 方法 | 题数 | 成功 | 降级 | 异常 | 可用率 | 命中 | 端到端准确率 | 条件准确率 | 平均耗时(ms) |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in summary:
         accuracy = "N/A" if row["accuracy"] is None else f"{row['accuracy']:.2%}"
         latency = "N/A" if row["avg_latency_ms"] is None else f"{row['avg_latency_ms']:.2f}"
-        recall = "N/A" if row["entity_recall"] is None else f"{row['entity_recall']:.2%}"
-        lines.append(f"| {row['method']} | {row['available']}/{row['questions']} | {row['availability']:.2%} | {row['entity_hits']} | {accuracy} | {recall} | {latency} |")
-    from eval.metrics import category_name, summarize_by_category
-    questions_by_id = {q["id"]: q for q in load_questions()}
-    enriched = []
-    for row in results:
-        category = category_name(questions_by_id.get(row.question_id, {}))
-        enriched.append({"method": row.method, "category": category, "entity_hit": row.entity_hit, **row.debug_info})
-    lines += ["", "## 分类别结果", "", "| 方法 | 类别 | 题数 | 准确率 | 路径完整性 | 证据充分性 |", "|---|---|---:|---:|---:|---:|"]
-    for row in summarize_by_category(enriched):
-        lines.append(f"| {row['method']} | {row['category']} | {row['questions']} | {row['accuracy']:.2%} | {row['path_completeness']:.2%} | {row['evidence_sufficiency']:.2%} |")
-    lines += ["", "## 指标解释", "", "- **可用率**：方法成功返回 `Answer` 的题数 / 总题数。", "- **准确率**：自动判分成功题数 / 方法成功返回题数；方法不可用不会被误算成回答错误。", "- **路径完整性**：证据覆盖的关系跳数 / 问题预期跳数，范围 0~1。", "- **证据充分性**：答案命中标准实体与证据非空两项的平均值，范围 0~1。", "- **平均耗时**：从调用 `ask()` 到返回或抛出异常的单题平均耗时。", "", "## 逐题结果", "", "| 题号 | 方法 | 状态 | 实体命中 | 回答/错误 |", "|---|---|---|---|---|"]
-    for row in results:
-        text = row.answer_text if row.status == "ok" else row.error
-        text = text.replace("|", "\\|").replace("\n", " ")[:240]
-        lines.append(f"| {row.question_id} | {row.method} | {row.status} | {'是' if row.entity_hit else '否'} | {text} |")
-    return "\n".join(lines) + "\n"
+        lines.append(
+            f"| {row['method']} | {row['questions']} | {row['ok']} | {row['degraded']} | "
+            f"{row['errors']} | {row['availability']:.2%} | {row['entity_hits']} | "
+            f"{row['e2e_accuracy']:.2%} | {accuracy} | {latency} |")
+
+    def table(title: str, key: str) -> None:
+        lines.extend(["", f"## {title}", "",
+                      f"| 方法 | {key} | 题数 | 准确率 | 完全匹配 | 路径完整性 | 证据充分性 |",
+                      "|---|---|---:|---:|---:|---:|---:|"])
+        for item in summarize_by(rows, ("method", key)):
+            lines.append(
+                f"| {item['method']} | {item[key]} | {item['questions']} | "
+                f"{item['accuracy']:.2%} | {item['exact_match']:.2%} | "
+                f"{item['path_completeness']:.2%} | {item['evidence_sufficiency']:.2%} |")
+
+    table("分类别结果", "category")
+    table("分书目结果", "book")
+    table("分跳数结果", "hop")
+
+    lines += ["", "## 指标解释", "",
+              "- **端到端准确率**：命中题数 / 全部题数（异常与降级也算未答对）。",
+              "- **条件准确率**：命中题数 / 成功返回题数。",
+              "- **完全匹配（exact_match）**：answer_entities 全部命中才算 1。",
+              "- **路径完整性**：证据路径必须**连通**且覆盖预期跳数，不连通的边不得分。",
+              "- **证据充分性**：答案命中 × 证据覆盖预期关系类型。",
+              "- **否定表述**（如「不是洪七公」）不计为命中。",
+              "", "## 逐题结果", "",
+              "| 题号 | 方法 | 状态 | 命中 | 注入 | 生成状态 | 回答/错误 |",
+              "|---|---|---|---|---|---|---|"]
+    for result in results:
+        text = (result.answer_text if result.status != STATUS_ERROR else result.error)
+        text = (text or "").replace("|", "\\|").replace(chr(10), " ")[:240]
+        lines.append(f"| {result.question_id} | {result.method} | {result.status} | "
+                     f"{'是' if result.entity_hit else '否'} | {result.injection} | "
+                     f"{result.generation_status} | {text} |")
+    return chr(10).join(lines) + chr(10)
 
 
-def run(methods: Iterable[str], top_k: int, question_path: Path, output_path: Path, result_json: Path) -> int:
-    """完整执行一次评测；返回适合命令行使用的退出码。"""
+def run(methods: Iterable[str], top_k: int, question_path: Path,
+        output_path: Path, result_json: Path) -> int:
     methods = list(methods)
     questions = load_questions(question_path)
+    questions_by_id = {q["id"]: q for q in questions}
     import_project_methods()
-    results = [run_one_method(name, question, top_k) for name in methods for question in questions]
-    summary = summarize(results, len(questions))
+    results = [run_one_method(name, question, top_k)
+               for name in methods for question in questions]
+    summary = summarize(results, questions_by_id)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     result_json.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(markdown_report(summary, results, top_k), encoding="utf-8")
-    result_json.write_text(json.dumps({"summary": summary, "results": [r.__dict__ for r in results]}, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"已完成：{len(questions)} 道题 × {len(methods)} 个方法")
+    output_path.write_text(
+        markdown_report(summary, results, questions, top_k, question_path),
+        encoding="utf-8")
+    payload = {
+        "generated_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
+        "questions_file": str(question_path),
+        "top_k": top_k,
+        "methods": methods,
+        "question_count": len(questions),
+        "summary": summary,
+        "results": [r.__dict__ for r in results],
+    }
+    result_json.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
+                           encoding="utf-8")
+    print(f"已完成：{len(questions)} 道题 x {len(methods)} 个方法")
     print(f"Markdown 报告：{output_path}")
     print(f"JSON 原始结果：{result_json}")
     return 0
@@ -243,11 +287,12 @@ def run(methods: Iterable[str], top_k: int, question_path: Path, output_path: Pa
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="比较 GraphRAG 的多个问答方法")
-    parser.add_argument("--methods", nargs="+", default=list(DEFAULT_METHODS), help="要运行的方法名，默认运行五种方法")
-    parser.add_argument("--top-k", type=int, default=5, help="传给每个方法 ask() 的 top_k，默认 5")
-    parser.add_argument("--questions", type=Path, default=QUESTION_FILE, help="问题集 JSON 路径")
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Markdown 报告路径")
-    parser.add_argument("--result-json", type=Path, default=DEFAULT_RESULT_JSON, help="逐题 JSON 结果路径")
+    parser.add_argument("--methods", nargs="+", default=list(DEFAULT_METHODS))
+    parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument("--questions", type=Path, default=QUESTION_FILE)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--result-json", type=Path, default=DEFAULT_RESULT_JSON)
+    parser.add_argument("--limit", type=int, default=0, help="只跑前 N 题（0=全部）")
     return parser
 
 
@@ -256,4 +301,15 @@ if __name__ == "__main__":
     if args.top_k <= 0:
         print("--top-k 必须是正整数", file=sys.stderr)
         raise SystemExit(2)
-    raise SystemExit(run(args.methods, args.top_k, args.questions, args.output, args.result_json))
+    questions_path = args.questions
+    if args.limit:
+        loaded = load_questions(questions_path)
+        trimmed = loaded[:args.limit]
+        # 限定子集写到报告同目录，不污染源码目录
+        subset_path = args.output.parent / f"questions_limit_{args.limit}.json"
+        subset_path.parent.mkdir(parents=True, exist_ok=True)
+        subset_path.write_text(json.dumps({"questions": trimmed}, ensure_ascii=False),
+                               encoding="utf-8")
+        questions_path = subset_path
+    raise SystemExit(run(args.methods, args.top_k, questions_path,
+                         args.output, args.result_json))

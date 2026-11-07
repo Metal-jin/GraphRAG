@@ -1,230 +1,461 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>金庸武侠知识图谱问答系统</title>
-    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: #12122a; color: #e8e8f0; height: 100vh;
-            display: flex; flex-direction: column; overflow: hidden;
-        }
-        .header {
-            padding: 14px 24px; background: linear-gradient(135deg, #1e1e3f 0%, #2a1e4f 100%);
-            border-bottom: 1px solid #3a3a6a; display: flex; align-items: center; justify-content: space-between;
-        }
-        .header h1 {
-            font-size: 20px; font-weight: 600; letter-spacing: 1px;
-            background: linear-gradient(90deg, #7ec8ff, #b48cff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .header .sub { font-size: 13px; color: #8a8ab0; }
-        .main { flex: 1; display: flex; min-height: 0; }
-        .panel {
-            width: 360px; padding: 18px; background: #1a1a36; border-right: 1px solid #3a3a6a;
-            display: flex; flex-direction: column; gap: 14px; overflow-y: auto;
-        }
-        .panel h2 { font-size: 15px; color: #9ab8ff; font-weight: 600; }
-        #questionInput {
-            width: 100%; height: 90px; padding: 12px; background: #12122a; border: 1px solid #3a3a6a;
-            border-radius: 10px; color: #e8e8f0; font-size: 14px; resize: vertical; outline: none;
-            transition: border-color .2s;
-        }
-        #questionInput:focus { border-color: #7ec8ff; }
-        #askBtn {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, #4a7dff, #7b4aff);
-            border: none; border-radius: 10px; color: #fff; font-size: 15px; font-weight: 600;
-            cursor: pointer; transition: opacity .2s, transform .1s;
-        }
-        #askBtn:hover { opacity: .9; } #askBtn:active { transform: scale(.98); }
-        .answer-card {
-            background: #12122a; border: 1px solid #3a3a6a; border-radius: 10px; padding: 14px;
-            min-height: 80px; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
-        }
-        .graph-wrap { flex: 1; position: relative; min-width: 0; }
-        #network { width: 100%; height: 100%; background: radial-gradient(circle at 50% 40%, #1a1a3a 0%, #12122a 100%); }
-        .footer {
-            padding: 12px 24px; background: #1a1a36; border-top: 1px solid #3a3a6a;
-            display: flex; align-items: center; gap: 14px;
-        }
-        .footer label { font-size: 14px; color: #9ab8ff; white-space: nowrap; }
-        .legend {
-            position: absolute; top: 12px; left: 12px; z-index: 10;
-            background: rgba(18,18,42,.85); border: 1px solid #3a3a6a; border-radius: 10px;
-            padding: 10px 12px; font-size: 12px; color: #c8c8e0;
-            display: flex; flex-direction: column; gap: 5px;
-        }
-        .legend .row { display: flex; align-items: center; gap: 6px; }
-        .legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-        .legend .hint { margin-top: 4px; color: #8a8ab0; font-size: 11px; }
-        #eraSlider { flex: 1; accent-color: #7b4aff; }
-        #eraText { font-size: 14px; color: #b48cff; font-weight: 600; min-width: 90px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金庸武侠知识图谱问答系统</title>
+<link href="https://unpkg.com/vis-network@9.1.9/styles/vis-network.min.css" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0e131d;
+    --panel: #171f2d;
+    --inset: #111925;
+    --line: #344052;
+    --text: #eef1f5;
+    --muted: #abb7c9;
+    --accent: #eec481;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.55 system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+    min-height: 100vh; height: 100dvh; display: flex; flex-direction: column;
+  }
+  h1, h2, p { margin: 0; }
+  button, textarea { font: inherit; }
+  button { cursor: pointer; color: inherit; }
+  button:disabled { cursor: not-allowed; opacity: .55; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .header { padding: 18px clamp(16px, 3vw, 40px); display: flex; align-items: center;
+            gap: 13px; border-bottom: 1px solid var(--line); }
+  .seal { width: 42px; height: 42px; flex: none; display: grid; place-items: center;
+          color: var(--accent); background: #2e2621; border: 1px solid #725840;
+          border-radius: 10px; font: bold 23px "Songti SC", SimSun, serif; }
+  .header h1 { font-size: clamp(18px, 2.4vw, 24px); letter-spacing: .04em; }
+  .sub, .hint, .muted { color: var(--muted); font-size: 12px; }
+  .main { flex: 1; display: grid; grid-template-columns: minmax(330px, 390px) minmax(0, 1fr);
+          gap: 16px; min-height: 0; padding: 18px clamp(16px, 3vw, 40px) 22px; }
+  .panel, .graph-card { min-width: 0; background: var(--panel); border: 1px solid var(--line);
+                        border-radius: 16px; }
+  .panel { overflow-y: auto; }
+  .panel > section, .panel > form { padding: 18px; }
+  .panel > section { border-top: 1px solid var(--line); }
+  h2 { font-size: 15px; letter-spacing: .05em; }
+  #questionInput { display: block; width: 100%; min-height: 86px; margin: 10px 0;
+                   padding: 10px 12px; background: var(--inset); border: 1px solid var(--line);
+                   border-radius: 10px; color: var(--text); resize: vertical; }
+  #questionInput::placeholder { color: var(--muted); }
+  .actions, .examples, .meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  #askBtn { padding: 8px 18px; border: 1px solid transparent; border-radius: 8px;
+            color: #241c14; background: var(--accent); font-weight: 700; }
+  #askBtn:hover:not(:disabled) { background: #f8d49c; }
+  .examples { margin-top: 12px; }
+  .chip { padding: 4px 9px; border: 1px solid var(--line); background: var(--inset);
+          border-radius: 7px; color: var(--muted); font-size: 12px; }
+  .chip:hover:not(:disabled), .chip[aria-pressed="true"] { color: var(--accent); border-color: #917247; }
+  .status { margin-top: 8px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+  .status:empty, .meta:empty { display: none; }
+  .status.error { color: #ffa49f; }
+  .status.ok { color: #a6d9b4; }
+  .status.warn { color: var(--accent); }
+  .answer-card { margin-top: 10px; padding: 10px 12px; min-height: 62px; background: var(--inset);
+                 border-radius: 8px; border-left: 3px solid var(--accent);
+                 font-size: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .meta { margin-top: 10px; }
+  .meta span { padding: 2px 7px; background: var(--inset); border-radius: 5px; }
+  .query-details { margin-top: 10px; }
+  .query-details summary { cursor: pointer; }
+  .evidence { display: grid; gap: 8px; margin-top: 10px; }
+  .evidence .item { background: var(--inset); border: 1px solid var(--line); border-radius: 8px;
+                    font-size: 13px; overflow-wrap: anywhere; }
+  .item summary { padding: 8px 10px; cursor: pointer; color: var(--text); }
+  .item summary:hover { color: var(--accent); }
+  .item p { padding: 0 10px 10px; white-space: pre-wrap; }
+  .item p + p { color: var(--muted); }
+  .graph-card { display: flex; flex-direction: column; overflow: hidden; }
+  .graph-header, .graph-footer { display: flex; align-items: center; flex-wrap: wrap;
+                                justify-content: space-between; gap: 10px; padding: 12px 14px; }
+  .graph-header { border-bottom: 1px solid var(--line); }
+  .graph-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+  .graph-wrap { flex: 1; min-height: 0; position: relative;
+                background: radial-gradient(circle, #344052 1px, transparent 1px) 0 0 / 22px 22px, var(--inset); }
+  #network { width: 100%; height: 100%; }
+  .graph-footer { border-top: 1px solid var(--line); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot); }
+  .overlay { position: absolute; inset: 0; display: grid; place-content: center;
+             padding: 20px; text-align: center; background: #111925e8; color: var(--muted); }
+  .overlay:empty { display: none; }
+  @media (max-width: 900px), (max-height: 580px) {
+    body { height: auto; }
+    .main { grid-template-columns: minmax(0, 1fr); }
+    .panel { overflow: visible; }
+    .graph-wrap { flex: none; height: clamp(320px, 62vh, 560px); }
+  }
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>金庸武侠知识图谱问答系统</h1>
-        <span class="sub">GraphRAG · 意图分类 + 领域检索</span>
+  <header class="header">
+    <div class="seal" aria-hidden="true">侠</div>
+    <div>
+      <h1>金庸武侠知识图谱</h1>
+      <p class="sub">射雕三部曲 · 问答与原文溯源</p>
     </div>
+  </header>
 
-    <div class="main">
-        <div class="panel">
-            <h2>🔍 提问</h2>
-            <textarea id="questionInput" placeholder="例如：郭靖的师父的师父是谁？"></textarea>
-            <button id="askBtn">提 问</button>
-            <h2>💬 回答</h2>
-            <div class="answer-card" id="answerBox">（答案将显示在这里）</div>
+  <main class="main">
+    <section class="panel" aria-label="问答">
+      <form id="askForm">
+        <h2><label for="questionInput">江湖问答</label></h2>
+        <textarea id="questionInput" maxlength="500" placeholder="问一问人物、武功或门派…"></textarea>
+        <div class="actions">
+          <button id="askBtn" type="submit">提问</button>
+          <span class="hint">Ctrl / ⌘ + Enter</span>
         </div>
-        <div class="graph-wrap">
-            <div class="legend">
-                <div class="row"><span class="dot" style="background:#4fc3f7"></span>人物</div>
-                <div class="row"><span class="dot" style="background:#ffb74d"></span>门派</div>
-                <div class="row"><span class="dot" style="background:#81c784"></span>武功</div>
-                <div class="row"><span class="dot" style="background:#ba68c8"></span>地点</div>
-                <div class="hint">滚轮缩放 · 拖拽平移 · 悬停看名 · 点击节点展开关系</div>
-            </div>
-            <div id="network"></div>
+        <div class="status" id="statusLine" role="status"></div>
+        <div class="examples" id="examples" aria-label="示例问题">
+          <button class="chip" type="button">郭靖的母亲是谁？</button>
+          <button class="chip" type="button">张三丰创建了哪个门派？</button>
+          <button class="chip" type="button">穆念慈的儿子是谁？</button>
         </div>
-    </div>
+      </form>
+      <section id="resultPanel" aria-labelledby="answerTitle">
+        <h2 id="answerTitle">回答</h2>
+        <div class="answer-card muted" id="answerBox" aria-live="polite">提交问题后，回答会出现在这里。</div>
+        <details class="query-details muted" id="queryDetails" hidden>
+          <summary id="queryMethod">检索详情</summary>
+          <div class="meta" id="metaLine"></div>
+        </details>
+      </section>
+      <section aria-labelledby="evidenceTitle">
+        <h2 id="evidenceTitle">检索证据 <span class="muted" id="evidenceCount"></span></h2>
+        <div class="evidence" id="evidenceBox"><p class="muted">这里会显示关系路径和原文出处。</p></div>
+      </section>
+    </section>
 
-    <div class="footer">
-        <label>时代过滤</label>
-        <input type="range" id="eraSlider" min="1" max="3" value="1">
-        <span id="eraText">射雕英雄传</span>
-    </div>
+    <section class="graph-card" aria-labelledby="graphTitle">
+      <header class="graph-header">
+        <div>
+          <h2 id="graphTitle">关系图谱</h2>
+          <p class="hint" id="graphInfo">射雕英雄传</p>
+        </div>
+        <div class="graph-tools" id="bookFilters" role="group" aria-label="按书查看图谱">
+          <button class="chip" type="button" aria-pressed="true">射雕英雄传</button>
+          <button class="chip" type="button" aria-pressed="false">神雕侠侣</button>
+          <button class="chip" type="button" aria-pressed="false">倚天屠龙记</button>
+        </div>
+        <button class="chip" id="fitBtn" type="button" disabled>适应视图</button>
+      </header>
+      <div class="graph-wrap">
+        <div id="network" aria-label="人物与关系图谱"></div>
+        <div class="overlay" id="overlay" role="status">图谱加载中…</div>
+      </div>
+      <div class="graph-footer">
+        <div class="legend muted">
+          <span><i class="dot" style="--dot:#4fc3f7"></i>人物</span>
+          <span><i class="dot" style="--dot:#ffb74d"></i>门派</span>
+          <span><i class="dot" style="--dot:#81c784"></i>武功</span>
+          <span><i class="dot" style="--dot:#ba68c8"></i>地点</span>
+        </div>
+        <p class="hint">滚轮缩放 · 拖拽平移 · 点选节点展开关系</p>
+      </div>
+    </section>
+  </main>
 
-    <script>
-        // ============ 颜色映射 ============
-        // 实体类型 → 颜色/形状（人物圆、门派方、武功菱形、地点三角）
-        const typeStyle = {
-            "人物": { color: "#4fc3f7", shape: "dot" },
-            "门派": { color: "#ffb74d", shape: "square" },
-            "武功": { color: "#81c784", shape: "diamond" },
-            "地点": { color: "#ba68c8", shape: "triangle" },
-        };
-        // 关系类型（中文简称）→ 边颜色
-        const relColor = {
-            "师徒": "#4fc3f7", "夫妻": "#f06292", "父母": "#81c784",
-            "仇敌": "#e57373", "结拜": "#ffb74d", "门派": "#ffb74d",
-            "精通": "#81c784", "创立": "#ba68c8", "位置": "#90a4ae",
-            "演化": "#ba68c8", "后裔": "#f06292",
-        };
+<!-- 固定版本，避免 CDN 漂移导致行为不可复现 -->
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<script>
+const typeStyle = {
+  "人物": { color: "#4fc3f7", shape: "dot" },
+  "门派": { color: "#ffb74d", shape: "square" },
+  "武功": { color: "#81c784", shape: "diamond" },
+  "地点": { color: "#ba68c8", shape: "triangle" },
+};
+const relColor = {
+  "师徒": "#4fc3f7", "夫妻": "#f06292", "父母": "#81c784", "仇敌": "#e57373",
+  "结拜": "#ffb74d", "门派": "#ffb74d", "精通": "#81c784", "创立": "#ba68c8",
+  "位置": "#90a4ae", "演化": "#ba68c8", "后裔": "#f06292",
+};
+const byId = id => document.getElementById(id);
+const questionInput = byId("questionInput");
+const askBtn = byId("askBtn");
+const answerBox = byId("answerBox");
+const queryDetails = byId("queryDetails");
+const metaLine = byId("metaLine");
+const bookFilters = byId("bookFilters");
+const fitBtn = byId("fitBtn");
+const graphInfo = byId("graphInfo");
+const overlay = byId("overlay");
+const evidenceKinds = { chunk: "原文片段", path: "关系路径", triple: "实体关系",
+                        chain: "师承链", member: "门派关系", art: "武学传承" };
+const methodLabels = { vector: "原文检索", library_graphrag: "图谱综合检索",
+                       person_relation: "人物关系", master_chain: "师承链",
+                       sect_agg: "门派关系", art_lineage: "武学传承", cross_novel: "跨书关联" };
+const graphLib = window.vis;
+const nodes = graphLib && new graphLib.DataSet([]);
+const edges = graphLib && new graphLib.DataSet([]);
+const network = graphLib && new graphLib.Network(byId("network"),
+  { nodes, edges }, {
+    nodes: { shape: "dot", size: 16,
+             font: { size: 13, color: "#eef1f5", background: "#111925" },
+             borderWidth: 1.5 },
+    edges: { arrows: { to: { enabled: true, scaleFactor: 0.6 } },
+             smooth: { type: "continuous" }, width: 1.2,
+             font: { size: 10, color: "#abb7c9", background: "#111925" } },
+    physics: { enabled: true,
+               barnesHut: { gravitationalConstant: -800, springLength: 240,
+                            springConstant: 0.004 },
+               stabilization: { iterations: 250 } },
+    interaction: { hover: true, zoomView: true, dragView: true,
+                   keyboard: { enabled: true, bindToWindow: false } },
+  });
 
-        // ============ 初始化 vis-network ============
-        const nodes = new vis.DataSet([]);
-        const edges = new vis.DataSet([]);
-        const container = document.getElementById("network");
-        const options = {
-            nodes: {
-                shape: "dot", size: 16,
-                // 节点上直接显示名字（默认只有 30 个节点，不会乱）
-                font: { size: 12, color: "#e8e8f0", face: "PingFang SC, Microsoft YaHei", background: "#12122a" },
-                borderWidth: 1.5, borderWidthSelected: 3,
-                color: { background: "#4fc3f7", border: "#8fd4ff", highlight: { background: "#fff", border: "#fff" } },
-            },
-            edges: {
-                arrows: { to: { enabled: true, scaleFactor: 0.6 } },
-                smooth: { type: "continuous" },
-                width: 1.2,
-                // 边上显示关系类型（中文小字）
-                font: { size: 10, color: "#9a9ab0", face: "PingFang SC, Microsoft YaHei", background: "#12122a" },
-                color: { color: "#5a5a8a", highlight: "#ffd54f" },
-            },
-            physics: {
-                enabled: true,
-                // 减小引力、增大弹簧长度，让节点更分散，避免中心节点爆炸状辐射
-                barnesHut: { gravitationalConstant: -800, springLength: 240, springConstant: 0.004 },
-                stabilization: { iterations: 250 },
-            },
-            interaction: {
-                hover: true, tooltipDelay: 100,
-                zoomView: true,         // 滚轮缩放
-                dragView: true,         // 拖拽平移
-                navigationButtons: true, // 右下角显示 +/- 缩放按钮
-                keyboard: true,          // 键盘方向键平移
-            },
-        };
-        const network = new vis.Network(container, { nodes, edges }, options);
+function styleNode(node) {
+  const style = typeStyle[node.type] || typeStyle["人物"];
+  const title = document.createElement("span");
+  title.textContent = node.label;
+  return { ...node, title, shape: style.shape,
+           color: { background: style.color, border: "#ffffff",
+                    highlight: { background: "#fff" } } };
+}
+function styleEdge(edge) {
+  const color = relColor[edge.label] || "#5a5a8a";
+  return { ...edge, color: { color, highlight: "#ffd54f" } };
+}
+function upsertNodes(list) {
+  if (!list.length) return;
+  const existing = new Set(nodes.getIds());
+  const updates = list.filter(n => existing.has(n.id));
+  const inserts = list.filter(n => !existing.has(n.id));
+  if (updates.length) nodes.update(updates);
+  if (inserts.length) nodes.add(inserts);
+}
+function upsertEdges(list) {
+  if (!list.length) return;
+  const existing = new Set(edges.getIds());
+  const updates = list.filter(e => existing.has(e.id));
+  const inserts = list.filter(e => !existing.has(e.id));
+  if (updates.length) edges.update(updates);
+  if (inserts.length) edges.add(inserts);
+}
+function resetStyles() {
+  nodes.update(nodes.get().map(n => {
+    const style = typeStyle[n.type] || typeStyle["人物"];
+    return { id: n.id, shape: style.shape,
+             color: { background: style.color, border: "#ffffff" } };
+  }));
+  edges.update(edges.get().map(e => ({
+    id: e.id, color: { color: relColor[e.label] || "#5a5a8a", highlight: "#ffd54f" },
+  })));
+}
+function highlightPath(path) {
+  if (!path) return;
+  resetStyles();
+  const ids = new Set(path.nodes || []);
+  nodes.update(nodes.get().filter(n => ids.has(n.id)).map(n => ({
+    id: n.id, color: { background: "#ff5252", border: "#fff" },
+  })));
+  const wanted = new Set((path.edges || []).map(pair => pair[0] + "||" + pair[1]));
+  edges.update(edges.get().filter(e => wanted.has(e.from + "||" + e.to)).map(e => ({
+    id: e.id, color: { color: "#ff5252", highlight: "#ff5252" },
+  })));
+}
 
-        // ============ 给节点/边套样式 ============
-        // title 用于 hover 时显示名字（因为 label 文字被隐藏了）
-        function styleNodes(nodeArr) {
-            return nodeArr.map(n => {
-                const s = typeStyle[n.type] || typeStyle["人物"];
-                return { ...n, title: n.label, shape: s.shape,
-                         color: { background: s.color, border: "#ffffff", highlight: { background: "#fff" } } };
-            });
-        }
-        function styleEdges(edgeArr) {
-            return edgeArr.map(e => {
-                const c = relColor[e.label] || "#5a5a8a";
-                return { ...e, color: { color: c, highlight: "#ffd54f" } };
-            });
-        }
+function setStatus(text, kind) {
+  const line = byId("statusLine");
+  line.textContent = text;
+  line.className = "status" + (kind ? " " + kind : "");
+}
 
-        // ============ 提问 ============
-        document.getElementById("askBtn").onclick = async () => {
-            const q = document.getElementById("questionInput").value.trim();
-            if (!q) { alert("请输入问题"); return; }
-            const resp = await fetch("/api/qa", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question: q })
-            });
-            const res = await resp.json();
-            document.getElementById("answerBox").innerText = res.answer || "（无答案）";
-            nodes.clear(); edges.clear();
-            if (res.subgraph) {
-                nodes.add(styleNodes(res.subgraph.nodes || []));
-                edges.add(styleEdges(res.subgraph.edges || []));
-            }
-            highlightPath(res.path || []);
-        };
+function appendText(parent, tag, text, className = "") {
+  const element = document.createElement(tag);
+  element.className = className;
+  element.textContent = text;
+  parent.appendChild(element);
+}
 
-        // ============ 高亮推理路径 ============
-        function highlightPath(pathArr) {
-            nodes.update(nodes.getIds().map(id => ({ id, color: undefined })));
-            edges.update(edges.getIds().map(id => ({ id, color: undefined })));
-            for (const nid of pathArr) {
-                nodes.update({ id: nid, color: { background: "#ff5252", border: "#fff" } });
-            }
-            for (let i = 0; i < pathArr.length - 1; i++) {
-                const from = pathArr[i], to = pathArr[i + 1];
-                for (const e of edges.get()) {
-                    if ((e.from === from && e.to === to) || (e.from === to && e.to === from)) {
-                        edges.update({ id: e.id, color: { color: "#ff5252", highlight: "#ff5252" } });
-                    }
-                }
-            }
-        }
+function renderEvidence(items, emptyText = "本次问答暂无可展示的检索证据。") {
+  const box = byId("evidenceBox");
+  box.replaceChildren();
+  byId("evidenceCount").textContent = items.length ? "· " + items.length + " 条" : "";
+  if (!items.length) {
+    appendText(box, "p", emptyText, "muted");
+    return;
+  }
+  items.forEach((item, index) => {
+    const card = document.createElement("details");
+    card.className = "item";
+    const kind = evidenceKinds[item.kind] || "检索证据";
+    const books = [...new Set((item.chunk_ids || []).map(id => String(id).split("::")[0]))];
+    const source = item.book || books.join("、");
+    const heading = [index + 1 + ". " + kind, source, item.chapter].filter(Boolean).join(" · ");
+    appendText(card, "summary", heading);
+    const text = item.kind === "chunk" ? item.legacy?.text || item.text : item.text;
+    if (text) appendText(card, "p", text);
+    if (item.kind !== "chunk") {
+      const snippets = [...new Set((item.edges || []).flatMap(edge => edge.snippets || []))];
+      snippets.slice(0, 6).forEach(snippet => appendText(card, "p", snippet));
+    }
+    box.appendChild(card);
+  });
+}
 
-        // ============ 点击节点展开邻居 ============
-        network.on("click", async (params) => {
-            if (params.nodes.length === 0) return;
-            const nodeId = params.nodes[0];
-            const r = await fetch(`/api/node/neighbor?nodeId=${encodeURIComponent(nodeId)}`);
-            const json = await r.json();
-            nodes.add(styleNodes(json.nodes || []));
-            edges.add(styleEdges(json.edges || []));
-        });
+let graphVersion = 0;
+let graphScope = "";
 
-        // ============ 时代滑块过滤 ============
-        const eraMap = { 1: "射雕英雄传", 2: "神雕侠侣", 3: "倚天屠龙记" };
-        const slider = document.getElementById("eraSlider");
-        const eraTextDom = document.getElementById("eraText");
-        slider.oninput = async function () {
-            const val = this.value;
-            eraTextDom.innerText = eraMap[val];
-            const resp = await fetch(`/api/graph/byera?era=${encodeURIComponent(eraMap[val])}`);
-            const data = await resp.json();
-            nodes.clear(); edges.clear();
-            nodes.add(styleNodes(data.nodes || []));
-            edges.add(styleEdges(data.edges || []));
-        };
-    </script>
+function addToGraph(data) {
+  upsertNodes((data.nodes || []).map(styleNode));
+  upsertEdges((data.edges || []).map(styleEdge));
+  graphInfo.textContent = [graphScope, nodes.length + " 个节点", edges.length + " 条关系"].join(" · ");
+  fitBtn.disabled = !nodes.length;
+}
+
+function showGraph(data, scope, path) {
+  edges.clear();
+  nodes.clear();
+  graphScope = scope;
+  addToGraph(data);
+  highlightPath(path);
+  overlay.textContent = nodes.length ? "" : "这个范围内暂无可展示的节点。";
+}
+
+const askForm = byId("askForm");
+const resultPanel = byId("resultPanel");
+
+async function ask() {
+  if (askBtn.disabled) return;
+  const question = questionInput.value.trim();
+  if (!question) {
+    setStatus("请输入问题。", "error");
+    questionInput.focus();
+    return;
+  }
+  askBtn.disabled = true;
+  askBtn.textContent = "回答中…";
+  resultPanel.setAttribute("aria-busy", "true");
+  answerBox.classList.add("muted");
+  answerBox.textContent = "正在等待回答…";
+  queryDetails.hidden = true;
+  queryDetails.open = false;
+  metaLine.replaceChildren();
+  renderEvidence([], "正在查找相关证据…");
+  setStatus("检索并生成答案中…");
+
+  const version = graphVersion;
+  const era = bookFilters.querySelector('[aria-pressed="true"]').textContent;
+  let payload;
+  try {
+    const response = await fetch("/api/qa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, top_k: 5, era }),
+      signal: window.AbortSignal?.timeout?.(120000),
+    });
+    const data = await response.json();
+    if (!response.ok || data.status === "error") {
+      setStatus(data.error?.message || "问答服务暂时不可用，请重试。", "error");
+    } else {
+      payload = data;
+    }
+  } catch (error) {
+    setStatus(error.name === "TimeoutError" ? "等待超时，请稍后重试。" :
+      "连接问答服务失败，请稍后重试。", "error");
+  } finally {
+    askBtn.disabled = false;
+    askBtn.textContent = "提问";
+    resultPanel.setAttribute("aria-busy", "false");
+  }
+
+  if (!payload) {
+    answerBox.textContent = "本次问答未完成。";
+    renderEvidence([]);
+    return;
+  }
+
+  answerBox.classList.remove("muted");
+  answerBox.textContent = payload.answer || "暂无可展示的回答。";
+  byId("queryMethod").textContent = methodLabels[payload.method] || payload.method || "检索详情";
+  for (const [label, value] of [["意图", payload.intent], ["注入", payload.injection], ["状态", payload.status]]) {
+    if (value) appendText(metaLine, "span", label + " · " + value);
+  }
+  queryDetails.hidden = !metaLine.childElementCount;
+  if (payload.status === "no_context") {
+    setStatus("现有资料不足以回答这个问题。", "warn");
+  } else if (payload.status === "degraded" || payload.generation?.status === "unavailable") {
+    setStatus("生成服务暂时不可用，下面显示检索结果。", "warn");
+  } else {
+    setStatus("回答已生成。", "ok");
+  }
+  renderEvidence(payload.evidence || []);
+  if (network && version === graphVersion && payload.subgraph?.nodes?.length) {
+    graphVersion++;
+    showGraph(payload.subgraph, "问答相关图谱", payload.path);
+  }
+}
+
+askForm.addEventListener("submit", event => {
+  event.preventDefault();
+  ask();
+});
+questionInput.addEventListener("keydown", event => {
+  if (!event.isComposing && (event.ctrlKey || event.metaKey) && event.key === "Enter") {
+    event.preventDefault();
+    askForm.requestSubmit();
+  }
+});
+byId("examples").addEventListener("click", event => {
+  const example = event.target.closest("button");
+  if (!example) return;
+  questionInput.value = example.textContent;
+  questionInput.focus();
+});
+
+network?.on("click", async params => {
+  if (!params.nodes.length) return;
+  const nodeId = params.nodes[0];
+  const version = graphVersion;
+  try {
+    const response = await fetch("/api/node/neighbor?nodeId=" + encodeURIComponent(nodeId));
+    if (!response.ok) return;
+    const payload = await response.json();
+    if (version === graphVersion) addToGraph(payload);
+  } catch (error) { /* 展开失败时保留当前图谱 */ }
+});
+
+async function loadEraGraph(book) {
+  const version = ++graphVersion;
+  graphInfo.textContent = book;
+  overlay.textContent = "图谱加载中…";
+  fitBtn.disabled = true;
+  try {
+    const response = await fetch("/api/graph/byera?era=" + encodeURIComponent(book), {
+      signal: window.AbortSignal?.timeout?.(15000),
+    });
+    if (!response.ok) throw new Error("图谱加载失败");
+    const payload = await response.json();
+    if (version === graphVersion) showGraph(payload, book);
+  } catch (error) {
+    if (version === graphVersion) overlay.textContent = "图谱加载失败，点击书名重试。";
+  }
+}
+
+if (network) {
+  bookFilters.addEventListener("click", event => {
+    const selected = event.target.closest("button");
+    if (!selected) return;
+    for (const book of bookFilters.querySelectorAll("button")) {
+      book.setAttribute("aria-pressed", String(book === selected));
+    }
+    loadEraGraph(selected.textContent);
+  });
+  fitBtn.addEventListener("click", () => network.fit({ animation: true }));
+  loadEraGraph(bookFilters.querySelector('[aria-pressed="true"]').textContent);
+} else {
+  bookFilters.querySelectorAll("button").forEach(button => { button.disabled = true; });
+  overlay.textContent = "图谱组件未加载，刷新页面可重试。";
+}
+</script>
 </body>
 </html>

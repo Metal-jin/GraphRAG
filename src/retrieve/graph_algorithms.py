@@ -137,6 +137,51 @@ def shortest_path(graph: Graph, source: str, target: str,
             "path": path, "edges": edge_path}
 
 
+def bfs_paths(graph: Graph, source: str,
+              max_hops: Optional[int] = None) -> Dict[str, Dict[str, Any]]:
+    """单源 BFS：一次构建邻接表，返回 {目标: {distance, path, edges}}。
+
+    跨书检索需要"一个人到所有其他人"的距离，逐个调用 shortest_path 会重复
+    构建邻接表并做 N 次 BFS（任务 16/29）。
+    """
+    names = _node_info(graph)
+    source = str(source).strip()
+    if source not in names:
+        return {}
+    adjacency = build_adjacency(graph)
+    previous: Dict[str, Optional[str]] = {source: None}
+    previous_edge: Dict[str, Dict[str, Any]] = {}
+    distance = {source: 0}
+    queue = deque([source])
+    while queue:
+        current = queue.popleft()
+        if max_hops is not None and distance[current] >= max_hops:
+            continue
+        for neighbor, edge in adjacency.get(current, []):
+            if neighbor in previous:
+                continue
+            previous[neighbor] = current
+            previous_edge[neighbor] = edge
+            distance[neighbor] = distance[current] + 1
+            queue.append(neighbor)
+    result: Dict[str, Dict[str, Any]] = {}
+    for name, dist in distance.items():
+        if name == source:
+            continue
+        path, edge_path = [], []
+        current: Optional[str] = name
+        while current is not None:
+            path.append(current)
+            if current in previous_edge:
+                edge_path.append(previous_edge[current])
+            current = previous[current]
+        path.reverse()
+        edge_path.reverse()
+        result[name] = {"source": source, "target": name, "distance": dist,
+                        "path": path, "edges": edge_path}
+    return result
+
+
 def relationship_distance(graph: Graph, source: str, target: str,
                           max_hops: Optional[int] = None) -> Optional[int]:
     """只返回两个节点之间的最短跳数。"""
@@ -203,5 +248,5 @@ def analyze_graph(graph: Graph, top_k: int = 10) -> Dict[str, Any]:
 
 
 __all__ = ["build_adjacency", "degree_centrality", "pagerank", "page_rank",
-           "shortest_path", "relationship_distance", "louvain_communities",
-           "detect_communities", "analyze_graph"]
+           "shortest_path", "bfs_paths", "relationship_distance",
+           "louvain_communities", "detect_communities", "analyze_graph"]

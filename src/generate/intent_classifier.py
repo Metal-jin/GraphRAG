@@ -1,145 +1,203 @@
-"""意图分类器：识别问题类型，自动路由到领域检索策略。
+"""意图分类器（任务 11 / 19 重写）。
 
-阶段二核心：用户不再需要手动选方法，系统根据问题自动判断意图并路由。
-
-意图（语义）→ 路由（方法）+ 注入形式：
-    - person（人物师徒关系）      → master_chain    + path（路径）
-    - person_relation（人物关系） → person_relation + triples（三元组）
-    - sect（门派聚合）            → sect_agg        + subgraph（子图摘要）
-    - art（武功传承）             → art_lineage     + path（路径）
-    - general（通用兜底/综合比较） → vector         + text（原文）
-
-分类方法（规则 + 实体识别，阶段二够用，无需训练模型）：
-    1. 从图谱拿到全部实体名，按类型分组（人物 / 门派 / 武功）
-    2. 在问题里做「长名优先」的字符串匹配，命中起始实体
-    3. 结合关键词（师徒 / 传承 / 绝学等）判断最终意图
+变化：
+- 实体识别统一走 core.entity_link（正名 + 别名 + 全量命中 + 置信度），
+  不再自己写一套长名字符串匹配；
+- 分类结果带 seed 的实体 ID / 类型 / 置信度，并传给检索器；
+- 新增 cross_novel（跨书关联/血缘）与 compare（综合比较）意图；
+- 索引缓存可刷新、可失效，数据库恢复后能自动恢复（不再是"一次失败永久空图"）。
 """
-from dataclasses import dataclass
-from typing import Dict, Optional
+from __future__ import annotations
 
-from ingest.data_loader import get_graph
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Sequence
 
+from core.entity_link import EntityIndex, EntityIndexCache, EntityMatch
+from core.query import QueryScope, detect_scope
+from core.question_plan import FOUNDING_VERBS
 
-@dataclass
-class Intent:
-    """分类结果。"""
-    intent: str        # 语义意图（person / sect / art / general）
-    method_name: str   # 路由到的检索方法名
-    seed_entity: str   # 识别出的起始实体（可能为空字符串）
-    entity_type: str   # 实体类型（人物 / 门派 / 武功 / 空）
-    injection: str     # 注入形式（path / subgraph / text）
-    reason: str        # 分类依据，方便调试和答辩解释
-
-
-# 关键词表（辅助判断意图）
-ART_KEYWORDS = ("传承", "谁传", "传给谁", "创始人", "谁创", "源自", "流自", "从谁")
-SECT_KEYWORDS = ("绝学", "成员", "门下", "有哪些", "掌门", "帮主", "什么武功", "会什么")
-MASTER_KEYWORDS = ("师父", "师傅", "师祖", "太师父", "徒弟", "弟子", "师承", "师从", "师门", "门徒")
-
-# 非师徒的人物关系关键词（父子/配偶/结拜/仇敌，路由到 person_relation）
+ART_KEYWORDS = ("传承", "谁传", "传给谁", "传给了", "传给", "谁传授",
+                "创始人", "谁创", "源自", "流自", "从谁", "演化")
+SECT_KEYWORDS = ("绝学", "成员", "门下", "有哪些", "掌门", "帮主", "什么武功", "会什么",
+                 "创始人", "谁创", *FOUNDING_VERBS)
+MASTER_KEYWORDS = ("师父", "师傅", "师祖", "太师父", "徒弟", "弟子", "师承", "师从",
+                   "师门", "门徒", "恩师")
 PERSON_REL_KEYWORDS = (
     "父亲", "母亲", "爸爸", "妈妈", "爹", "娘", "儿子", "女儿", "子女", "孩子",
     "父母", "父子", "父女", "母子", "母女", "爹娘",
     "配偶", "妻子", "丈夫", "老婆", "老公", "夫人", "娘子", "夫妻",
     "结拜", "义兄", "义弟", "结义", "义结金兰",
     "仇敌", "敌人", "对手", "死对头", "仇人",
+    "岳父", "岳母", "外公", "外婆", "孙子", "孙女",
 )
-
-# 综合比较类关键词（路由到通用检索）
-COMPARE_KEYWORDS = ("谁厉害", "谁强", "谁更", "比较", "区别", "对比", "哪个厉害", "谁武功高", "谁高")
-
-# 武功精通问法（问人物精通什么武功，图 MASTERS 关系缺失，走通用检索）
-ART_SKILL_KEYWORDS = ("精通", "掌法", "棒法", "剑法", "拳法", "刀法", "棍法", "指法", "爪法",
-                      "绝技", "成名武功", "独门武功", "所学武功")
-
-# 门派/地点归属问法（BELONGS_TO / LOCATED_IN 关系缺失，走通用检索）
+COMPARE_KEYWORDS = ("谁厉害", "谁强", "谁更", "比较", "区别", "对比", "哪个厉害",
+                    "谁武功高", "谁高")
+CROSS_NOVEL_KEYWORDS = ("跨书", "血缘", "后人", "之后人", "关联", "什么关系", "有何关系",
+                        "几代", "时代差异")
+ART_SKILL_KEYWORDS = ("精通", "掌法", "棒法", "剑法", "拳法", "刀法", "棍法", "指法",
+                      "爪法", "绝技", "绝学", "成名武功", "独门武功", "所学武功")
 SECT_LOCATION_KEYWORDS = ("属于哪个门派", "哪个帮派", "哪个门派", "来自哪里", "来自何处",
                           "创立的门派", "创立了什么门派", "哪里的岛主", "哪里的")
 
 
+@dataclass
+class Intent:
+    """分类结果（字段只增不减，保持向后兼容）。"""
+
+    intent: str
+    method_name: str
+    seed_entity: str = ""
+    entity_type: str = ""
+    injection: str = "text"
+    reason: str = ""
+    seed_entity_id: str = ""
+    confidence: float = 0.0
+    scope: QueryScope = field(default_factory=QueryScope)
+    matches: List[Dict[str, Any]] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"intent": self.intent, "method_name": self.method_name,
+                "seed_entity": self.seed_entity, "entity_type": self.entity_type,
+                "injection": self.injection, "reason": self.reason,
+                "seed_entity_id": self.seed_entity_id,
+                "confidence": round(self.confidence, 3),
+                "scope": self.scope.to_dict(), "matches": self.matches}
+
+
 class IntentClassifier:
-    """规则 + 实体识别的意图分类器。"""
+    """规则 + 实体链接的分类器（离线可用，无需训练模型）。"""
 
-    def __init__(self):
-        self._graph_cache: Optional[Dict] = None
+    def __init__(self, index_cache: Optional[EntityIndexCache] = None):
+        self.cache = index_cache or EntityIndexCache()
 
-    def _graph(self) -> Dict:
-        """惰性加载图谱（缓存，避免每次分类都连 Neo4j）。"""
-        if self._graph_cache is None:
-            try:
-                self._graph_cache = get_graph()
-            except Exception:
-                # Neo4j 未启动时降级为空图，分类会落到 general
-                self._graph_cache = {"nodes": [], "edges": []}
-        return self._graph_cache
+    # ---------- 缓存 ----------
 
-    def _match_entity(self, question: str, entity_type: str) -> str:
-        """在问题里匹配指定类型的实体，长名优先。
+    def _index(self) -> EntityIndex:
+        return self.cache.get()
 
-        长名优先是为了避免「黄」误匹配到「黄蓉」而非「黄药师」。
-        """
-        nodes = self._graph().get("nodes", [])
-        names = [n.get("name", "") for n in nodes if n.get("type") == entity_type]
-        names = [n for n in names if n]
-        for name in sorted(names, key=len, reverse=True):
-            if name in question:
-                return name
-        return ""
+    def invalidate(self) -> None:
+        self.cache.invalidate()
+
+    @property
+    def degraded_reason(self) -> str:
+        return self.cache.degraded_reason
+
+    # ---------- 分类 ----------
+
+    @staticmethod
+    def _first_match(matches: Sequence[EntityMatch], label: Optional[str]) -> Optional[EntityMatch]:
+        for match in matches:
+            if label is None or match.label == label:
+                return match
+        return None
 
     def classify(self, question: str) -> Intent:
-        q = (question or "").strip()
+        text = (question or "").strip()
+        scope = detect_scope(text)
+        index = self._index()
+        matches = index.link(text, limit=6)
+        match_dicts = [m.to_dict() for m in matches]
 
-        # 1. 武功实体 + 传承关键词 → 武功传承
-        art = self._match_entity(q, "武功")
-        if art and any(k in q for k in ART_KEYWORDS):
-            return Intent("art", "art_lineage", art, "武功", "path",
-                          f"命中武功实体「{art}」且含传承关键词")
+        art = self._first_match(matches, "武功")
+        sect = self._first_match(matches, "门派")
+        people = [m for m in matches if m.label == "人物"]
+        person = people[0] if people else None
 
-        # 2. 门派实体 + 聚合关键词 → 门派聚合
-        sect = self._match_entity(q, "门派")
-        if sect and any(k in q for k in SECT_KEYWORDS):
-            return Intent("sect", "sect_agg", sect, "门派", "subgraph",
-                          f"命中门派实体「{sect}」且含聚合关键词")
+        # 多个跨时代人物 + 关联词 → 跨书检索
+        if len(people) >= 2 and any(word in text for word in CROSS_NOVEL_KEYWORDS):
+            return self._build("cross_novel", "cross_novel", people[0], "人物",
+                               "triples", "命中多个人物且含跨书/关联关键词", match_dicts, scope)
+        if len(people) >= 2 and scope.is_filtered and any(w in text for w in ("关联", "关系")):
+            return self._build("cross_novel", "cross_novel", people[0], "人物",
+                               "triples", "命中多个人物且指定了时代范围", match_dicts, scope)
 
-        # 2.5 人物实体 + 武功精通问法 → 通用检索（MASTERS 关系缺失）
-        person = self._match_entity(q, "人物")
-        if person and any(k in q for k in ART_SKILL_KEYWORDS):
-            return Intent("general", "vector", person, "人物", "text",
-                          f"命中人物实体「{person}」且含武功精通问法，走通用检索")
+        # 武功 + 传承/创立 → 武功传承
+        if art and any(word in text for word in ART_KEYWORDS):
+            return self._build("art", "art_lineage", art, "武功", "path",
+                               f"命中武功实体「{art.canonical}」且含传承关键词",
+                               match_dicts, scope)
 
-        # 2.6 人物实体 + 门派/地点问法 → 通用检索（BELONGS_TO/LOCATED_IN 缺失）
-        if person and any(k in q for k in SECT_LOCATION_KEYWORDS):
-            return Intent("general", "vector", person, "人物", "text",
-                          f"命中人物实体「{person}」且含门派/地点问法，走通用检索")
+        # 门派 + 聚合关键词 → 门派聚合
+        if sect and any(word in text for word in SECT_KEYWORDS):
+            return self._build("sect", "sect_agg", sect, "门派", "subgraph",
+                               f"命中门派实体「{sect.canonical}」且含聚合关键词",
+                               match_dicts, scope)
 
-        # 3. 人物实体 + 父子/配偶/结拜/仇敌 → 人物关系检索
-        if person and any(k in q for k in PERSON_REL_KEYWORDS):
-            return Intent("person_relation", "person_relation", person, "人物", "triples",
-                          f"命中人物实体「{person}」且含人物关系关键词（父子/配偶/结拜/仇敌）")
+        # 人物 + 创立问法 → 门派检索（反向查 FOUNDER_OF）
+        if person and any(word in text for word in FOUNDING_VERBS):
+            return self._build("sect", "sect_agg", person, "人物", "subgraph",
+                               "命中人物 + 创立问法，反向查其创立的门派",
+                               match_dicts, scope)
 
-        # 4. 人物实体 + 综合比较类 → 通用检索
-        if person and any(k in q for k in COMPARE_KEYWORDS):
-            return Intent("general", "vector", person, "人物", "text",
-                          f"命中人物实体「{person}」但属综合比较类，走通用检索")
+        # 人物 + 武功精通问法 → 通用检索（MASTERS 关系覆盖不全时更稳）
+        if person and any(word in text for word in ART_SKILL_KEYWORDS):
+            return self._build("general", "vector", person, "人物", "text",
+                               "人物 + 武功精通问法，走通用检索", match_dicts, scope)
 
-        # 5. 人物实体 + 师徒/关系关键词 → 师徒链
-        if person and any(k in q for k in MASTER_KEYWORDS):
-            return Intent("person", "master_chain", person, "人物", "path",
-                          f"命中人物实体「{person}」且含师徒关系关键词")
+        # 人物 + 门派/地点问法 → 通用检索
+        if person and any(word in text for word in SECT_LOCATION_KEYWORDS):
+            return self._build("general", "vector", person, "人物", "text",
+                               "人物 + 门派/地点问法，走通用检索", match_dicts, scope)
 
-        # 6. 人物实体（无明确关键词）→ 默认按人物关系处理
+        # 人物 + 亲属/配偶/结拜/仇敌 → 人物关系
+        if person and any(word in text for word in PERSON_REL_KEYWORDS):
+            return self._build("person_relation", "person_relation", person, "人物",
+                               "triples", "人物关系关键词（父子/配偶/结拜/仇敌）",
+                               match_dicts, scope)
+
+        # 人物 + 综合比较 → 通用检索
+        if person and any(word in text for word in COMPARE_KEYWORDS):
+            return self._build("general", "vector", person, "人物", "text",
+                               "人物 + 综合比较类，走通用检索", match_dicts, scope)
+
+        # 人物 + 师徒关键词 → 师徒链
+        if person and any(word in text for word in MASTER_KEYWORDS):
+            return self._build("person", "master_chain", person, "人物", "path",
+                               "人物 + 师徒关系关键词", match_dicts, scope)
+
+        # 只有人物、没有明确关系问法：走通用检索（不再默认当成师徒问题）
         if person:
-            return Intent("person", "master_chain", person, "人物", "path",
-                          f"命中人物实体「{person}」，默认按人物关系处理")
+            intent = self._build("general", "vector", person, "人物", "text",
+                                 "命中人物但没有明确关系问法，走通用检索",
+                                 match_dicts, scope)
+            intent.confidence = min(intent.confidence, 0.4)
+            return intent
 
-        # 7. 兜底 → 通用基线
-        return Intent("general", "vector", "", "", "text", "未命中领域实体，走通用检索")
+        # 兜底
+        return self._build("general", "vector", None, "", "text",
+                           "未命中领域实体，走通用检索", match_dicts, scope)
+
+    @staticmethod
+    def _build(intent: str, method: str, match: Optional[EntityMatch],
+               entity_type: str, injection: str, reason: str,
+               matches: List[Dict[str, Any]], scope: QueryScope) -> Intent:
+        return Intent(
+            intent=intent, method_name=method,
+            seed_entity=match.canonical if match else "",
+            entity_type=entity_type if match else "",
+            injection=injection, reason=reason,
+            seed_entity_id=(f"{entity_type}::{match.canonical}" if match else ""),
+            confidence=match.confidence if match else 0.2,
+            scope=scope, matches=matches)
 
 
-# 模块级单例，供 service 直接使用
-_classifier = IntentClassifier()
+_classifier: Optional[IntentClassifier] = None
+
+
+def get_classifier(refresh: bool = False) -> IntentClassifier:
+    global _classifier
+    if refresh or _classifier is None:
+        _classifier = IntentClassifier()
+    return _classifier
 
 
 def classify(question: str) -> Intent:
     """便捷入口：分类一个问题。"""
-    return _classifier.classify(question)
+    return get_classifier().classify(question)
+
+
+def invalidate_cache() -> None:
+    get_classifier().invalidate()
+
+
+__all__ = ["Intent", "IntentClassifier", "classify", "get_classifier", "invalidate_cache"]

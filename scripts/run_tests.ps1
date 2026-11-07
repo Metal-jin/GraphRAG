@@ -1,18 +1,33 @@
-# run_tests.ps1
-# 一键运行所有测试
+# 一键运行测试（任务 30：显式返回 pytest 退出码，路径相对仓库根）
+param(
+    [string]$Python = "python",
+    [string]$Args = ""
+)
 
-Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "GraphRAG Test Suite" -ForegroundColor Cyan
-Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host ""
+$ErrorActionPreference = "Stop"
+$env:PYTHONUTF8 = "1"
+$repoRoot = Split-Path $PSScriptRoot -Parent
+$env:PYTHONPATH = Join-Path $repoRoot "src"
 
-# 设置输出编码，避免中文乱码
-$env:PYTHONIOENCODING = "utf-8"
+Push-Location $repoRoot
+try {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "GraphRAG Test Suite" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
 
-# 运行 pytest
-python -m pytest -v --tb=short
+    $pytestArgs = @("-m", "pytest", "-v", "--tb=short")
+    if ($Args -ne "") { $pytestArgs += $Args.Split(" ") }
+    & $Python @pytestArgs
+    $code = $LASTEXITCODE
 
-Write-Host ""
-Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "Test run completed" -ForegroundColor Cyan
-Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host ""
+    if ($code -eq 0) {
+        Write-Host "测试全部通过" -ForegroundColor Green
+    } else {
+        Write-Host "测试失败（退出码 $code）" -ForegroundColor Red
+    }
+    exit $code
+}
+finally {
+    Pop-Location
+}
