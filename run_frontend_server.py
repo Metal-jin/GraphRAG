@@ -360,6 +360,8 @@ class ThreadingWSGIServer(ThreadingMixIn, WSGIServer):
 
 def main() -> int:
     import argparse
+    from core.console import ensure_utf8_console
+    ensure_utf8_console()
     parser = argparse.ArgumentParser(description="金庸武侠知识图谱问答服务")
     parser.add_argument("--host", default="127.0.0.1", help="监听地址（默认仅回环）")
     parser.add_argument("--port", type=int, default=5000)

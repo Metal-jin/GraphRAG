@@ -926,6 +926,8 @@ def _resolve_targets(args) -> List[Path]:
 
 
 def main() -> None:
+    from core.console import ensure_utf8_console
+    ensure_utf8_console()
     parser = argparse.ArgumentParser(description="LLM 抽取 + Neo4j 入库（多书、版本化、事务化）")
     parser.add_argument("--chunks", type=str, default=None, help="chunks 文件路径")
     parser.add_argument("--book", type=str, default=None, help="书名（如 神雕侠侣）")

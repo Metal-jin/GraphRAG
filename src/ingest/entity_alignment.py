@@ -617,6 +617,8 @@ def apply_descendants(session, candidates: List[DescendantCandidate],
 # ============================================================
 
 def main() -> int:
+    from core.console import ensure_utf8_console
+    ensure_utf8_console()
     parser = argparse.ArgumentParser(description="实体对齐系统（规则 + 词典 + 相似度 + 血缘）")
     parser.add_argument("--dry-run", action="store_true", help="只报告，不改库")
     parser.add_argument("--apply", action="store_true", help="真正改库（默认 dry-run）")

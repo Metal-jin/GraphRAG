@@ -331,6 +331,8 @@ def update_manifest(book: str, *, out_dir: Optional[Path] = None,
 # ============ CLI ============
 
 def main() -> None:
+    from core.console import ensure_utf8_console
+    ensure_utf8_console()
     parser = argparse.ArgumentParser(description="金庸小说语料切块（多书、句子友好、版本化）")
     parser.add_argument("--source", type=str, default=None,
                         help="单个 txt 文件路径；不填则处理 data/source/ 下所有 txt")

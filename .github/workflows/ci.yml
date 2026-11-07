@@ -14,6 +14,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python: ["3.10", "3.12"]
+    # Unicode: Windows runners default to cp1252, so force UTF-8 everywhere.
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,10 +28,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
       - name: Run offline tests
-        env:
-          PYTHONUTF8: "1"
         run: python -m pytest -q
-      # 这些入口必须能在「没有 PYTHONPATH」的情况下直接运行（自举 sys.path）
+      # Entry points must run without PYTHONPATH (they bootstrap sys.path).
       - name: CLI smoke test (no PYTHONPATH)
         run: |
           python src/ingest/corpus.py --help

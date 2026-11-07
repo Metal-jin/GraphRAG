@@ -178,6 +178,8 @@ DEFAULT_DROP_NAMES: List[str] = ["师父", "大师父", "白雕", "汗血宝马"
 
 
 def main() -> int:
+    from core.console import ensure_utf8_console
+    ensure_utf8_console()
     parser = argparse.ArgumentParser(description="图谱轻量清洗（别名归并 + 噪声剔除）")
     parser.add_argument("--dry-run", action="store_true", help="只报告，不改库")
     parser.add_argument("--audit", action="store_true", help="打印候选名单现状后退出")
