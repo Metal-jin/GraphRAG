@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 import re
+import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -33,10 +34,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from neo4j import GraphDatabase
-from openai import OpenAI
+# 自举 sys.path：允许 `python src/ingest/build_kg.py` 直接运行（不依赖 PYTHONPATH）
+_SRC_DIR = Path(__file__).resolve().parents[1]
+if str(_SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(_SRC_DIR))
 
-from core.config import get_env, get_settings
+from neo4j import GraphDatabase  # noqa: E402
+from openai import OpenAI  # noqa: E402
+
+from core.config import get_env, get_settings  # noqa: E402
 from core.embedding import (EmbeddingService, assert_index_compatible,
                             get_embedder, local_hash_embed)
 from core.errors import IndexCompatibilityError

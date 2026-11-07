@@ -35,12 +35,18 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-from core.ontology import infer_era  # 单一本体：书名 -> 时代
+# 自举 sys.path：允许 `python src/ingest/corpus.py` 直接运行（不依赖 PYTHONPATH）
+_SRC_DIR = Path(__file__).resolve().parents[1]
+if str(_SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(_SRC_DIR))
+
+from core.ontology import infer_era  # noqa: E402  单一本体：书名 -> 时代
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SOURCE_DIR = PROJECT_ROOT / "data" / "source"

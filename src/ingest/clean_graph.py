@@ -17,14 +17,21 @@ from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 from typing import Dict, Iterable, List, Set, Tuple
 
-from neo4j import GraphDatabase
+# 自举 sys.path：允许 `python src/ingest/clean_graph.py` 直接运行（不依赖 PYTHONPATH）
+_SRC_DIR = Path(__file__).resolve().parents[1]
+if str(_SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(_SRC_DIR))
 
-from core.config import get_settings
-from core.ontology import ALL_RELATION_TYPES, ENTITY_LABEL_SET
-from ingest import graph_ops
-from ingest.graph_ops import ALLOWED_REL_TYPES, UnknownRelationError, quote_type
+from neo4j import GraphDatabase  # noqa: E402
+
+from core.config import get_settings  # noqa: E402
+from core.ontology import ALL_RELATION_TYPES, ENTITY_LABEL_SET  # noqa: E402
+from ingest import graph_ops  # noqa: E402
+from ingest.graph_ops import (ALLOWED_REL_TYPES, UnknownRelationError,  # noqa: E402
+                              quote_type)
 
 ENTITY_LABELS = ENTITY_LABEL_SET
 

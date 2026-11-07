@@ -27,5 +27,11 @@ jobs:
         env:
           PYTHONUTF8: "1"
         run: python -m pytest -q
-      - name: Check corpus CLI defaults
-        run: python src/ingest/corpus.py --help
+      # 这些入口必须能在「没有 PYTHONPATH」的情况下直接运行（自举 sys.path）
+      - name: CLI smoke test (no PYTHONPATH)
+        run: |
+          python src/ingest/corpus.py --help
+          python src/ingest/build_kg.py --help
+          python src/ingest/clean_graph.py --help
+          python src/ingest/entity_alignment.py --help
+          python run_frontend_server.py --help
